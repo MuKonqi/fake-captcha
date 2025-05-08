@@ -38,7 +38,7 @@
 (function() {
     'use strict';
 
-    const cooldown = 46; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
+    const cooldown = 4600; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
 
     const validity = 230; // Validity for challange in seconds
 
@@ -505,7 +505,7 @@
         })
 
         function setMessage(message) {
-            box.style.height = "613px";
+            box.style.height = captchaHelpMessage.style.display == "block" ? "652px" : "613px";
             captchaMessage.style.display = "block";
             captchaMessage.innerText = message;
         }
