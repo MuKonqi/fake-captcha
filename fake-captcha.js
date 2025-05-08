@@ -127,11 +127,12 @@
         const wantedCategories = {...categories};
         delete wantedCategories.__others__
 
+        let captchaImages;
         let category;
+        let correctNumber;
         let correctImagePaths;
         let wrongImagePaths;
         let imagePaths;
-        let captchaImages;
 
         let status = 0;
 
@@ -447,7 +448,7 @@
         captchaButton.style.borderRadius = "2px";
         captchaButton.style.cursor = "pointer";
         captchaButton.style.textAlign = "center";
-        captchaButton.style.transition = "all .5s ease"
+        captchaButton.style.transition = "all .5s ease";
         captchaButton.style.background = "#1a73e8";
         captchaButton.style.fontSize = "14px";
         captchaButton.style.fontWeight = "500";
@@ -465,7 +466,7 @@
                     }
             }
 
-            if (successful === 3) {
+            if (successful === correctNumber) {
                 document.cookie = `challangeDate=${new Date().toString()}; SameSite=None; Secure=None`;
 
                 location.reload();
@@ -566,6 +567,20 @@
         function setCaptcha() {
             category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
 
+            const randomNumber = Math.random() * 100;
+
+            if (randomNumber <= 11.5) {
+                correctNumber = 2;
+            }
+
+            else if (randomNumber <= 77) {
+                correctNumber = 3;
+            }
+
+            else if (randomNumber <= 100) {
+                correctNumber = 4;
+            }
+
             correctImagePaths = [];
 
             wrongImagePaths = [];
@@ -599,8 +614,8 @@
                 }
             }
 
-            setImagePaths(correctImagePaths, 3);
-            setImagePaths(wrongImagePaths, 6);
+            setImagePaths(correctImagePaths, correctNumber);
+            setImagePaths(wrongImagePaths, 9 - correctNumber);
 
             for (let currentIndex = imagePaths.length - 1; currentIndex > 0; currentIndex--) {
                 const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
@@ -608,8 +623,7 @@
             }
 
             captchaLabel.innerText = category;
-
-            captchaExample.setAttribute("src", correctImagePaths[2 + Math.ceil(Math.random() * (correctImagePaths.length - 3))]);
+            captchaExample.setAttribute("src", correctImagePaths[correctNumber - 1 + Math.ceil(Math.random() * (correctImagePaths.length - correctNumber))]);
 
             function setCaptchaImageToDefault(element) {
                 element.clicked = false;
