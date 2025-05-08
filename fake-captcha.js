@@ -43,13 +43,20 @@ class Config { // Do not forget to set this!
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
+    static activecategories = [ // There must be at least one
+        "Cami",
+        "İnsan"
+    ]
+
     static categories = {
         "__others__": [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Yosemite_El_Capitan.jpg/330px-Yosemite_El_Capitan.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Fire_Engine_33_%286225707251%29.jpg/330px-Fire_Engine_33_%286225707251%29.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg"
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Downtown_Charlottesville_fire_hydrant.jpg/250px-Downtown_Charlottesville_fire_hydrant.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Pune_green_bus.jpg/250px-Pune_green_bus.jpg"
         ], // Do not change __others__'s name or do not delete it! The images here will never be correct image for reCAPTCHA.
         "Cami": [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
@@ -561,10 +568,21 @@ class reCAPTCHA {
         this.helpTextlink.setAttribute("target", "_blank");
         this.helpTextlink.setAttribute("href", "https://support.google.com/recaptcha");
         this.helpText.appendChild(this.helpTextlink);
+
+        this.categories = {};
+
+        for (let i = 0; i < Config.activecategories.length; i++) {
+            const key = Config.activecategories[i];
+            this.categories[key] = Config.categories[key];
+        }
+
+        if (!("__others__" in this.categories)) {
+            this.categories["__others__"] = Config.categories["__others__"];
+        }
     }
 
     focusToImage(event) {
-        if (event.currentTarget.clicked) {
+        if (!event.currentTarget.clicked) {
             event.currentTarget.clicked = true;
             event.currentTarget.style.width = "90%";
             event.currentTarget.style.border = "2px solid #2cde85";
@@ -614,7 +632,7 @@ class reCAPTCHA {
     }
 
     set() {
-        const wantedCategories = {...Config.categories};
+        const wantedCategories = {...this.categories};
         delete wantedCategories.__others__;
 
         const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
@@ -637,7 +655,7 @@ class reCAPTCHA {
 
         this.wrongImagePaths = [];
 
-        for (const [category_, paths] of Object.entries(Config.categories)) {
+        for (const [category_, paths] of Object.entries(this.categories)) {
             if (category_ === category) {
                 this.correctImagePaths.push(...paths)
             }
