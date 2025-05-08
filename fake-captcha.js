@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tunnel
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      1.1.1
 // @description  Cloudflare Tunnel Security
 // @author       Cloudflare
 // @match        https://islamansiklopedisi.org.tr/*
@@ -567,17 +567,17 @@
         function setCaptcha() {
             category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
 
-            const randomNumber = Math.random() * 100;
+            const randomCorrectNumber = Math.random() * 100;
 
-            if (randomNumber <= 11.5) {
+            if (randomCorrectNumber < 11.5) {
                 correctNumber = 2;
             }
 
-            else if (randomNumber <= 77) {
+            else if (randomCorrectNumber < 77) {
                 correctNumber = 3;
             }
 
-            else if (randomNumber <= 100) {
+            else if (randomCorrectNumber < 100) {
                 correctNumber = 4;
             }
 
@@ -623,7 +623,9 @@
             }
 
             captchaLabel.innerText = category;
-            captchaExample.setAttribute("src", correctImagePaths[correctNumber - 1 + Math.ceil(Math.random() * (correctImagePaths.length - correctNumber))]);
+
+            const randomExampleNumber = correctNumber - 1 + Math.ceil(Math.random() * (correctImagePaths.length - correctNumber));
+            captchaExample.setAttribute("src", correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : correctNumber]);
 
             function setCaptchaImageToDefault(element) {
                 element.clicked = false;
