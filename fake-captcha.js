@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tunnel
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.1.0
 // @description  Cloudflare Tunnel Security
 // @author       Cloudflare
 // @match        https://islamansiklopedisi.org.tr/*
@@ -38,6 +38,8 @@
 (function() {
     'use strict';
 
+    // Configuration (do not forget to set them!)
+
     const cooldown = 4600; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
 
     const validity = 230; // Validity for challange in seconds
@@ -51,7 +53,7 @@
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Fire_Engine_33_%286225707251%29.jpg/330px-Fire_Engine_33_%286225707251%29.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg"
-        ], // Do not change __others__'s name or do not delete it! The images here will never be correct image for pictured captcha.
+        ], // Do not change __others__'s name or do not delete it! The images here will never be correct image for reCAPTCHA.
         "Cami": [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg/330px-Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg",
@@ -75,6 +77,38 @@
             `${pinterestURL}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`
         ]
     };
+
+    const titleText = "Bir dakika lütfen...";
+
+    const labelText = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
+
+    const verifyingText = "Doğrulanıyor...";
+
+    const tryAgainText = "Tekrar deneyin";
+
+    const privacyPolicyText = "Gizlilik";
+
+    const termsOfUseText = "Koşullar";
+
+    const selectAllImagesText = "içeren tüm resimleri seçin";
+
+    const tryAgainLaterText = "Lütfen daha sonra tekrar deneyin.";
+
+    const errorText = "Lütfen tüm eşleşen resimleri seçin.";
+
+    const helpText = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın.";
+
+    const learnMoreLinkText = "Daha fazla bilgi edinin.";
+
+    const descriptionText = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
+
+    const footerText = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
+
+    const verifyYouAreHumanText = "Gerçek kişi olduğunuzu\ndoğrulayın";
+
+    const captchaHeaderLayout = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+
+    // Code
 
     const currentDate = new Date();
 
@@ -107,7 +141,7 @@
             element.style.display = "none";
         }
 
-        document.title = "Bir dakika lütfen...";
+        document.title = titleText;
 
         document.documentElement.style.fontFamily = "Calibri, sans-serif";
 
@@ -146,22 +180,22 @@
         container.style.paddingRight = "1.5rem";
         main.appendChild(container);
 
-        const label = document.createElement("h1");
-        label.style.textAlign = "left";
-        label.style.fontSize = "2.5rem";
+        const siteName = document.createElement("h1");
+        siteName.style.textAlign = "left";
+        siteName.style.fontSize = "2.5rem";
+        siteName.style.fontWeight = "900";
+        siteName.style.lineHeight = "3.75rem";
+        siteName.innerText = window.location.hostname;
+        container.appendChild(siteName);
+
+        const label = document.createElement("p");
+        label.style.fontSize = "1.5rem";
         label.style.fontWeight = "900";
         label.style.lineHeight = "3.75rem";
-        label.innerText = window.location.hostname;
+        label.style.marginTop = "0";
+        label.style.marginBottom = "2rem";
+        label.innerText = labelText;
         container.appendChild(label);
-
-        const description = document.createElement("p");
-        description.style.fontSize = "1.5rem";
-        description.style.fontWeight = "900";
-        description.style.lineHeight = "3.75rem";
-        description.style.marginTop = "0";
-        description.style.marginBottom = "2rem";
-        description.innerText = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir."
-        container.appendChild(description);
 
         const box = document.createElement("div");
         box.style.width = "300px"
@@ -195,12 +229,12 @@
         checkbox.addEventListener("change", function() {
             if (status === 1) {
                 checkbox.style.visibility = "hidden";
-                text.innerText = "Doğrulanıyor...";
+                verifying.innerText = verifyingText;
 
                 setTimeout(function() {
                     checkbox.checked = false;
                     checkbox.style.visibility = "visible";
-                    text.innerText = "Tekrar deneyin";
+                    verifying.innerText = tryAgainText;
                 }, cooldown / 2)
 
                 status = 2;
@@ -215,12 +249,12 @@
         })
         content.append(checkbox);
 
-        const text = document.createElement("label");
-        text.style.alignItems = "center";
-        text.style.color = "#fff"
-        text.style.marginLeft = "8px";
-        text.innerText = "Doğrulanıyor...";
-        content.append(text);
+        const verifying = document.createElement("label");
+        verifying.style.alignItems = "center";
+        verifying.style.color = "#fff"
+        verifying.style.marginLeft = "8px";
+        verifying.innerText = verifyingText;
+        content.append(verifying);
 
         const branding = document.createElement("div");
         branding.style.margin = "0px 16px 0px auto";
@@ -250,7 +284,7 @@
         privacyPolicy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
         privacyPolicy.style.textDecoration = "underline";
         privacyPolicy.style.color = "#bbbbbb";
-        privacyPolicy.innerText = "Gizlilik";
+        privacyPolicy.innerText = privacyPolicyText;
         links.appendChild(privacyPolicy)
 
         const radiusSeperator = document.createElement("span");
@@ -263,7 +297,7 @@
         websiteTerms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
         websiteTerms.style.textDecoration = "underline";
         websiteTerms.style.color = "#bbbbbb";
-        websiteTerms.innerText = "Koşullar";
+        websiteTerms.innerText = termsOfUseText;
         links.appendChild(websiteTerms)
 
         const captchaFrame = document.createElement("div");
@@ -280,7 +314,7 @@
 
         const captchaHeader = document.createElement("div");
         captchaHeader.style.width = "100%";
-        captchaHeader.style.height = "20%";
+        captchaHeader.style.height = "115.6px";
         captchaHeader.style.backgroundColor = "#1a73e8";
         captchaHeader.style.alignContent = "center";
         captchaHeader.style.alignItems = "center";
@@ -293,15 +327,32 @@
         captchaTextFrame.style.color = "#fff";
         captchaHeader.appendChild(captchaTextFrame);
 
-        const captchaLabel = document.createElement("strong");
-        captchaLabel.style.fontSize = "24px";
-        captchaTextFrame.appendChild(captchaLabel);
+        let captchaDescription;
+        let captchaLabel;
 
-        captchaTextFrame.appendChild(document.createElement("br"));
+        if (captchaHeaderLayout === 0) {
+            captchaDescription = document.createElement("span");
+            captchaDescription.innerText = selectAllImagesText;
+            captchaTextFrame.appendChild(captchaDescription);
 
-        const captchaDescription = document.createElement("span");
-        captchaDescription.innerText = "içeren tüm resimleri seçin";
-        captchaTextFrame.appendChild(captchaDescription);
+            captchaTextFrame.appendChild(document.createElement("br"));
+
+            captchaLabel = document.createElement("strong");
+            captchaLabel.style.fontSize = "24px";
+            captchaTextFrame.appendChild(captchaLabel);
+        }
+
+        else if (captchaHeaderLayout === 1) {
+            captchaLabel = document.createElement("strong");
+            captchaLabel.style.fontSize = "24px";
+            captchaTextFrame.appendChild(captchaLabel);
+
+            captchaTextFrame.appendChild(document.createElement("br"));
+
+            captchaDescription = document.createElement("span");
+            captchaDescription.innerText = selectAllImagesText;
+            captchaTextFrame.appendChild(captchaDescription);
+        }
 
         const captchaExample = document.createElement("img");
         captchaExample.style.height = "96px";
@@ -312,11 +363,12 @@
         captchaHeader.appendChild(captchaExample);
 
         const captchaImagesFrame = document.createElement("div");
-        captchaImagesFrame.style.width = "390px";
-        captchaImagesFrame.style.height = "390px";
+        captchaImagesFrame.style.width = "382px";
+        captchaImagesFrame.style.height = "382px";
+        captchaImagesFrame.style.margin = "auto";
         captchaImagesFrame.style.aspectRatio = "1 / 1";
         captchaImagesFrame.style.display = "grid";
-        captchaImagesFrame.style.gap = "5px";
+        captchaImagesFrame.style.gap = "8px";
         captchaImagesFrame.style.gridTemplateColumns = "repeat(3, 1fr)";
         captchaImagesFrame.style.alignItems = "center";
         captchaImagesFrame.style.justifyItems = "center";
@@ -324,7 +376,7 @@
 
         const captchaMessage = document.createElement("p");
         captchaMessage.style.display = "none";
-        captchaMessage.style.margin = "7px 0";
+        captchaMessage.style.margin = "0px 0px 7px 0px";
         captchaMessage.style.padding = "0px";
         captchaMessage.style.textAlign = "center";
         captchaMessage.style.color = "#d93025";
@@ -333,7 +385,8 @@
 
         const captchaSeperator = document.createElement("div");
         captchaSeperator.style.width = "100%";
-        captchaSeperator.style.height = "1px";
+        captchaSeperator.style.height = "4px";
+        captchaSeperator.style.margin = "0px";
         captchaSeperator.style.backgroundColor = "#999999";
         captchaFrame.appendChild(captchaSeperator);
 
@@ -369,7 +422,7 @@
         captchaAudio.style.cursor = "pointer";
         captchaAudio.style.opacity = ".55";
         captchaAudio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
-        captchaAudio.addEventListener("click", function() {setMessage("Lütfen daha sonra tekrar deneyin.");});
+        captchaAudio.addEventListener("click", function() {setMessage(tryAgainLaterText);});
         captchaControls.appendChild(captchaAudio);
 
         const captchaHelp = document.createElement("img");
@@ -421,7 +474,7 @@
             else {
                 resetCaptcha();
 
-                setMessage("Lütfen tüm eşleşen resimleri seçin.");
+                setMessage(errorText);
             }
         });
         captchaFooter.appendChild(captchaButton);
@@ -440,21 +493,21 @@
         captchaHelpMessage.style.fontSize = "12px";
         captchaHelpMessage.style.fontWeight = "400";
         captchaHelpMessage.style.color = "#000";
-        captchaHelpMessage.innerText = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın. ";
+        captchaHelpMessage.innerText = `${helpText} `;
         captchaFrame.appendChild(captchaHelpMessage);
 
         const captchaLink = document.createElement("a");
-        captchaLink.innerText = "Daha fazla bilgi edinin.";
+        captchaLink.innerText = learnMoreLinkText;
         captchaLink.setAttribute("target", "_blank");
         captchaLink.setAttribute("href", "https://support.google.com/recaptcha");
         captchaHelpMessage.appendChild(captchaLink);
 
-        const reason = document.createElement("div");
-        reason.style.marginTop = "4rem";
-        reason.style.fontSize = "1.5rem";
-        reason.style.lineHeight = "2.25rem";
-        reason.innerText = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
-        container.append(reason);
+        const description = document.createElement("div");
+        description.style.marginTop = "4rem";
+        description.style.fontSize = "1.5rem";
+        description.style.lineHeight = "2.25rem";
+        description.innerText = descriptionText;
+        container.append(description);
 
         const footer = document.createElement("div");
         footer.style.width = "100%";
@@ -489,11 +542,11 @@
         rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
         footer.appendChild(rayIdText);
 
-        const footerText = document.createElement("p");
-        footerText.innerHTML = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
-        footer.appendChild(footerText);
+        const footerInformation = document.createElement("p");
+        footerInformation.innerHTML = footerText;
+        footer.appendChild(footerInformation);
 
-        const footerLink = footerText.getElementsByTagName("a").item(0);
+        const footerLink = footerInformation.getElementsByTagName("a").item(0);
         footerLink.style.color = "#fff";
         footerLink.addEventListener("mouseover", function() {
             footerLink.style.color = "#F48120";
@@ -511,12 +564,6 @@
         }
 
         function setCaptcha() {
-            function setCaptchaImageToDefault(element) {
-                element.clicked = false;
-                element.style.width = "95%";
-                element.style.border = "0px";
-            }
-
             category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
 
             correctImagePaths = [];
@@ -564,6 +611,12 @@
 
             captchaExample.setAttribute("src", correctImagePaths[2 + Math.floor(Math.random() * (correctImagePaths.length - 3))]);
 
+            function setCaptchaImageToDefault(element) {
+                element.clicked = false;
+                element.style.width = `${(parseInt(captchaImagesFrame.style.width) - 2 * parseInt(captchaImagesFrame.style.gap) - 12) / 3}px`;
+                element.style.border = "0px";
+            }
+
             captchaImages = [];
 
             for (let path of imagePaths) {
@@ -606,7 +659,7 @@
         setTimeout(function() {
             status = 1;
             checkbox.style.visibility = "visible";
-            text.innerText = "Gerçek kişi olduğunuzu\ndoğrulayın";
+            verifying.innerText = verifyYouAreHumanText;
         }, cooldown)
     }
 })();
