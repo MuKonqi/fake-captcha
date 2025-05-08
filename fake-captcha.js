@@ -128,9 +128,6 @@ class Cookies {
 
 class Main {
     constructor() {
-        this.focusToLink = this.focusToLink.bind(this);
-        this.unfocusToLink = this.unfocusToLink.bind(this);
-
         document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
 
         for (let element of document.body.getElementsByTagName("*")) {
@@ -249,8 +246,8 @@ class Main {
 
         this.link = this.information.getElementsByTagName("a").item(0);
         this.link.style.color = "#fff";
-        this.link.addEventListener("mouseover", this.focusToLink);
-        this.link.addEventListener("mouseleave", this.unfocusToLink);
+        this.link.addEventListener("mouseover", this.focusToLink.bind(this));
+        this.link.addEventListener("mouseleave", this.unfocusToLink.bind(this));
     }
 
     focusToLink() {
@@ -267,9 +264,6 @@ class Main {
 
 class Tunnel {
     constructor(box, recaptcha) {
-        this.change = this.change.bind(this);
-        this.continue = this.continue.bind(this);
-
         this.box = box;
         this.recaptcha = recaptcha;
 
@@ -294,7 +288,7 @@ class Tunnel {
         this.checkbox.style.cursor = "pointer";
         this.checkbox.style.visibility = "hidden";
         this.checkbox.setAttribute("type", "checkbox");
-        this.checkbox.addEventListener("change", this.change)
+        this.checkbox.addEventListener("change", this.change.bind(this))
         this.content.append(this.checkbox);
 
         this.verifying = document.createElement("label");
@@ -354,7 +348,7 @@ class Tunnel {
             this.checkbox.style.visibility = "hidden";
             this.verifying.innerText = Config.verifying;
 
-            setTimeout(this.continue, Config.cooldown / 2)
+            setTimeout(this.continue.bind(this), Config.cooldown / 2)
 
             this.status = 2;
         }
@@ -383,11 +377,6 @@ class Tunnel {
 
 class reCAPTCHA {
     constructor(box) {
-        this.reset = this.reset.bind(this);
-        this.message = this.message.bind(this);
-        this.showHelp = this.showHelp.bind(this);
-        this.verify = this.verify.bind(this);
-
         this.box = box;
 
         this.frame = document.createElement("div");
@@ -498,7 +487,7 @@ class reCAPTCHA {
         this.reload.style.cursor = "pointer";
         this.reload.style.opacity = ".55";
         this.reload.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/refresh_2x.png");
-        this.reload.addEventListener("click", this.reset);
+        this.reload.addEventListener("click", this.reset.bind(this));
         this.controls.appendChild(this.reload);
 
         this.audio = document.createElement("img");
@@ -510,7 +499,7 @@ class reCAPTCHA {
         this.audio.style.opacity = ".55";
         this.audio.message = Config.tryAgainLater;
         this.audio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
-        this.audio.addEventListener("click", this.message);
+        this.audio.addEventListener("click", this.message.bind(this));
         this.controls.appendChild(this.audio);
 
         this.help = document.createElement("img");
@@ -521,7 +510,7 @@ class reCAPTCHA {
         this.help.style.cursor = "pointer";
         this.help.style.opacity = ".55";
         this.help.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
-        this.help.addEventListener("click", this.showHelp);
+        this.help.addEventListener("click", this.showHelp.bind(this));
         this.controls.appendChild(this.help);
 
         this.button = document.createElement("div");
@@ -536,7 +525,7 @@ class reCAPTCHA {
         this.button.style.background = "#1a73e8";
         this.button.style.fontSize = "14px";
         this.button.style.fontWeight = "500";
-        this.button.addEventListener("click", this.verify);
+        this.button.addEventListener("click", this.verify.bind(this));
         this.footer.appendChild(this.button);
 
         this.buttonText = document.createElement("p");
@@ -564,14 +553,14 @@ class reCAPTCHA {
     }
 
     focusToImage(event) {
-        if (event.currentTarget.clicked) {
+        if (!event.currentTarget.clicked) {
             event.currentTarget.clicked = true;
             event.currentTarget.style.width = "90%";
             event.currentTarget.style.border = "2px solid #2cde85";
         }
 
         else {
-            event.currentTarget.reset();
+            this.resetImage(event.currentTarget);
         }
     }
 
@@ -673,8 +662,7 @@ class reCAPTCHA {
             image.style.aspectRatio = "1 / 1";
             image.style.transition = "all .5s ease";
             image.setAttribute("src", path);
-            image.reset = this.resetImage(image);
-            image.addEventListener("click", this.focusToImage)
+            image.addEventListener("click", this.focusToImage.bind(this));
             this.resetImage(image);
             this.images.appendChild(image);
             this.final.push(image);
