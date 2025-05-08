@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         Tunnel
+// @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.1.1
-// @description  Cloudflare Tunnel Security
-// @author       Cloudflare
+// @version      1.2.0
+// @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
+// @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
 // @match        https://www.ensonhaber.com/*
 // @match        https://www.ahaber.com.tr/*
 // @match        https://www.haber7.com/*
-// @icon         https://cf-assets.www.cloudflare.com/slt3lc6tev37/fdh7MDcUlyADCr49kuUs2/5f780ced9677a05d52b05605be88bc6f/cf-logo-v-rgb.png
+// @icon         https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/RecaptchaLogo.svg/150px-RecaptchaLogo.svg.png
 // @grant        none
 // ==/UserScript==
 
@@ -35,18 +35,15 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-(function() {
-    'use strict';
 
-    // Configuration (do not forget to set them!)
+class Config { // Do not forget to set this!
+    static cooldown = 46; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
 
-    const cooldown = 46; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
+    static validity = 230; // Validity for challange in seconds
 
-    const validity = 230; // Validity for challange in seconds
+    static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
-    const pinterestURL = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
-
-    let categories = {
+    static categories = {
         "__others__": [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Yosemite_El_Capitan.jpg/330px-Yosemite_El_Capitan.jpg",
@@ -69,72 +66,70 @@
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
         ],
         "İnsan": [
-            `${pinterestURL}https://i.pinimg.com/736x/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
-            `${pinterestURL}https://i.pinimg.com/736x/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
             `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
-            `${pinterestURL}https://i.pinimg.com/736x/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
-            `${pinterestURL}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
-            `${pinterestURL}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`
+            `${Config.pinterestLink}https://i.pinimg.com/736x/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`
         ]
     };
 
-    const titleText = "Bir dakika lütfen...";
+    static title = "Bir dakika lütfen...";
 
-    const labelText = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
+    static label = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
 
-    const verifyingText = "Doğrulanıyor...";
+    static verifying = "Doğrulanıyor...";
 
-    const tryAgainText = "Tekrar deneyin";
+    static tryAgain = "Tekrar deneyin";
 
-    const privacyPolicyText = "Gizlilik";
+    static privacy = "Gizlilik";
 
-    const termsOfUseText = "Koşullar";
+    static terms = "Koşullar";
 
-    const selectAllImagesText = "içeren tüm resimleri seçin";
+    static select = "içeren tüm resimleri seçin";
 
-    const tryAgainLaterText = "Lütfen daha sonra tekrar deneyin.";
+    static tryAgainLater = "Lütfen daha sonra tekrar deneyin.";
 
-    const errorText = "Lütfen tüm eşleşen resimleri seçin.";
+    static error = "Lütfen tüm eşleşen resimleri seçin.";
 
-    const helpText = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın.";
+    static help = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın.";
 
-    const learnMoreLinkText = "Daha fazla bilgi edinin.";
+    static learnMore = "Daha fazla bilgi edinin.";
 
-    const descriptionText = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
+    static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
 
-    const footerText = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
+    static footer = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
 
-    const verifyYouAreHumanText = "Gerçek kişi olduğunuzu\ndoğrulayın";
+    static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
 
-    const captchaHeaderLayout = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+}
 
-    // Code
 
-    const currentDate = new Date();
+class Cookies {
+    constructor() {
+        this.currentDate = new Date();
 
-    let challangeDate = new Date();
+        this.challangeDate = new Date();
 
-    const challangeDateCookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("challangeDate="))
-    ?.split("=")[1];
+        this.challangeDateCookie = document.cookie.split("; ").find((row) => row.startsWith("challangeDate="))?.split("=")[1];
 
-    if (challangeDateCookie !== undefined) {
-        challangeDate = new Date(challangeDateCookie);
+        if (this.challangeDateCookie !== undefined) {
+            this.challangeDate = new Date(this.challangeDateCookie);
+        }
     }
 
-    if ((((currentDate.getTime() - challangeDate.getTime()) / 1000)) >= validity || challangeDateCookie === undefined) {
-        const wantedCategories = {...categories};
-        delete wantedCategories.__others__
+    get continue() {
+        return (((this.currentDate.getTime() - this.challangeDate.getTime()) / 1000)) >= Config.validity || this.challangeDateCookie === undefined
+    }
+}
 
-        let captchaImages;
-        let category;
-        let correctNumber;
-        let correctImagePaths;
-        let wrongImagePaths;
-        let imagePaths;
 
-        let status = 0;
+class Main {
+    constructor() {
+        this.focusToLink = this.focusToLink.bind(this);
+        this.unfocusToLink = this.unfocusToLink.bind(this);
 
         document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
 
@@ -142,7 +137,7 @@
             element.style.display = "none";
         }
 
-        document.title = titleText;
+        document.title = Config.title;
 
         document.documentElement.style.fontFamily = "Calibri, sans-serif";
 
@@ -154,381 +149,86 @@
 
         document.body.style.margin = "0";
 
-        const main = document.createElement("div");
-        main.style.width = "100%";
-        main.style.height = "100%";
-        main.style.top = "0";
-        main.style.right = "0";
-        main.style.bottom = "0px";
-        main.style.left = "0";
-        main.style.margin = "0";
-        main.style.padding = "0";
-        main.style.boxSizing = "border-box";
-        main.style.flexDirection = "column";
-        main.style.flex = "1";
-        main.style.alignItems = "center";
-        main.style.display = "flex";
-        main.style.position = "sticky";
-        main.style.backgroundColor = "#222";
-        main.style.color = "#d9d9d9";
-        document.body.appendChild(main);
+        this.body = document.createElement("div");
+        this.body.style.width = "100%";
+        this.body.style.height = "100%";
+        this.body.style.top = "0";
+        this.body.style.right = "0";
+        this.body.style.bottom = "0px";
+        this.body.style.left = "0";
+        this.body.style.margin = "0";
+        this.body.style.padding = "0";
+        this.body.style.boxSizing = "border-box";
+        this.body.style.flexDirection = "column";
+        this.body.style.flex = "1";
+        this.body.style.alignItems = "center";
+        this.body.style.display = "flex";
+        this.body.style.position = "sticky";
+        this.body.style.backgroundColor = "#222";
+        this.body.style.color = "#d9d9d9";
+        document.body.appendChild(this.body);
 
-        const container = document.createElement("div");
-        container.style.width = "100%";
-        container.style.maxWidth = "60rem";
-        container.style.margin = "8rem auto";
-        container.style.paddingLeft = "1.5rem";
-        container.style.paddingRight = "1.5rem";
-        main.appendChild(container);
+        this.frame = document.createElement("div");
+        this.frame.style.width = "100%";
+        this.frame.style.maxWidth = "60rem";
+        this.frame.style.margin = "8rem auto";
+        this.frame.style.paddingLeft = "1.5rem";
+        this.frame.style.paddingRight = "1.5rem";
+        this.body.appendChild(this.frame);
 
-        const siteName = document.createElement("h1");
-        siteName.style.textAlign = "left";
-        siteName.style.fontSize = "2.5rem";
-        siteName.style.fontWeight = "900";
-        siteName.style.lineHeight = "3.75rem";
-        siteName.innerText = window.location.hostname;
-        container.appendChild(siteName);
+        this.name = document.createElement("h1");
+        this.name.style.textAlign = "left";
+        this.name.style.fontSize = "2.5rem";
+        this.name.style.fontWeight = "900";
+        this.name.style.lineHeight = "3.75rem";
+        this.name.innerText = window.location.hostname;
+        this.frame.appendChild(this.name);
 
-        const label = document.createElement("p");
-        label.style.fontSize = "1.5rem";
-        label.style.fontWeight = "900";
-        label.style.lineHeight = "3.75rem";
-        label.style.marginTop = "0";
-        label.style.marginBottom = "2rem";
-        label.innerText = labelText;
-        container.appendChild(label);
+        this.label = document.createElement("p");
+        this.label.style.fontSize = "1.5rem";
+        this.label.style.fontWeight = "900";
+        this.label.style.lineHeight = "3.75rem";
+        this.label.style.marginTop = "0";
+        this.label.style.marginBottom = "2rem";
+        this.label.innerText = Config.label;
+        this.frame.appendChild(this.label);
 
-        const box = document.createElement("div");
-        box.style.width = "300px"
-        box.style.height = "65px";
-        box.style.display = "flex";
-        box.style.border = "1px solid #e0e0e0";
-        box.style.alignItems = "center";
-        box.style.backgroundColor = "#232323";
-        box.style.borderColor = "#797979";
-        container.appendChild(box);
+        this.box = document.createElement("div");
+        this.box.style.width = "300px"
+        this.box.style.height = "65px";
+        this.box.style.display = "flex";
+        this.box.style.border = "1px solid #e0e0e0";
+        this.box.style.alignItems = "center";
+        this.box.style.backgroundColor = "#232323";
+        this.box.style.borderColor = "#797979";
+        this.frame.appendChild(this.box);
 
-        const contentFrame = document.createElement("div");
-        contentFrame.style.width = "100%"
-        contentFrame.style.height = "100%";
-        contentFrame.style.display = "flex";
-        contentFrame.style.alignItems = "center";
-        box.append(contentFrame);
+        this.description = document.createElement("div");
+        this.description.style.marginTop = "4rem";
+        this.description.style.fontSize = "1.5rem";
+        this.description.style.lineHeight = "2.25rem";
+        this.description.innerText = Config.description;
+        this.frame.append(this.description);
 
-        const content = document.createElement("div");
-        content.style.display = "flex";
-        content.style.placeItems = "center";
-        content.style.marginLeft = "16px";
-        contentFrame.append(content);
-
-        const checkbox = document.createElement("input");
-        checkbox.style.width = "24px";
-        checkbox.style.height = "24px";
-        checkbox.style.cursor = "pointer";
-        checkbox.style.visibility = "hidden";
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.addEventListener("change", function() {
-            if (status === 1) {
-                checkbox.style.visibility = "hidden";
-                verifying.innerText = verifyingText;
-
-                setTimeout(function() {
-                    checkbox.checked = false;
-                    checkbox.style.visibility = "visible";
-                    verifying.innerText = tryAgainText;
-                }, cooldown / 2)
-
-                status = 2;
-            }
-
-            else if (status === 2) {
-                box.style.width = "400px";
-                box.style.height = "582px";
-                contentFrame.style.display = "none";
-                captchaFrame.style.display = "flex";
-            }
-        })
-        content.append(checkbox);
-
-        const verifying = document.createElement("label");
-        verifying.style.alignItems = "center";
-        verifying.style.color = "#fff"
-        verifying.style.marginLeft = "8px";
-        verifying.innerText = verifyingText;
-        content.append(verifying);
-
-        const branding = document.createElement("div");
-        branding.style.margin = "0px 16px 0px auto";
-        branding.style.display = "grid";
-        branding.style.textAlign = "right";
-        contentFrame.append(branding);
-
-        const cloudfare = document.createElement("a");
-        cloudfare.setAttribute("target", "_blank");
-        cloudfare.setAttribute("href", "https://www.cloudflare.com/application-services/products/turnstile/")
-        branding.append(cloudfare);
-
-        const logo = document.createElement("img")
-        logo.style.width = "72px";
-        logo.style.height = "24px";
-        logo.setAttribute("src", "https://cf-assets.www.cloudflare.com/slt3lc6tev37/fdh7MDcUlyADCr49kuUs2/5f780ced9677a05d52b05605be88bc6f/cf-logo-v-rgb.png")
-        cloudfare.append(logo);
-
-        const links = document.createElement("div");
-        links.style.display = "flex";
-        links.style.justifyContent = "flex-end";
-        links.style.fontSize = "8px";
-        branding.append(links);
-
-        const privacyPolicy = document.createElement("a");
-        privacyPolicy.setAttribute("target", "_blank");
-        privacyPolicy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
-        privacyPolicy.style.textDecoration = "underline";
-        privacyPolicy.style.color = "#bbbbbb";
-        privacyPolicy.innerText = privacyPolicyText;
-        links.appendChild(privacyPolicy)
-
-        const radiusSeperator = document.createElement("span");
-        radiusSeperator.style.margin = "0px 2.3px";
-        radiusSeperator.innerText = "•";
-        links.append(radiusSeperator)
-
-        const websiteTerms = document.createElement("a");
-        websiteTerms.setAttribute("target", "_blank");
-        websiteTerms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
-        websiteTerms.style.textDecoration = "underline";
-        websiteTerms.style.color = "#bbbbbb";
-        websiteTerms.innerText = termsOfUseText;
-        links.appendChild(websiteTerms)
-
-        const captchaFrame = document.createElement("div");
-        captchaFrame.style.width = "100%"
-        captchaFrame.style.height = "100%";
-        captchaFrame.style.backgroundColor = "#fff";
-        captchaFrame.style.border = "1px solid #a9a9a9";
-        captchaFrame.style.display = "none";
-        captchaFrame.style.flexDirection = "column";
-        captchaFrame.style.alignContent = "center";
-        captchaFrame.style.alignItems = "center";
-        captchaFrame.style.justifyContent = "space-between";
-        box.appendChild(captchaFrame);
-
-        const captchaHeader = document.createElement("div");
-        captchaHeader.style.width = "100%";
-        captchaHeader.style.height = "115.6px";
-        captchaHeader.style.backgroundColor = "#1a73e8";
-        captchaHeader.style.alignContent = "center";
-        captchaHeader.style.alignItems = "center";
-        captchaFrame.appendChild(captchaHeader);
-
-        const captchaTextFrame = document.createElement("p");
-        captchaTextFrame.style.margin = "24px";
-        captchaTextFrame.style.float = "left";
-        captchaTextFrame.style.fontSize = "16px";
-        captchaTextFrame.style.color = "#fff";
-        captchaHeader.appendChild(captchaTextFrame);
-
-        let captchaDescription;
-        let captchaLabel;
-
-        if (captchaHeaderLayout === 0) {
-            captchaDescription = document.createElement("span");
-            captchaDescription.innerText = selectAllImagesText;
-            captchaTextFrame.appendChild(captchaDescription);
-
-            captchaTextFrame.appendChild(document.createElement("br"));
-
-            captchaLabel = document.createElement("strong");
-            captchaLabel.style.fontSize = "24px";
-            captchaTextFrame.appendChild(captchaLabel);
-        }
-
-        else if (captchaHeaderLayout === 1) {
-            captchaLabel = document.createElement("strong");
-            captchaLabel.style.fontSize = "24px";
-            captchaTextFrame.appendChild(captchaLabel);
-
-            captchaTextFrame.appendChild(document.createElement("br"));
-
-            captchaDescription = document.createElement("span");
-            captchaDescription.innerText = selectAllImagesText;
-            captchaTextFrame.appendChild(captchaDescription);
-        }
-
-        const captchaExample = document.createElement("img");
-        captchaExample.style.height = "96px";
-        captchaExample.style.aspectRatio = "1 / 1";
-        captchaExample.style.margin = "9.8px 24px 9.8px auto";
-        captchaExample.style.float = "right";
-        captchaExample.style.border = "1px solid #fff";
-        captchaHeader.appendChild(captchaExample);
-
-        const captchaImagesFrame = document.createElement("div");
-        captchaImagesFrame.style.width = "382px";
-        captchaImagesFrame.style.height = "382px";
-        captchaImagesFrame.style.margin = "auto";
-        captchaImagesFrame.style.aspectRatio = "1 / 1";
-        captchaImagesFrame.style.display = "grid";
-        captchaImagesFrame.style.gap = "8px";
-        captchaImagesFrame.style.gridTemplateColumns = "repeat(3, 1fr)";
-        captchaImagesFrame.style.alignItems = "center";
-        captchaImagesFrame.style.justifyItems = "center";
-        captchaFrame.appendChild(captchaImagesFrame);
-
-        const captchaMessage = document.createElement("p");
-        captchaMessage.style.display = "none";
-        captchaMessage.style.margin = "0px 0px 7px 0px";
-        captchaMessage.style.padding = "0px";
-        captchaMessage.style.textAlign = "center";
-        captchaMessage.style.color = "#d93025";
-        captchaMessage.style.fontSize = "14px";
-        captchaFrame.appendChild(captchaMessage);
-
-        const captchaSeperator = document.createElement("div");
-        captchaSeperator.style.width = "100%";
-        captchaSeperator.style.height = "4px";
-        captchaSeperator.style.margin = "0px";
-        captchaSeperator.style.backgroundColor = "#999999";
-        captchaFrame.appendChild(captchaSeperator);
-
-        const captchaFooter = document.createElement("div");
-        captchaFooter.style.width = "400px";
-        captchaFooter.style.height = "60px";
-        captchaFrame.appendChild(captchaFooter);
-
-        const captchaControls = document.createElement("div");
-        captchaControls.style.height = "48px";
-        captchaControls.style.margin = "6px";
-        captchaControls.style.float = "left";
-        captchaControls.style.display = "flex";
-        captchaControls.style.alignItems = "center";
-        captchaFooter.appendChild(captchaControls);
-
-        const captchaReload = document.createElement("img");
-        captchaReload.style.width = "32px";
-        captchaReload.style.height = "32px";
-        captchaReload.style.margin = "8px";
-        captchaReload.style.float = "left";
-        captchaReload.style.cursor = "pointer";
-        captchaReload.style.opacity = ".55";
-        captchaReload.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/refresh_2x.png");
-        captchaReload.addEventListener("click", function() {resetCaptcha();});
-        captchaControls.appendChild(captchaReload);
-
-        const captchaAudio = document.createElement("img");
-        captchaAudio.style.width = "32px";
-        captchaAudio.style.height = "32px";
-        captchaAudio.style.margin = "8px";
-        captchaAudio.style.float = "left";
-        captchaAudio.style.cursor = "pointer";
-        captchaAudio.style.opacity = ".55";
-        captchaAudio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
-        captchaAudio.addEventListener("click", function() {setMessage(tryAgainLaterText);});
-        captchaControls.appendChild(captchaAudio);
-
-        const captchaHelp = document.createElement("img");
-        captchaHelp.style.width = "32px";
-        captchaHelp.style.height = "32px";
-        captchaHelp.style.margin = "8px";
-        captchaHelp.style.float = "left";
-        captchaHelp.style.cursor = "pointer";
-        captchaHelp.style.opacity = ".55";
-        captchaHelp.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
-        captchaHelp.addEventListener("click", function() {
-            box.style.height = captchaMessage.style.display == "block" ? "683px" : "652px";
-            captchaHelpMessage.style.display = "block";
-        });
-        captchaControls.appendChild(captchaHelp);
-
-        const captchaButton = document.createElement("div");
-        captchaButton.style.width = "100px";
-        captchaButton.style.height = "42px";
-        captchaButton.style.margin = "9px 8px 9px auto";
-        captchaButton.style.float = "right";
-        captchaButton.style.borderRadius = "2px";
-        captchaButton.style.cursor = "pointer";
-        captchaButton.style.textAlign = "center";
-        captchaButton.style.transition = "all .5s ease";
-        captchaButton.style.background = "#1a73e8";
-        captchaButton.style.fontSize = "14px";
-        captchaButton.style.fontWeight = "500";
-        captchaButton.addEventListener("click", function() {
-            let successful = 0;
-
-            for (let captcha of captchaImages) {
-                if (captcha.clicked)
-                    if (correctImagePaths.includes(captcha.getAttribute("src"))) {
-                        successful++;
-                    }
-
-                    else {
-                        successful--;
-                    }
-            }
-
-            if (successful === correctNumber) {
-                document.cookie = `challangeDate=${new Date().toString()}; SameSite=None; Secure=None`;
-
-                location.reload();
-            }
-
-            else {
-                resetCaptcha();
-
-                setMessage(errorText);
-            }
-        });
-        captchaFooter.appendChild(captchaButton);
-
-        const captchaButtonText = document.createElement("p");
-        captchaButtonText.style.margin = "12px";
-        captchaButtonText.style.textAlign = "center";
-        captchaButtonText.innerText = "DOĞRULA";
-        captchaButton.appendChild(captchaButtonText);
-
-        const captchaHelpMessage = document.createElement("p");
-        captchaHelpMessage.style.height = "70px";
-        captchaHelpMessage.style.display = "none";
-        captchaHelpMessage.style.margin = "0px";
-        captchaHelpMessage.style.padding = "5px 20px 5px 20px";
-        captchaHelpMessage.style.fontSize = "12px";
-        captchaHelpMessage.style.fontWeight = "400";
-        captchaHelpMessage.style.color = "#000";
-        captchaHelpMessage.innerText = `${helpText} `;
-        captchaFrame.appendChild(captchaHelpMessage);
-
-        const captchaLink = document.createElement("a");
-        captchaLink.innerText = learnMoreLinkText;
-        captchaLink.setAttribute("target", "_blank");
-        captchaLink.setAttribute("href", "https://support.google.com/recaptcha");
-        captchaHelpMessage.appendChild(captchaLink);
-
-        const description = document.createElement("div");
-        description.style.marginTop = "4rem";
-        description.style.fontSize = "1.5rem";
-        description.style.lineHeight = "2.25rem";
-        description.innerText = descriptionText;
-        container.append(description);
-
-        const footer = document.createElement("div");
-        footer.style.width = "100%";
-        footer.style.maxWidth = "60rem";
-        footer.style.maxHeight = "80px";
-        footer.style.margin = "auto 0px 0px 0px";
-        footer.style.paddingLeft = "1.5rem";
-        footer.style.paddingRight = "1.5rem";
-        footer.style.boxSizing = "border-box";
-        footer.style.flexDirection = "column";
-        footer.style.flex = "1";
-        footer.style.alignItems = "center";
-        footer.style.display = "flex";
-        footer.style.backgroundColor = "#222";
-        footer.style.color = "#d9d9d9";
-        footer.style.borderTop = "1px solid #d9d9d9";
-        footer.style.textAlign = "center";
-        footer.style.fontSize = ".75rem";
-        footer.style.lineHeight = "1.125rem";
-        main.appendChild(footer)
+        this.footer = document.createElement("div");
+        this.footer.style.width = "100%";
+        this.footer.style.maxWidth = "60rem";
+        this.footer.style.maxHeight = "80px";
+        this.footer.style.margin = "auto 0px 0px 0px";
+        this.footer.style.paddingLeft = "1.5rem";
+        this.footer.style.paddingRight = "1.5rem";
+        this.footer.style.boxSizing = "border-box";
+        this.footer.style.flexDirection = "column";
+        this.footer.style.flex = "1";
+        this.footer.style.alignItems = "center";
+        this.footer.style.display = "flex";
+        this.footer.style.backgroundColor = "#222";
+        this.footer.style.color = "#d9d9d9";
+        this.footer.style.borderTop = "1px solid #d9d9d9";
+        this.footer.style.textAlign = "center";
+        this.footer.style.fontSize = ".75rem";
+        this.footer.style.lineHeight = "1.125rem";
+        this.body.appendChild(this.footer)
 
         let rayId = "";
         const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -538,144 +238,499 @@
             rayId += characters.charAt(randomInd);
         }
 
-        const rayIdText = document.createElement("p");
-        rayIdText.style.marginBottom = "0";
-        rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
-        footer.appendChild(rayIdText);
+        this.rayIdText = document.createElement("p");
+        this.rayIdText.style.marginBottom = "0";
+        this.rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
+        this.footer.appendChild(this.rayIdText);
 
-        const footerInformation = document.createElement("p");
-        footerInformation.innerHTML = footerText;
-        footer.appendChild(footerInformation);
+        this.information = document.createElement("p");
+        this.information.innerHTML = Config.footer;
+        this.footer.appendChild(this.information);
 
-        const footerLink = footerInformation.getElementsByTagName("a").item(0);
-        footerLink.style.color = "#fff";
-        footerLink.addEventListener("mouseover", function() {
-            footerLink.style.color = "#F48120";
-            footerLink.style.textDecoration = "underline";
-         })
-        footerLink.addEventListener("mouseleave", function() {
-            footerLink.style.color = "#fff";
-            footerLink.style.textDecoration = "none";
-        })
+        this.link = this.information.getElementsByTagName("a").item(0);
+        this.link.style.color = "#fff";
+        this.link.addEventListener("mouseover", this.focusToLink);
+        this.link.addEventListener("mouseleave", this.unfocusToLink);
+    }
 
-        function setMessage(message) {
-            box.style.height = captchaHelpMessage.style.display == "block" ? "683px" : "613px";
-            captchaMessage.style.display = "block";
-            captchaMessage.innerText = message;
+    focusToLink() {
+        this.link.style.color = "#F48120";
+        this.link.style.textDecoration = "underline";
+    }
+
+    unfocusToLink() {
+        this.link.style.color = "#fff";
+        this.link.style.textDecoration = "none";
+    }
+}
+
+
+class Tunnel {
+    constructor(box, recaptcha) {
+        this.change = this.change.bind(this);
+        this.continue = this.continue.bind(this);
+
+        this.box = box;
+        this.recaptcha = recaptcha;
+
+        this.status = 0;
+
+        this.frame = document.createElement("div");
+        this.frame.style.width = "100%"
+        this.frame.style.height = "100%";
+        this.frame.style.display = "flex";
+        this.frame.style.alignItems = "center";
+        this.box.append(this.frame);
+
+        this.content = document.createElement("div");
+        this.content.style.display = "flex";
+        this.content.style.placeItems = "center";
+        this.content.style.marginLeft = "16px";
+        this.frame.append(this.content);
+
+        this.checkbox = document.createElement("input");
+        this.checkbox.style.width = "24px";
+        this.checkbox.style.height = "24px";
+        this.checkbox.style.cursor = "pointer";
+        this.checkbox.style.visibility = "hidden";
+        this.checkbox.setAttribute("type", "checkbox");
+        this.checkbox.addEventListener("change", this.change)
+        this.content.append(this.checkbox);
+
+        this.verifying = document.createElement("label");
+        this.verifying.style.alignItems = "center";
+        this.verifying.style.color = "#fff"
+        this.verifying.style.marginLeft = "8px";
+        this.verifying.innerText = Config.verifying;
+        this.content.append(this.verifying);
+
+        this.branding = document.createElement("div");
+        this.branding.style.margin = "0px 16px 0px auto";
+        this.branding.style.display = "grid";
+        this.branding.style.textAlign = "right";
+        this.frame.append(this.branding);
+
+        this.cloudflare = document.createElement("a");
+        this.cloudflare.setAttribute("target", "_blank");
+        this.cloudflare.setAttribute("href", "https://www.cloudflare.com/application-services/products/turnstile/")
+        this.branding.append(this.cloudflare);
+
+        this.logo = document.createElement("img")
+        this.logo.style.width = "72px";
+        this.logo.style.height = "24px";
+        this.logo.setAttribute("src", "https://cf-assets.www.cloudflare.com/slt3lc6tev37/fdh7MDcUlyADCr49kuUs2/5f780ced9677a05d52b05605be88bc6f/cf-logo-v-rgb.png")
+        this.cloudflare.append(this.logo);
+
+        this.links = document.createElement("div");
+        this.links.style.display = "flex";
+        this.links.style.justifyContent = "flex-end";
+        this.links.style.fontSize = "8px";
+        this.branding.append(this.links);
+
+        this.privacy = document.createElement("a");
+        this.privacy.setAttribute("target", "_blank");
+        this.privacy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
+        this.privacy.style.textDecoration = "underline";
+        this.privacy.style.color = "#bbbbbb";
+        this.privacy.innerText = Config.privacy;
+        this.links.appendChild(this.privacy)
+
+        this.seperator = document.createElement("span");
+        this.seperator.style.margin = "0px 2.3px";
+        this.seperator.innerText = "•";
+        this.links.append(this.seperator)
+
+        this.terms = document.createElement("a");
+        this.terms.setAttribute("target", "_blank");
+        this.terms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
+        this.terms.style.textDecoration = "underline";
+        this.terms.style.color = "#bbbbbb";
+        this.terms.innerText = Config.terms;
+        this.links.appendChild(this.terms);
+    }
+
+    change() {
+        if (this.status === 1) {
+            this.checkbox.style.visibility = "hidden";
+            this.verifying.innerText = Config.verifying;
+
+            setTimeout(this.continue, Config.cooldown / 2)
+
+            this.status = 2;
         }
 
-        function setCaptcha() {
-            category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
+        else if (this.status === 2) {
+            this.box.style.width = "400px";
+            this.box.style.height = "582px";
+            this.frame.style.display = "none";
+            this.recaptcha.style.display = "flex";
+        }
+    }
 
-            const randomCorrectNumber = Math.random() * 100;
+    continue() {
+        this.checkbox.checked = false;
+        this.checkbox.style.visibility = "visible";
+        this.verifying.innerText = Config.tryAgain;
+    }
 
-            if (randomCorrectNumber < 11.5) {
-                correctNumber = 2;
+    start() {
+        this.status = 1;
+        this.checkbox.style.visibility = "visible";
+        this.verifying.innerText = Config.verifyYou;
+    }
+}
+
+
+class reCAPTCHA {
+    constructor(box) {
+        this.reset = this.reset.bind(this);
+        this.message = this.message.bind(this);
+        this.showHelp = this.showHelp.bind(this);
+        this.verify = this.verify.bind(this);
+
+        this.box = box;
+
+        this.frame = document.createElement("div");
+        this.frame.style.width = "100%"
+        this.frame.style.height = "100%";
+        this.frame.style.backgroundColor = "#fff";
+        this.frame.style.border = "1px solid #a9a9a9";
+        this.frame.style.display = "none";
+        this.frame.style.flexDirection = "column";
+        this.frame.style.alignContent = "center";
+        this.frame.style.alignItems = "center";
+        this.frame.style.justifyContent = "space-between";
+        this.box.appendChild(this.frame);
+
+        this.header = document.createElement("div");
+        this.header.style.width = "100%";
+        this.header.style.height = "115.6px";
+        this.header.style.backgroundColor = "#1a73e8";
+        this.header.style.alignContent = "center";
+        this.header.style.alignItems = "center";
+        this.frame.appendChild(this.header);
+
+        this.texts = document.createElement("p");
+        this.texts.style.margin = "24px";
+        this.texts.style.float = "left";
+        this.texts.style.fontSize = "16px";
+        this.texts.style.color = "#fff";
+        this.header.appendChild(this.texts);
+
+        if (Config.captchaHeader === 0) {
+            this.description = document.createElement("span");
+            this.description.innerText = Config.select;
+            this.texts.appendChild(this.description);
+
+            this.texts.appendChild(document.createElement("br"));
+
+            this.label = document.createElement("strong");
+            this.label.style.fontSize = "24px";
+            this.texts.appendChild(this.label);
+        }
+
+        else if (Config.captchaHeader === 1) {
+            this.label = document.createElement("strong");
+            this.label.style.fontSize = "24px";
+            this.texts.appendChild(this.label);
+
+            this.texts.appendChild(document.createElement("br"));
+
+            this.description = document.createElement("span");
+            this.description.innerText = Config.select;
+            this.texts.appendChild(this.description);
+        }
+
+        this.example = document.createElement("img");
+        this.example.style.height = "96px";
+        this.example.style.aspectRatio = "1 / 1";
+        this.example.style.margin = "9.8px 24px 9.8px auto";
+        this.example.style.float = "right";
+        this.example.style.border = "1px solid #fff";
+        this.header.appendChild(this.example);
+
+        this.images = document.createElement("div");
+        this.images.style.width = "382px";
+        this.images.style.height = "382px";
+        this.images.style.margin = "auto";
+        this.images.style.aspectRatio = "1 / 1";
+        this.images.style.display = "grid";
+        this.images.style.gap = "8px";
+        this.images.style.gridTemplateColumns = "repeat(3, 1fr)";
+        this.images.style.alignItems = "center";
+        this.images.style.justifyItems = "center";
+        this.frame.appendChild(this.images);
+
+        this.text = document.createElement("p");
+        this.text.style.display = "none";
+        this.text.style.margin = "0px 0px 7px 0px";
+        this.text.style.padding = "0px";
+        this.text.style.textAlign = "center";
+        this.text.style.color = "#d93025";
+        this.text.style.fontSize = "14px";
+        this.frame.appendChild(this.text);
+
+        this.seperator = document.createElement("div");
+        this.seperator.style.width = "100%";
+        this.seperator.style.height = "4px";
+        this.seperator.style.margin = "0px";
+        this.seperator.style.backgroundColor = "#999999";
+        this.frame.appendChild(this.seperator);
+
+        this.footer = document.createElement("div");
+        this.footer.style.width = "400px";
+        this.footer.style.height = "60px";
+        this.frame.appendChild(this.footer);
+
+        this.controls = document.createElement("div");
+        this.controls.style.height = "48px";
+        this.controls.style.margin = "6px";
+        this.controls.style.float = "left";
+        this.controls.style.display = "flex";
+        this.controls.style.alignItems = "center";
+        this.footer.appendChild(this.controls);
+
+        this.reload = document.createElement("img");
+        this.reload.style.width = "32px";
+        this.reload.style.height = "32px";
+        this.reload.style.margin = "8px";
+        this.reload.style.float = "left";
+        this.reload.style.cursor = "pointer";
+        this.reload.style.opacity = ".55";
+        this.reload.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/refresh_2x.png");
+        this.reload.addEventListener("click", this.reset);
+        this.controls.appendChild(this.reload);
+
+        this.audio = document.createElement("img");
+        this.audio.style.width = "32px";
+        this.audio.style.height = "32px";
+        this.audio.style.margin = "8px";
+        this.audio.style.float = "left";
+        this.audio.style.cursor = "pointer";
+        this.audio.style.opacity = ".55";
+        this.audio.message = Config.tryAgainLater;
+        this.audio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
+        this.audio.addEventListener("click", this.message);
+        this.controls.appendChild(this.audio);
+
+        this.help = document.createElement("img");
+        this.help.style.width = "32px";
+        this.help.style.height = "32px";
+        this.help.style.margin = "8px";
+        this.help.style.float = "left";
+        this.help.style.cursor = "pointer";
+        this.help.style.opacity = ".55";
+        this.help.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
+        this.help.addEventListener("click", this.showHelp);
+        this.controls.appendChild(this.help);
+
+        this.button = document.createElement("div");
+        this.button.style.width = "100px";
+        this.button.style.height = "42px";
+        this.button.style.margin = "9px 8px 9px auto";
+        this.button.style.float = "right";
+        this.button.style.borderRadius = "2px";
+        this.button.style.cursor = "pointer";
+        this.button.style.textAlign = "center";
+        this.button.style.transition = "all .5s ease";
+        this.button.style.background = "#1a73e8";
+        this.button.style.fontSize = "14px";
+        this.button.style.fontWeight = "500";
+        this.button.addEventListener("click", this.verify);
+        this.footer.appendChild(this.button);
+
+        this.buttonText = document.createElement("p");
+        this.buttonText.style.margin = "12px";
+        this.buttonText.style.textAlign = "center";
+        this.buttonText.innerText = "DOĞRULA";
+        this.button.appendChild(this.buttonText);
+
+        this.helpText = document.createElement("p");
+        this.helpText.style.height = "70px";
+        this.helpText.style.display = "none";
+        this.helpText.style.margin = "0px";
+        this.helpText.style.padding = "5px 20px 5px 20px";
+        this.helpText.style.fontSize = "12px";
+        this.helpText.style.fontWeight = "400";
+        this.helpText.style.color = "#000";
+        this.helpText.innerText = `${Config.help} `;
+        this.frame.appendChild(this.helpText);
+
+        this.helpTextlink = document.createElement("a");
+        this.helpTextlink.innerText = Config.learnMore;
+        this.helpTextlink.setAttribute("target", "_blank");
+        this.helpTextlink.setAttribute("href", "https://support.google.com/recaptcha");
+        this.helpText.appendChild(this.helpTextlink);
+    }
+
+    focusToImage(event) {
+        if (event.currentTarget.clicked) {
+            event.currentTarget.clicked = true;
+            event.currentTarget.style.width = "90%";
+            event.currentTarget.style.border = "2px solid #2cde85";
+        }
+
+        else {
+            event.currentTarget.reset();
+        }
+    }
+
+    message(message) {
+        this.box.style.height = this.helpText.style.display == "block" ? "683px" : "613px";
+        this.text.style.display = "block";
+
+        if (typeof message == "string") {
+            this.text.innerText = message;
+        }
+
+        else {
+            this.text.innerText = message.currentTarget.message;
+        }
+    }
+
+    randomizeImages(array) {
+        for (let currentIndex = array.length - 1; currentIndex > 0; currentIndex--) {
+            const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+        }
+    }
+
+    reset() {
+        this.box.style.height = "582px";
+        this.text.style.display = "none";
+        this.helpText.style.display = "none";
+
+        for (let captcha of this.final) {
+            this.images.removeChild(captcha);
+        }
+
+        this.set();
+    }
+
+    resetImage(image) {
+        image.clicked = false;
+        image.style.width = `${(parseInt(this.images.style.width) - 2 * parseInt(this.images.style.gap) - 12) / 3}px`;
+        image.style.border = "0px";
+    }
+
+    set() {
+        const wantedCategories = {...Config.categories};
+        delete wantedCategories.__others__;
+
+        const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
+
+        const randomCorrectNumber = Math.random() * 100;
+
+        if (randomCorrectNumber < 11.5) {
+            this.correctNumber = 2;
+        }
+
+        else if (randomCorrectNumber < 77) {
+            this.correctNumber = 3;
+        }
+
+        else if (randomCorrectNumber < 100) {
+            this.correctNumber = 4;
+        }
+
+        this.correctImagePaths = [];
+
+        this.wrongImagePaths = [];
+
+        for (const [category_, paths] of Object.entries(Config.categories)) {
+            if (category_ === category) {
+                this.correctImagePaths.push(...paths)
             }
 
-            else if (randomCorrectNumber < 77) {
-                correctNumber = 3;
+            else {
+                this.wrongImagePaths.push(...paths)
             }
+        }
 
-            else if (randomCorrectNumber < 100) {
-                correctNumber = 4;
-            }
+        this.randomizeImages(this.correctImagePaths);
+        this.randomizeImages(this.wrongImagePaths);
 
-            correctImagePaths = [];
+        this.imagePaths = [];
 
-            wrongImagePaths = [];
+        this.setImages(this.correctImagePaths, this.correctNumber);
+        this.setImages(this.wrongImagePaths, 9 - this.correctNumber);
 
-            for (const [category_, paths] of Object.entries(categories)) {
-                if (category_ === category) {
-                    correctImagePaths.push(...paths)
+        for (let currentIndex = this.imagePaths.length - 1; currentIndex > 0; currentIndex--) {
+            const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
+            [this.imagePaths[currentIndex], this.imagePaths[randomIndex]] = [this.imagePaths[randomIndex], this.imagePaths[currentIndex]]
+        }
+
+        this.label.innerText = category;
+
+        const randomExampleNumber = this.correctNumber - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - this.correctNumber));
+        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : this.correctNumber]);
+
+        this.final = [];
+
+        for (let path of this.imagePaths) {
+            let image = document.createElement("img");
+            image.style.margin = "2px";
+            image.style.aspectRatio = "1 / 1";
+            image.style.transition = "all .5s ease";
+            image.setAttribute("src", path);
+            image.reset = this.resetImage(image);
+            image.addEventListener("click", this.focusToImage)
+            this.resetImage(image);
+            this.images.appendChild(image);
+            this.final.push(image);
+        }
+    }
+
+    setImages(array, value) {
+        for (let i = 0; i < value; i++) {
+            this.imagePaths.push(array[i])
+        }
+    }
+
+    showHelp() {
+        this.box.style.height = this.text.style.display == "block" ? "683px" : "652px";
+        this.helpText.style.display = "block";
+    }
+
+    verify() {
+        let successful = 0;
+
+        for (let image of this.final) {
+            if (image.clicked)
+                if (this.correctImagePaths.includes(image.getAttribute("src"))) {
+                    successful++;
                 }
 
                 else {
-                    wrongImagePaths.push(...paths)
+                    successful--;
                 }
-            }
-
-
-            function randomizeImagePaths(array) {
-                for (let currentIndex = array.length - 1; currentIndex > 0; currentIndex--) {
-                    const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
-                }
-            }
-
-            randomizeImagePaths(correctImagePaths);
-            randomizeImagePaths(wrongImagePaths);
-
-            imagePaths = [];
-
-            function setImagePaths(array, value) {
-                for (let i = 0; i < value; i++) {
-                    imagePaths.push(array[i])
-                }
-            }
-
-            setImagePaths(correctImagePaths, correctNumber);
-            setImagePaths(wrongImagePaths, 9 - correctNumber);
-
-            for (let currentIndex = imagePaths.length - 1; currentIndex > 0; currentIndex--) {
-                const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-                [imagePaths[currentIndex], imagePaths[randomIndex]] = [imagePaths[randomIndex], imagePaths[currentIndex]]
-            }
-
-            captchaLabel.innerText = category;
-
-            const randomExampleNumber = correctNumber - 1 + Math.ceil(Math.random() * (correctImagePaths.length - correctNumber));
-            captchaExample.setAttribute("src", correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : correctNumber]);
-
-            function setCaptchaImageToDefault(element) {
-                element.clicked = false;
-                element.style.width = `${(parseInt(captchaImagesFrame.style.width) - 2 * parseInt(captchaImagesFrame.style.gap) - 12) / 3}px`;
-                element.style.border = "0px";
-            }
-
-            captchaImages = [];
-
-            for (let path of imagePaths) {
-                let captchaImage = document.createElement("img");
-                captchaImage.style.margin = "2px";
-                captchaImage.style.aspectRatio = "1 / 1";
-                captchaImage.style.transition = "all .5s ease";
-                captchaImage.setAttribute("src", path);
-                captchaImage.addEventListener("click", function() {
-                    if (!captchaImage.clicked) {
-                        captchaImage.clicked = true;
-                        captchaImage.style.width = "90%";
-                        captchaImage.style.border = "2px solid #2cde85";
-                    }
-
-                    else {
-                        setCaptchaImageToDefault(captchaImage);
-                    }
-                })
-                setCaptchaImageToDefault(captchaImage);
-                captchaImagesFrame.appendChild(captchaImage);
-                captchaImages.push(captchaImage);
-            }
         }
 
-        function resetCaptcha() {
-            box.style.height = "582px";
-            captchaMessage.style.display = "none";
-            captchaHelpMessage.style.display = "none";
+        if (successful === this.correctNumber) {
+            document.cookie = `challangeDate=${new Date().toString()}; SameSite=None; Secure=None`;
 
-            for (let captcha of captchaImages) {
-                captchaImagesFrame.removeChild(captcha);
-            }
-
-            setCaptcha();
+            location.reload();
         }
 
-        setCaptcha();
+        else {
+            this.reset();
+            this.message(Config.error);
+        }
+    }
+}
 
-        setTimeout(function() {
-            status = 1;
-            checkbox.style.visibility = "visible";
-            verifying.innerText = verifyYouAreHumanText;
-        }, cooldown)
+
+(function() {
+    'use strict';
+
+    const cookies = new Cookies();
+
+    if (cookies.continue) {
+        const main = new Main();
+        const recaptcha = new reCAPTCHA(main.box, main.label);
+        const tunnel = new Tunnel(main.box, recaptcha.frame);
+
+        recaptcha.set();
+        setTimeout(tunnel.start(), Config.cooldown);
     }
 })();
