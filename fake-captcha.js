@@ -40,7 +40,7 @@
 
     // Configuration (do not forget to set them!)
 
-    const cooldown = 4600; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
+    const cooldown = 46; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
 
     const validity = 230; // Validity for challange in seconds
 
@@ -357,7 +357,7 @@
         const captchaExample = document.createElement("img");
         captchaExample.style.height = "96px";
         captchaExample.style.aspectRatio = "1 / 1";
-        captchaExample.style.margin = "0px 24px 0px auto";
+        captchaExample.style.margin = "9.8px 24px 9.8px auto";
         captchaExample.style.float = "right";
         captchaExample.style.border = "1px solid #fff";
         captchaHeader.appendChild(captchaExample);
@@ -434,7 +434,7 @@
         captchaHelp.style.opacity = ".55";
         captchaHelp.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
         captchaHelp.addEventListener("click", function() {
-            box.style.height = "652px";
+            box.style.height = captchaMessage.style.display == "block" ? "683px" : "652px";
             captchaHelpMessage.style.display = "block";
         });
         captchaControls.appendChild(captchaHelp);
@@ -558,7 +558,7 @@
         })
 
         function setMessage(message) {
-            box.style.height = captchaHelpMessage.style.display == "block" ? "652px" : "613px";
+            box.style.height = captchaHelpMessage.style.display == "block" ? "683px" : "613px";
             captchaMessage.style.display = "block";
             captchaMessage.innerText = message;
         }
@@ -609,7 +609,7 @@
 
             captchaLabel.innerText = category;
 
-            captchaExample.setAttribute("src", correctImagePaths[2 + Math.floor(Math.random() * (correctImagePaths.length - 3))]);
+            captchaExample.setAttribute("src", correctImagePaths[2 + Math.ceil(Math.random() * (correctImagePaths.length - 3))]);
 
             function setCaptchaImageToDefault(element) {
                 element.clicked = false;
