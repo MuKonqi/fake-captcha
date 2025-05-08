@@ -623,7 +623,6 @@
             }
 
             captchaLabel.innerText = category;
-
             captchaExample.setAttribute("src", correctImagePaths[correctNumber - 1 + Math.ceil(Math.random() * (correctImagePaths.length - correctNumber))]);
 
             function setCaptchaImageToDefault(element) {
