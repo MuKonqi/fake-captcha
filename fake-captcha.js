@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      1.2.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -85,6 +85,8 @@ class Config { // Do not forget to set this!
     static title = "Bir dakika lütfen...";
 
     static label = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
+
+    static label2 = "Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.";
 
     static verifying = "Doğrulanıyor...";
 
@@ -212,7 +214,7 @@ class Main {
         this.description.style.fontSize = "1.5rem";
         this.description.style.lineHeight = "2.25rem";
         this.description.innerText = Config.description;
-        this.frame.append(this.description);
+        this.frame.appendChild(this.description);
 
         this.footer = document.createElement("div");
         this.footer.style.width = "100%";
@@ -281,52 +283,65 @@ class Tunnel {
         this.frame.style.height = "100%";
         this.frame.style.display = "flex";
         this.frame.style.alignItems = "center";
-        this.box.append(this.frame);
+        this.box.appendChild(this.frame);
 
         this.content = document.createElement("div");
         this.content.style.display = "flex";
         this.content.style.placeItems = "center";
         this.content.style.marginLeft = "16px";
-        this.frame.append(this.content);
+        this.frame.appendChild(this.content);
+
+        this.spinner = document.createElement("div");
+        this.spinner.style.display = "block";
+        this.spinner.style.position = "relative";
+        this.spinner.style.width = "30px";
+        this.spinner.style.height = "30px";
+        this.spinner.style.border = "5px dotted #038127";
+        this.spinner.style.borderRadius = "50%";
+        this.spinner.animate(
+            [{transform: "rotate(0deg)"}, {transform: 'rotate(360deg)'}], 
+            {duration: 5000, iterations: Infinity}
+        );
+        this.content.appendChild(this.spinner);
 
         this.checkbox = document.createElement("input");
         this.checkbox.style.width = "24px";
         this.checkbox.style.height = "24px";
         this.checkbox.style.cursor = "pointer";
-        this.checkbox.style.visibility = "hidden";
+        this.checkbox.style.display = "none";
         this.checkbox.setAttribute("type", "checkbox");
         this.checkbox.addEventListener("change", this.change.bind(this))
-        this.content.append(this.checkbox);
+        this.content.appendChild(this.checkbox);
 
         this.verifying = document.createElement("label");
         this.verifying.style.alignItems = "center";
         this.verifying.style.color = "#fff"
         this.verifying.style.marginLeft = "8px";
         this.verifying.innerText = Config.verifying;
-        this.content.append(this.verifying);
+        this.content.appendChild(this.verifying);
 
         this.branding = document.createElement("div");
         this.branding.style.margin = "0px 16px 0px auto";
         this.branding.style.display = "grid";
         this.branding.style.textAlign = "right";
-        this.frame.append(this.branding);
+        this.frame.appendChild(this.branding);
 
         this.cloudflare = document.createElement("a");
         this.cloudflare.setAttribute("target", "_blank");
         this.cloudflare.setAttribute("href", "https://www.cloudflare.com/application-services/products/turnstile/")
-        this.branding.append(this.cloudflare);
+        this.branding.appendChild(this.cloudflare);
 
         this.logo = document.createElement("img")
         this.logo.style.width = "72px";
         this.logo.style.height = "24px";
         this.logo.setAttribute("src", "https://cf-assets.www.cloudflare.com/slt3lc6tev37/fdh7MDcUlyADCr49kuUs2/5f780ced9677a05d52b05605be88bc6f/cf-logo-v-rgb.png")
-        this.cloudflare.append(this.logo);
+        this.cloudflare.appendChild(this.logo);
 
         this.links = document.createElement("div");
         this.links.style.display = "flex";
         this.links.style.justifyContent = "flex-end";
         this.links.style.fontSize = "8px";
-        this.branding.append(this.links);
+        this.branding.appendChild(this.links);
 
         this.privacy = document.createElement("a");
         this.privacy.setAttribute("target", "_blank");
@@ -339,7 +354,7 @@ class Tunnel {
         this.seperator = document.createElement("span");
         this.seperator.style.margin = "0px 2.3px";
         this.seperator.innerText = "•";
-        this.links.append(this.seperator)
+        this.links.appendChild(this.seperator)
 
         this.terms = document.createElement("a");
         this.terms.setAttribute("target", "_blank");
@@ -352,7 +367,8 @@ class Tunnel {
 
     change() {
         if (this.status === 1) {
-            this.checkbox.style.visibility = "hidden";
+            this.spinner.style.display = "block";
+            this.checkbox.style.display = "none";
             this.verifying.innerText = Config.verifying;
 
             setTimeout(this.continue.bind(this), Config.cooldown / 2)
@@ -370,13 +386,15 @@ class Tunnel {
 
     continue() {
         this.checkbox.checked = false;
-        this.checkbox.style.visibility = "visible";
+        this.spinner.style.display = "none";
+        this.checkbox.style.display = "block";
         this.verifying.innerText = Config.tryAgain;
     }
 
     start() {
         this.status = 1;
-        this.checkbox.style.visibility = "visible";
+        this.spinner.style.display = "none";
+        this.checkbox.style.display = "block";
         this.verifying.innerText = Config.verifyYou;
     }
 }
@@ -736,6 +754,7 @@ class reCAPTCHA {
         const tunnel = new Tunnel(main.box, recaptcha.frame);
 
         recaptcha.set();
-        setTimeout(tunnel.start(), Config.cooldown);
+        setTimeout(tunnel.start.bind(tunnel), Config.cooldown);
+        main.label.innerText = Config.label2;
     }
 })();
