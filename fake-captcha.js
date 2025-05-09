@@ -43,7 +43,7 @@ class Config { // Do not forget to set this!
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
-    static activecategories = [ // There must be at least one
+    static activeCategories = [ // There must be at least one.
         "Cami",
         "İnsan"
     ]
@@ -560,9 +560,8 @@ class reCAPTCHA {
 
         this.categories = {};
 
-        for (let i = 0; i < Config.activecategories.length; i++) {
-            const key = Config.activecategories[i];
-            this.categories[key] = Config.categories[key];
+        for (let i = 0; i < Config.activeCategories.length; i++) {
+            this.categories[Config.activeCategories[i]] = Config.categories[Config.activeCategories[i]];
         }
 
         if (!("__others__" in this.categories)) {
