@@ -272,8 +272,9 @@ class Main {
 
 
 class Tunnel {
-    constructor(box, recaptcha) {
+    constructor(box, label, recaptcha) {
         this.box = box;
+        this.label = label;
         this.recaptcha = recaptcha;
 
         this.status = 0;
@@ -396,6 +397,7 @@ class Tunnel {
         this.spinner.style.display = "none";
         this.checkbox.style.display = "block";
         this.verifying.innerText = Config.verifyYou;
+        this.label.innerText = Config.label2;
     }
 }
 
@@ -751,10 +753,9 @@ class reCAPTCHA {
     if (cookies.continue) {
         const main = new Main();
         const recaptcha = new reCAPTCHA(main.box, main.label);
-        const tunnel = new Tunnel(main.box, recaptcha.frame);
+        const tunnel = new Tunnel(main.box, main.label, recaptcha.frame);
 
         recaptcha.set();
         setTimeout(tunnel.start.bind(tunnel), Config.cooldown);
-        main.label.innerText = Config.label2;
     }
 })();
