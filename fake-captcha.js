@@ -677,16 +677,21 @@ class reCAPTCHA {
 
             const randomCorrectNumber = Math.random() * 100;
 
-            if ((randomCorrectNumber < 11.5 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 7) {
+            if (randomCorrectNumber < 11.5) {
                 this.correctNumber = 2;
             }
 
-            else if ((randomCorrectNumber < 77 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 6) {
+            else if (randomCorrectNumber < 77) {
                 this.correctNumber = 3;
             }
 
-            else if ((randomCorrectNumber < 100 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 5) {
+            else if (randomCorrectNumber < 100) {
                 this.correctNumber = 4;
+            }
+            
+            if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > 9)
+            {
+                this.correctNumber = 9 - this.numberStatus[1];
             }
 
             if (this.numberStatus === undefined) {
