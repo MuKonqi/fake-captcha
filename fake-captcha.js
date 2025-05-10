@@ -450,8 +450,9 @@ class reCAPTCHA {
         this.box.appendChild(this.frame);
 
         this.header = document.createElement("div");
-        this.header.style.width = "100%";
-        this.header.style.height = "115.6px";
+        this.header.style.width = "382px";
+        this.header.style.height = "113px";
+        this.header.style.marginTop = "7px";
         this.header.style.backgroundColor = "#1a73e8";
         this.header.style.alignContent = "center";
         this.header.style.alignItems = "center";
@@ -497,12 +498,10 @@ class reCAPTCHA {
         this.header.appendChild(this.example);
 
         this.images = document.createElement("div");
-        this.images.style.width = "382px";
-        this.images.style.height = "382px";
-        this.images.style.margin = "auto";
+        this.images.style.width = "386px";
+        this.images.style.height = "386px";
         this.images.style.aspectRatio = "1 / 1";
         this.images.style.display = "grid";
-        this.images.style.gap = "8px";
         this.images.style.alignItems = "center";
         this.images.style.justifyItems = "center";
         this.frame.appendChild(this.images);
@@ -613,7 +612,7 @@ class reCAPTCHA {
     focusToImage(event) {
         if (!event.currentTarget.clicked) {
             event.currentTarget.clicked = true;
-            event.currentTarget.style.width = "90%";
+            event.currentTarget.style.width = "80%";
             event.currentTarget.style.border = "2px solid #2cde85";
         }
 
@@ -658,7 +657,7 @@ class reCAPTCHA {
 
     resetImage(image) {
         image.clicked = false;
-        image.style.width = `${(parseInt(this.images.style.width) - (Math.sqrt(this.grid) - 1) * parseInt(this.images.style.gap) - (Math.sqrt(this.grid) * 4)) / Math.sqrt(this.grid)}px`;
+        image.style.width = `${(parseInt(this.images.style.width) - (Math.sqrt(this.grid) * 4)) / Math.sqrt(this.grid)}px`;
         image.style.border = "0px";
     }
 
