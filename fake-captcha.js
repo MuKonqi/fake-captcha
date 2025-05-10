@@ -49,6 +49,7 @@ class Config { // Do not forget to set this!
     static categories = {
         // The first one is about activity, the second one is about how much of that category to show. 
         // Note: The second value should only be set for one category!
+        // Note: The relevant category must have 1 more content than the second value!  
         "__others__": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Yosemite_El_Capitan.jpg/330px-Yosemite_El_Capitan.jpg",
@@ -647,7 +648,7 @@ class reCAPTCHA {
                     if (number !== null) {
                         this.correctImagePaths.push(...this.randomizeImages([...paths]));
 
-                        this.setImages(this.correctImagePaths, number);
+                        this.setImages(this.correctImagePaths, number <= 7 ? number : 7);
                     }
 
                     else {
@@ -657,14 +658,14 @@ class reCAPTCHA {
 
                 else {
                     if (number !== null) {
-                        this.setImages(this.randomizeImages([...paths]), number);
+                        this.setImages(this.randomizeImages([...paths]), number <= 7 ? number : 7);
                     }
 
                     this.wrongImagePaths.push(...paths);
                 }
 
                 if (number !== null) {
-                    this.numberStatus = [category_ === category, number];
+                    this.numberStatus = [category_ === category, number <= 7 ? number : 7];
                 }
             }
         }
@@ -676,15 +677,15 @@ class reCAPTCHA {
 
             const randomCorrectNumber = Math.random() * 100;
 
-            if (randomCorrectNumber < 11.5) {
+            if ((randomCorrectNumber < 11.5 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 7) {
                 this.correctNumber = 2;
             }
 
-            else if (randomCorrectNumber < 77) {
+            else if ((randomCorrectNumber < 77 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 6) {
                 this.correctNumber = 3;
             }
 
-            else if (randomCorrectNumber < 100) {
+            else if ((randomCorrectNumber < 100 && this.numberStatus === undefined || this.numberStatus[1] < 5) || this.numberStatus[1] === 5) {
                 this.correctNumber = 4;
             }
 
