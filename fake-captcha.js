@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.3.1
+// @version      1.3.2
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -81,11 +81,16 @@ class Config { // Do not forget to set this!
             `${Config.pinterestLink}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/6a/f3/09/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`
+            `${Config.pinterestLink}https://i.pinimg.com/736x/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/51/61/d1/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/f2/e6/2c/f2e62c62df7937c5665feaffb9151b16.jpg`,
         ]]
     };
 
-    static ratios = { // The ratios of how many images are the correct image.
+    static ratios = {
+        // The ratios of how many images are the correct image for 3x3 layout.
+        // Note: Do not add or delete any key!
+        // Note: The total should add up to 100!
         "0": 0,
         "1": 0,
         "2": 10.625,
@@ -95,7 +100,19 @@ class Config { // Do not forget to set this!
         "6": 10.625,
         "7": 10.625,
         "8": 0
-    }
+    };
+
+    static grids = {
+        // Possibilities for reCAPTCHA's grid layouts.
+        // Note: Do not add or delete any key!
+        // Note: The total should add up to 100!
+        "9": 50,
+        "16": 50
+    };
+
+    static multiplier = 1.777777777777778; // Multiplier value of the values in 9 adapted to 16.
+
+    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
 
     static title = "Bir dakika lütfen...";
 
@@ -130,8 +147,6 @@ class Config { // Do not forget to set this!
     static footer = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
 
     static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
-
-    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
 }
 
 
@@ -488,7 +503,6 @@ class reCAPTCHA {
         this.images.style.aspectRatio = "1 / 1";
         this.images.style.display = "grid";
         this.images.style.gap = "8px";
-        this.images.style.gridTemplateColumns = "repeat(3, 1fr)";
         this.images.style.alignItems = "center";
         this.images.style.justifyItems = "center";
         this.frame.appendChild(this.images);
@@ -644,21 +658,33 @@ class reCAPTCHA {
 
     resetImage(image) {
         image.clicked = false;
-        image.style.width = `${(parseInt(this.images.style.width) - 2 * parseInt(this.images.style.gap) - 12) / 3}px`;
+        image.style.width = `${(parseInt(this.images.style.width) - (Math.sqrt(this.grid) - 1) * parseInt(this.images.style.gap) - (Math.sqrt(this.grid) * 4)) / Math.sqrt(this.grid)}px`;
         image.style.border = "0px";
     }
 
     set() {
+        this.correctImagePaths = [];
+        this.wrongImagePaths = [];
+        this.imagePaths = [];
+        this.imageElements = [];
+
         const wantedCategories = {...Config.categories};
         delete wantedCategories.__others__;
 
         const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
 
-        this.correctImagePaths = [];
+        const randomGridNumber = Math.random() * 100;
 
-        this.wrongImagePaths = [];
+        let value_ = 0;
 
-        this.imagePaths = [];
+        for (const [grid, value] of Object.entries(Config.grids)) {
+            value_ += value;
+
+            if (randomGridNumber < value_) {
+                this.grid = parseInt(grid);
+                break;
+            }
+        }
 
         for (const [category_, [active, number, paths]] of Object.entries(Config.categories)) {
             if (active || category_ === "__others__") {
@@ -666,7 +692,7 @@ class reCAPTCHA {
                     if (number !== null) {
                         this.correctImagePaths.push(...this.randomizeImages([...paths]));
 
-                        this.setImages(this.correctImagePaths, number <= 7 ? number : 7);
+                        this.setImages(this.correctImagePaths, Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
                     }
 
                     else {
@@ -676,14 +702,14 @@ class reCAPTCHA {
 
                 else {
                     if (number !== null) {
-                        this.setImages(this.randomizeImages([...paths]), number <= 7 ? number : 7);
+                        this.setImages(this.randomizeImages([...paths]), Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
                     }
 
                     this.wrongImagePaths.push(...paths);
                 }
 
                 if (number !== null) {
-                    this.numberStatus = [category_ === category, number <= 7 ? number : 7];
+                    this.numberStatus = [category_ === category, Math.round(number * (this.grid === 16 ? Config.multiplier : 1))];
                 }
             }
         }
@@ -691,7 +717,7 @@ class reCAPTCHA {
         this.randomizeImages(this.wrongImagePaths);
 
         if (this.numberStatus === undefined || !this.numberStatus[0]) {
-             this.randomizeImages(this.correctImagePaths);
+            this.randomizeImages(this.correctImagePaths);
 
             const randomCorrectNumber = Math.random() * 100;
 
@@ -701,26 +727,18 @@ class reCAPTCHA {
                 ratio_ += ratio;
 
                 if (randomCorrectNumber < ratio_) {
-                    this.correctNumber = parseInt(number);
+                    this.correctNumber = parseInt(Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
                     break;
                 }
             }
 
-            if (this.correctNumber === 0) {
-                this.buttonText.innerText = Config.skip;
-            }
-
-            else {
-                this.buttonText.innerText = Config.verify;
-            }
-
-            if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > 9) {
-                this.correctNumber = 9 - this.numberStatus[1];
+            if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > this.grid) {
+                this.correctNumber = this.grid - this.numberStatus[1];
             }
 
             if (this.numberStatus === undefined) {
                 this.setImages(this.correctImagePaths, this.correctNumber);
-                this.setImages(this.wrongImagePaths, 9 - this.correctNumber);
+                this.setImages(this.wrongImagePaths, this.grid - this.correctNumber);
             }
 
             else {
@@ -731,25 +749,18 @@ class reCAPTCHA {
                 }
 
                 this.setImages(this.correctImagePaths, this.correctNumber);
-                this.setImages(this.wrongImagePaths, 9 - this.correctNumber - this.numberStatus[1]);
+                this.setImages(this.wrongImagePaths, this.grid - this.correctNumber - this.numberStatus[1]);
             }
         }
 
         else {
-            this.setImages(this.wrongImagePaths, 9 - this.numberStatus[1]);
+            this.setImages(this.wrongImagePaths, this.grid - this.numberStatus[1]);
         }
 
         for (let currentIndex = this.imagePaths.length - 1; currentIndex > 0; currentIndex--) {
             const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
             [this.imagePaths[currentIndex], this.imagePaths[randomIndex]] = [this.imagePaths[randomIndex], this.imagePaths[currentIndex]];
         }
-
-        this.label.innerText = category;
-
-        const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
-        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
-
-        this.imageElements = [];
 
         for (let path of this.imagePaths) {
             let image = document.createElement("img");
@@ -762,6 +773,15 @@ class reCAPTCHA {
             this.images.appendChild(image);
             this.imageElements.push(image);
         }
+
+        this.buttonText.innerText = self.correctNumber === 0 ? Config.skip : Config.verify;
+
+        this.images.style.gridTemplateColumns = `repeat(${Math.sqrt(this.grid)}, 1fr)`;
+
+        this.label.innerText = category;
+
+        const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
+        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
     }
 
     setImages(array, value) {
@@ -810,7 +830,6 @@ class reCAPTCHA {
 
     if (cookies.continue) {
         document.title = Config.title;
-
         document.documentElement.style.display = "none";
 
         addEventListener("load", (event) => {
