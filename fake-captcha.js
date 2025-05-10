@@ -1,15 +1,18 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.2.1
+// @version      1.3.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
-// @match        https://www.ensonhaber.com/*
-// @match        https://www.ahaber.com.tr/*
-// @match        https://www.haber7.com/*
+// @match        https://*.ensonhaber.com/*
+// @match        https://*.ahaber.com.tr/*
+// @match        https://*.haber7.com/*
+// @match        https://*.cnnturk.com/*
+// @match        https://*.haberturk.com/*
 // @icon         https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/RecaptchaLogo.svg/150px-RecaptchaLogo.svg.png
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
 // MIT License
@@ -37,19 +40,16 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 46; // Cooldown for auto captcha and cooldown / 2 for manuel captcha in miliseconds
+    static cooldown = 46; // Cooldown for Tunnel's first step and cooldown / 2 for Tunnel's second step in miliseconds.
 
-    static validity = 230; // Validity for challange in seconds
+    static validity = 230; // Validity for challange in seconds.
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
-    static activeCategories = [ // There must be at least one.
-        "Cami",
-        "İnsan"
-    ]
-
     static categories = {
-        "__others__": [
+        // The first one is about activity, the second one is about how much of that category to show. 
+        // Note: The second value should only be set for one category!
+        "__others__": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Yosemite_El_Capitan.jpg/330px-Yosemite_El_Capitan.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
@@ -57,8 +57,8 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Downtown_Charlottesville_fire_hydrant.jpg/250px-Downtown_Charlottesville_fire_hydrant.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Pune_green_bus.jpg/250px-Pune_green_bus.jpg"
-        ], // Do not change __others__'s name or do not delete it! The images here will never be correct image for reCAPTCHA.
-        "Cami": [
+        ]], // Do not change __others__'s name or do not delete it! The images here will never be correct image for reCAPTCHA.
+        "Cami": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg/330px-Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/330px-Hagia_Sophia_Mars_2013.jpg",
@@ -71,15 +71,15 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Panoramic_view_of_Istanbul-_Yeni_Cami_%28The_New_Mosque%29%2C_Galata_Bridge._Turkey%2C_Southeastern_Europe.jpg/330px-Panoramic_view_of_Istanbul-_Yeni_Cami_%28The_New_Mosque%29%2C_Galata_Bridge._Turkey%2C_Southeastern_Europe.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Sultan_Ahmet_Mosque_February_2013.jpg/250px-Sultan_Ahmet_Mosque_February_2013.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
-        ],
-        "İnsan": [
+        ]],
+        "İnsan": [true, 5, [
             `${Config.pinterestLink}https://i.pinimg.com/736x/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
             `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`
-        ]
+        ]]
     };
 
     static title = "Bir dakika lütfen...";
@@ -137,34 +137,31 @@ class Cookies {
 
 class Main {
     constructor() {
+        document.documentElement.style.display = "block";
+        document.documentElement.style.fontFamily = "Calibri, sans-serif";
+        document.documentElement.style.backgroundColor = "#222";
+        document.documentElement.style.display = "flex";
+        document.documentElement.style.minHeight = "100%";
+
         document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
 
         for (let element of document.body.getElementsByTagName("*")) {
             element.style.display = "none";
         }
 
-        document.title = Config.title;
-
-        document.documentElement.style.fontFamily = "Calibri, sans-serif";
-
-        document.documentElement.style.backgroundColor = "#222";
-
         document.body.style.fontFamily = "Calibri, sans-serif";
-
         document.body.backgroundColor = "#222";
-
         document.body.style.margin = "0";
 
         this.body = document.createElement("div");
-        this.body.style.width = "100%";
-        this.body.style.height = "100%";
+        this.body.style.width = "100vw";
+        this.body.style.height = "100vh";
         this.body.style.top = "0";
         this.body.style.right = "0";
-        this.body.style.bottom = "0px";
+        this.body.style.bottom = "0";
         this.body.style.left = "0";
         this.body.style.margin = "0";
         this.body.style.padding = "0";
-        this.body.style.boxSizing = "border-box";
         this.body.style.flexDirection = "column";
         this.body.style.flex = "1";
         this.body.style.alignItems = "center";
@@ -175,26 +172,28 @@ class Main {
         document.body.appendChild(this.body);
 
         this.frame = document.createElement("div");
-        this.frame.style.width = "100%";
         this.frame.style.maxWidth = "60rem";
         this.frame.style.margin = "8rem auto";
-        this.frame.style.paddingLeft = "1.5rem";
-        this.frame.style.paddingRight = "1.5rem";
+        this.frame.style.flex = "1";
+        this.frame.style.boxSizing = "border-box";
+        this.frame.style.padding = "0px 1.5rem";
+        this.frame.setAttribute("role", "main");
         this.body.appendChild(this.frame);
 
         this.name = document.createElement("h1");
         this.name.style.textAlign = "left";
         this.name.style.fontSize = "2.5rem";
-        this.name.style.fontWeight = "900";
+        this.name.style.fontWeight = "700";
         this.name.style.lineHeight = "3.75rem";
+        this.name.style.padding = "0px";
+        this.name.style.margin = "0px";
         this.name.innerText = window.location.hostname;
         this.frame.appendChild(this.name);
 
         this.label = document.createElement("p");
         this.label.style.fontSize = "1.5rem";
         this.label.style.fontWeight = "900";
-        this.label.style.lineHeight = "3.75rem";
-        this.label.style.marginTop = "0";
+        this.label.style.marginTop = "0px";
         this.label.style.marginBottom = "2rem";
         this.label.innerText = Config.label;
         this.frame.appendChild(this.label);
@@ -220,10 +219,8 @@ class Main {
         this.footer.style.width = "100%";
         this.footer.style.maxWidth = "60rem";
         this.footer.style.maxHeight = "80px";
-        this.footer.style.margin = "auto 0px 0px 0px";
-        this.footer.style.paddingLeft = "1.5rem";
-        this.footer.style.paddingRight = "1.5rem";
         this.footer.style.boxSizing = "border-box";
+        this.footer.style.padding = "0px 1.5rem";
         this.footer.style.flexDirection = "column";
         this.footer.style.flex = "1";
         this.footer.style.alignItems = "center";
@@ -578,15 +575,6 @@ class reCAPTCHA {
         this.helpTextlink.setAttribute("href", "https://support.google.com/recaptcha");
         this.helpText.appendChild(this.helpTextlink);
 
-        this.categories = {};
-
-        for (let i = 0; i < Config.activeCategories.length; i++) {
-            this.categories[Config.activeCategories[i]] = Config.categories[Config.activeCategories[i]];
-        }
-
-        if (!("__others__" in this.categories)) {
-            this.categories["__others__"] = Config.categories["__others__"];
-        }
     }
 
     focusToImage(event) {
@@ -619,6 +607,8 @@ class reCAPTCHA {
             const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
             [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
         }
+
+        return array;
     }
 
     reset() {
@@ -626,7 +616,7 @@ class reCAPTCHA {
         this.text.style.display = "none";
         this.helpText.style.display = "none";
 
-        for (let captcha of this.final) {
+        for (let captcha of this.imageElements) {
             this.images.removeChild(captcha);
         }
 
@@ -640,58 +630,96 @@ class reCAPTCHA {
     }
 
     set() {
-        const wantedCategories = {...this.categories};
+        const wantedCategories = {...Config.categories};
         delete wantedCategories.__others__;
 
         const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
-
-        const randomCorrectNumber = Math.random() * 100;
-
-        if (randomCorrectNumber < 11.5) {
-            this.correctNumber = 2;
-        }
-
-        else if (randomCorrectNumber < 77) {
-            this.correctNumber = 3;
-        }
-
-        else if (randomCorrectNumber < 100) {
-            this.correctNumber = 4;
-        }
 
         this.correctImagePaths = [];
 
         this.wrongImagePaths = [];
 
-        for (const [category_, paths] of Object.entries(this.categories)) {
-            if (category_ === category) {
-                this.correctImagePaths.push(...paths)
+        this.imagePaths = [];
+
+        for (const [category_, [active, number, paths]] of Object.entries(Config.categories)) {
+            if (active || category_ === "__others__") {
+                if (category_ === category) {
+                    if (number !== null) {
+                        this.correctImagePaths.push(...this.randomizeImages([...paths]));
+
+                        this.setImages(this.correctImagePaths, number);
+                    }
+
+                    else {
+                        this.correctImagePaths.push(...paths);
+                    }
+                }
+
+                else {
+                    if (number !== null) {
+                        this.setImages(this.randomizeImages([...paths]), number);
+                    }
+
+                    this.wrongImagePaths.push(...paths);
+                }
+
+                if (number !== null) {
+                    this.numberStatus = [category_ === category, number];
+                }
+            }
+        }
+       
+        this.randomizeImages(this.wrongImagePaths);
+
+        if (this.numberStatus === undefined || !this.numberStatus[0]) {
+             this.randomizeImages(this.correctImagePaths);
+
+            const randomCorrectNumber = Math.random() * 100;
+
+            if (randomCorrectNumber < 11.5) {
+                this.correctNumber = 2;
+            }
+
+            else if (randomCorrectNumber < 77) {
+                this.correctNumber = 3;
+            }
+
+            else if (randomCorrectNumber < 100) {
+                this.correctNumber = 4;
+            }
+
+            if (this.numberStatus === undefined) {
+                this.setImages(this.correctImagePaths, this.correctNumber);
+                this.setImages(this.wrongImagePaths, 9 - this.correctNumber);
             }
 
             else {
-                this.wrongImagePaths.push(...paths)
+                for (let image of this.imagePaths) {
+                    if (this.wrongImagePaths.includes(image)) {
+                        this.wrongImagePaths.splice(this.wrongImagePaths.indexOf(image), 1);
+                    }
+                }
+
+                this.setImages(this.correctImagePaths, this.correctNumber);
+                this.setImages(this.wrongImagePaths, 9 - this.correctNumber - this.numberStatus[1]);
             }
         }
 
-        this.randomizeImages(this.correctImagePaths);
-        this.randomizeImages(this.wrongImagePaths);
-
-        this.imagePaths = [];
-
-        this.setImages(this.correctImagePaths, this.correctNumber);
-        this.setImages(this.wrongImagePaths, 9 - this.correctNumber);
+        else {
+            this.setImages(this.wrongImagePaths, 9 - this.numberStatus[1]);
+        }
 
         for (let currentIndex = this.imagePaths.length - 1; currentIndex > 0; currentIndex--) {
             const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-            [this.imagePaths[currentIndex], this.imagePaths[randomIndex]] = [this.imagePaths[randomIndex], this.imagePaths[currentIndex]]
+            [this.imagePaths[currentIndex], this.imagePaths[randomIndex]] = [this.imagePaths[randomIndex], this.imagePaths[currentIndex]];
         }
 
         this.label.innerText = category;
 
-        const randomExampleNumber = this.correctNumber - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - this.correctNumber));
-        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : this.correctNumber]);
+        const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
+        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
 
-        this.final = [];
+        this.imageElements = [];
 
         for (let path of this.imagePaths) {
             let image = document.createElement("img");
@@ -702,7 +730,7 @@ class reCAPTCHA {
             image.addEventListener("click", this.focusToImage.bind(this));
             this.resetImage(image);
             this.images.appendChild(image);
-            this.final.push(image);
+            this.imageElements.push(image);
         }
     }
 
@@ -720,7 +748,7 @@ class reCAPTCHA {
     verify() {
         let successful = 0;
 
-        for (let image of this.final) {
+        for (let image of this.imageElements) {
             if (image.clicked)
                 if (this.correctImagePaths.includes(image.getAttribute("src"))) {
                     successful++;
@@ -731,7 +759,7 @@ class reCAPTCHA {
                 }
         }
 
-        if (successful === this.correctNumber) {
+        if (successful === (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])) {
             document.cookie = `challangeDate=${new Date().toString()}; SameSite=None; Secure=None`;
 
             location.reload();
@@ -751,11 +779,17 @@ class reCAPTCHA {
     const cookies = new Cookies();
 
     if (cookies.continue) {
-        const main = new Main();
-        const recaptcha = new reCAPTCHA(main.box, main.label);
-        const tunnel = new Tunnel(main.box, main.label, recaptcha.frame);
+        document.title = Config.title;
 
-        recaptcha.set();
-        setTimeout(tunnel.start.bind(tunnel), Config.cooldown);
+        document.documentElement.style.display = "none";
+
+        addEventListener("load", (event) => {
+            const main = new Main();
+            const recaptcha = new reCAPTCHA(main.box, main.label);
+            const tunnel = new Tunnel(main.box, main.label, recaptcha.frame);
+
+            recaptcha.set();
+            setTimeout(tunnel.start.bind(tunnel), Config.cooldown);
+        })
     }
 })();
