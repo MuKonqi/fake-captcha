@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.3.0
+// @version      1.3.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -74,14 +74,28 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
         ]],
         "İnsan": [true, 5, [
+            `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
-            `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`
+            `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/6a/f3/09/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`
         ]]
     };
+
+    static ratios = { // The ratios of how many images are the correct image.
+        "0": 0,
+        "1": 0,
+        "2": 10.625,
+        "3": 34.5,
+        "4": 23,
+        "5": 10.625,
+        "6": 10.625,
+        "7": 10.625,
+        "8": 0
+    }
 
     static title = "Bir dakika lütfen...";
 
@@ -106,6 +120,10 @@ class Config { // Do not forget to set this!
     static help = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın.";
 
     static learnMore = "Daha fazla bilgi edinin.";
+
+    static skip = "Atla";
+
+    static verify = "Doğrula";
 
     static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
 
@@ -550,13 +568,13 @@ class reCAPTCHA {
         this.button.style.background = "#1a73e8";
         this.button.style.fontSize = "14px";
         this.button.style.fontWeight = "500";
+        this.button.style.textTransform = "uppercase";
         this.button.addEventListener("click", this.verify.bind(this));
         this.footer.appendChild(this.button);
 
         this.buttonText = document.createElement("p");
         this.buttonText.style.margin = "12px";
         this.buttonText.style.textAlign = "center";
-        this.buttonText.innerText = "DOĞRULA";
         this.button.appendChild(this.buttonText);
 
         this.helpText = document.createElement("p");
@@ -677,20 +695,26 @@ class reCAPTCHA {
 
             const randomCorrectNumber = Math.random() * 100;
 
-            if (randomCorrectNumber < 11.5) {
-                this.correctNumber = 2;
+            let ratio_ = 0;
+
+            for (const [number, ratio]  of Object.entries(Config.ratios)) {
+                ratio_ += ratio;
+
+                if (randomCorrectNumber < ratio_) {
+                    this.correctNumber = parseInt(number);
+                    break;
+                }
             }
 
-            else if (randomCorrectNumber < 77) {
-                this.correctNumber = 3;
+            if (this.correctNumber === 0) {
+                this.buttonText.innerText = Config.skip;
             }
 
-            else if (randomCorrectNumber < 100) {
-                this.correctNumber = 4;
+            else {
+                this.buttonText.innerText = Config.verify;
             }
-            
-            if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > 9)
-            {
+
+            if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > 9) {
                 this.correctNumber = 9 - this.numberStatus[1];
             }
 
