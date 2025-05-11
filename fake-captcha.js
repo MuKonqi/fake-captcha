@@ -52,7 +52,6 @@ class Config { // Do not forget to set this!
         // Note: The relevant category must have 1 more content than the second value!  
         "__others__": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Yosemite_El_Capitan.jpg/330px-Yosemite_El_Capitan.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Fire_Engine_33_%286225707251%29.jpg/330px-Fire_Engine_33_%286225707251%29.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg",
@@ -84,6 +83,24 @@ class Config { // Do not forget to set this!
             `${Config.pinterestLink}https://i.pinimg.com/736x/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/51/61/d1/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/f2/e6/2c/f2e62c62df7937c5665feaffb9151b16.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/7b/67/a0/7b67a025a104f2f11a991af0f46f4643.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/7f/58/5c/7f585c1fdc14fa25b6960b759e5ba686.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/fb/3c/2f/fb3c2fca26e69371df0ac7dca4946bb1.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/ec/97/59/ec9759530cdfcf6de96b500a8d206445.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/83/11/e1/8311e1b1e8efe53eb257c906587f2875.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/db/c1/21/dbc1218d8f79d6ca4e0d2f430c763213.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/37/f0/08/37f008932fa7b7a3006f2b05dd8d5586.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/7f/d3/17/7fd317b367625ca0a2b5e58d4aeb8096.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/f3/99/74/f399749fe6049b388175d93f52f242be.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/67/5f/44/675f440c9a058ee828bddded814f8157.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/33/c2/91/33c2911138c375dd7774ee210a526993.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/30/65/63/3065634ed2151184076be79cdb719c46.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/39/1d/01/391d01c9ddc3be77fe08ab8fe3a97bd5.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/8f/5c/7f/8f5c7fe9601a92d710d85f1b2d1ab6e9.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/9f/9b/d8/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/24/a0/45/24a0450592fdf051307842148c640ecb.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/0a/c4/40/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`,
         ]]
     };
 
