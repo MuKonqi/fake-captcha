@@ -100,7 +100,7 @@ class Config { // Do not forget to set this!
             `${Config.pinterestLink}https://i.pinimg.com/736x/9f/9b/d8/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/24/a0/45/24a0450592fdf051307842148c640ecb.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/736x/0a/c4/40/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/736x/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`
         ]]
     };
 
@@ -116,7 +116,8 @@ class Config { // Do not forget to set this!
         "5": 10.625,
         "6": 10.625,
         "7": 10.625,
-        "8": 0
+        "8": 0,
+        "9": 0
     };
 
     static grids = {
