@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.3.2
+// @version      1.4.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -206,9 +206,11 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 46; // Cooldown for Tunnel's first step and cooldown / 2 for Tunnel's second step in miliseconds.
+    static cooldown = 4600; // Cooldown for Tunnel's first step and cooldown / 2 for Tunnel's second step in miliseconds.
 
     static validity = 230; // Validity for challange in seconds.
+
+    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :=)
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
@@ -334,42 +336,26 @@ class Config { // Do not forget to set this!
 }
 
 
-class Cookies {
-    constructor() {
-        this.currentDate = new Date();
-
-        this.challangeDate = new Date();
-
-        this.challangeDateCookie = document.cookie.split("; ").find((row) => row.startsWith("challangeDate="))?.split("=")[1];
-
-        if (this.challangeDateCookie !== undefined) {
-            this.challangeDate = new Date(this.challangeDateCookie);
-        }
-    }
-
-    get continue() {
-        return (((this.currentDate.getTime() - this.challangeDate.getTime()) / 1000)) >= Config.validity || this.challangeDateCookie === undefined
-    }
-}
-
-
 class Main {
     constructor() {
+        document.title = Config.title;
+
+        document.querySelectorAll("link[rel*='icon'").forEach(favicon => favicon.setAttribute("href", "data:image/x-icon;base64,"));
+        document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
+
         document.documentElement.style.display = "block";
         document.documentElement.style.fontFamily = "Calibri, sans-serif";
         document.documentElement.style.backgroundColor = "#222";
         document.documentElement.style.display = "flex";
         document.documentElement.style.minHeight = "100%";
 
-        document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
+        document.body.style.fontFamily = "Calibri, sans-serif";
+        document.body.backgroundColor = "#222";
+        document.body.style.margin = "0";
 
         for (let element of document.body.getElementsByTagName("*")) {
             element.style.display = "none";
         }
-
-        document.body.style.fontFamily = "Calibri, sans-serif";
-        document.body.backgroundColor = "#222";
-        document.body.style.margin = "0";
 
         this.body = document.createElement("div");
         this.body.style.width = "100vw";
@@ -385,6 +371,7 @@ class Main {
         this.body.style.alignItems = "center";
         this.body.style.display = "flex";
         this.body.style.position = "sticky";
+        this.body.style.zIndex = "2147483647";
         this.body.style.backgroundColor = "#222";
         this.body.style.color = "#d9d9d9";
         document.body.appendChild(this.body);
@@ -469,6 +456,7 @@ class Main {
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
+        this.link.style.transition = "color .15s";
         this.link.style.color = "#fff";
         this.link.addEventListener("mouseover", this.focusToLink.bind(this));
         this.link.addEventListener("mouseleave", this.unfocusToLink.bind(this));
@@ -476,12 +464,12 @@ class Main {
 
     focusToLink() {
         this.link.style.color = "#F48120";
-        this.link.style.textDecoration = "underline";
+        this.link.style.setProperty("text-decoration", "underline", "important");
     }
 
     unfocusToLink() {
         this.link.style.color = "#fff";
-        this.link.style.textDecoration = "none";
+        this.link.style.setProperty("text-decoration", "none", "important");
     }
 }
 
@@ -562,7 +550,7 @@ class Tunnel {
         this.privacy = document.createElement("a");
         this.privacy.setAttribute("target", "_blank");
         this.privacy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
-        this.privacy.style.textDecoration = "underline";
+        this.privacy.style.setProperty("text-decoration", "underline", "important");
         this.privacy.style.color = "#bbbbbb";
         this.privacy.innerText = Config.privacy;
         this.links.appendChild(this.privacy)
@@ -575,7 +563,7 @@ class Tunnel {
         this.terms = document.createElement("a");
         this.terms.setAttribute("target", "_blank");
         this.terms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
-        this.terms.style.textDecoration = "underline";
+        this.terms.style.setProperty("text-decoration", "underline", "important");
         this.terms.style.color = "#bbbbbb";
         this.terms.innerText = Config.terms;
         this.links.appendChild(this.terms);
@@ -587,7 +575,7 @@ class Tunnel {
             this.checkbox.style.display = "none";
             this.verifying.innerText = Config.verifying;
 
-            setTimeout(this.continue.bind(this), Config.cooldown / 2)
+            setTimeout(this.continue.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 2))
 
             this.status = 2;
         }
@@ -993,7 +981,7 @@ class reCAPTCHA {
         }
 
         if (successful === (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])) {
-            document.cookie = `challangeDate=${new Date().toString()}; SameSite=None; Secure=None`;
+            document.cookie = `challangeDate=${new Date().toString()}; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
 
             location.reload();
         }
@@ -1009,9 +997,7 @@ class reCAPTCHA {
 (function() {
     'use strict';
 
-    const cookies = new Cookies();
-
-    if (cookies.continue) {
+    if (document.cookie.split("; ").find((row) => row.startsWith("challangeDate="))?.split("=")[1] === undefined) {
         document.title = Config.title;
         document.documentElement.style.display = "none";
 
@@ -1021,7 +1007,7 @@ class reCAPTCHA {
             const tunnel = new Tunnel(main.box, main.label, recaptcha.frame);
 
             recaptcha.set();
-            setTimeout(tunnel.start.bind(tunnel), Config.cooldown);
+            setTimeout(tunnel.start.bind(tunnel), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : Config.cooldown);
         })
     }
 })();
