@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.4.0
+// @version      1.5.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -210,14 +210,20 @@ class Config { // Do not forget to set this!
 
     static validity = 230; // Validity for challange in seconds.
 
-    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :=)
+    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
+    static expiryTimes = ["09:00", "09:40", "09:50", "10:30", "10:40", "11:20", "11:30", "12:10", "12:20", "13:00", "13:45", "14:25", "14:35", "15:15", "15:20", "16:00"]; // Expiry times in hour:minute format. Note: The order should be from first to last.
+
+    static maximumAge = 2300; // Maximum validition time to be used with expiryTimes.
+
+    static fixedValidity = false; // If you don't going to use expiryTimes, you should enable this.
+
     static categories = {
-        // The first one is about activity, the second one is about how much of that category to show. 
+        // Format: "name": [true or false (activation), int or null (how much of that category to show (null means random)), ["link1", ..., "linkn" (for image links)],
         // Note: The second value should only be set for one category!
-        // Note: The relevant category must have 1 more content than the second value!  
+        // Note: The relevant category must have 1 more content than the second value!
         "__others__": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
@@ -225,7 +231,7 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg/330px-Humberside_Fire_%26_Rescue_DH03P4_-_YT21_EHF.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Downtown_Charlottesville_fire_hydrant.jpg/250px-Downtown_Charlottesville_fire_hydrant.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Pune_green_bus.jpg/250px-Pune_green_bus.jpg"
-        ]], // Do not change __others__'s name or do not delete it! The images here will never be correct image for reCAPTCHA.
+        ]], // Do not change __others__'s name or do not delete it! Note: The images here will never be correct image for reCAPTCHA.
         "Cami": [true, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg/330px-Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg",
@@ -456,6 +462,7 @@ class Main {
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
+        this.link.style.setProperty("text-decoration", "none", "important");
         this.link.style.transition = "color .15s";
         this.link.style.color = "#fff";
         this.link.addEventListener("mouseover", this.focusToLink.bind(this));
@@ -607,6 +614,18 @@ class Tunnel {
 
 class reCAPTCHA {
     constructor(box) {
+        this.expiryDates = [];
+
+        for (let time of Config.expiryTimes) {
+            const date = new Date();
+
+            date.setHours(parseInt(time.split(":")[0]), parseInt(time.split(":")[1]), 0, 0);
+
+            this.expiryDates.push(date);
+        }
+
+        this.expiryDates.reverse();
+
         this.box = box;
 
         this.frame = document.createElement("div");
@@ -662,7 +681,7 @@ class reCAPTCHA {
         }
 
         this.example = document.createElement("img");
-        this.example.style.height = "96px";
+        this.example.style.height = "calc(100% - (2 * 9.8px))";
         this.example.style.aspectRatio = "1 / 1";
         this.example.style.margin = "9.8px 24px 9.8px auto";
         this.example.style.float = "right";
@@ -884,7 +903,7 @@ class reCAPTCHA {
                 }
             }
         }
-       
+
         this.randomizeImages(this.wrongImagePaths);
 
         if (this.numberStatus === undefined || !this.numberStatus[0]) {
@@ -981,7 +1000,33 @@ class reCAPTCHA {
         }
 
         if (successful === (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])) {
-            document.cookie = `challangeDate=${new Date().toString()}; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+            if (Config.fixedValidity) {
+                document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+            }
+
+            else {
+                const currentDate = new Date();
+
+                for (let date of this.expiryDates) {
+                    console.log(date, currentDate);
+
+                    if (currentDate <= date) {
+                        if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
+                            document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                        }
+
+                        else {
+                            document.cookie = `captchaPassed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
+                        }
+
+                        break
+                    }
+                }
+
+                if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
+                    document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                }
+            }
 
             location.reload();
         }
@@ -997,7 +1042,7 @@ class reCAPTCHA {
 (function() {
     'use strict';
 
-    if (document.cookie.split("; ").find((row) => row.startsWith("challangeDate="))?.split("=")[1] === undefined) {
+    if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
         document.title = Config.title;
         document.documentElement.style.display = "none";
 
