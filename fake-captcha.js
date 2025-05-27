@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.5.0
+// @version      1.5.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -347,7 +347,7 @@ class Main {
         document.title = Config.title;
 
         document.querySelectorAll("link[rel*='icon'").forEach(favicon => favicon.setAttribute("href", "data:image/x-icon;base64,"));
-        document.querySelectorAll('style, link[rel="stylesheet"]').forEach(css => css.remove());
+        document.querySelectorAll('style, link[rel*="stylesheet"]').forEach(css => css.remove());
 
         document.documentElement.style.display = "block";
         document.documentElement.style.fontFamily = "Calibri, sans-serif";
@@ -462,7 +462,7 @@ class Main {
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
-        this.link.style.setProperty("text-decoration", "none", "important");
+        this.link.style.textDecoration = "none";
         this.link.style.transition = "color .15s";
         this.link.style.color = "#fff";
         this.link.addEventListener("mouseover", this.focusToLink.bind(this));
@@ -471,12 +471,12 @@ class Main {
 
     focusToLink() {
         this.link.style.color = "#F48120";
-        this.link.style.setProperty("text-decoration", "underline", "important");
+        this.link.style.textDecoration = "underline";
     }
 
     unfocusToLink() {
         this.link.style.color = "#fff";
-        this.link.style.setProperty("text-decoration", "none", "important");
+        this.link.style.textDecoration = "none";
     }
 }
 
@@ -557,7 +557,7 @@ class Tunnel {
         this.privacy = document.createElement("a");
         this.privacy.setAttribute("target", "_blank");
         this.privacy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
-        this.privacy.style.setProperty("text-decoration", "underline", "important");
+        this.privacy.style.textDecoration = "underline";
         this.privacy.style.color = "#bbbbbb";
         this.privacy.innerText = Config.privacy;
         this.links.appendChild(this.privacy)
@@ -570,7 +570,7 @@ class Tunnel {
         this.terms = document.createElement("a");
         this.terms.setAttribute("target", "_blank");
         this.terms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
-        this.terms.style.setProperty("text-decoration", "underline", "important");
+        this.terms.style.textDecoration = "underline";
         this.terms.style.color = "#bbbbbb";
         this.terms.innerText = Config.terms;
         this.links.appendChild(this.terms);
