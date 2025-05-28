@@ -624,8 +624,6 @@ class reCAPTCHA {
             this.expiryDates.push(date);
         }
 
-        this.expiryDates.reverse();
-
         this.box = box;
 
         this.frame = document.createElement("div");
