@@ -216,7 +216,7 @@ class Config { // Do not forget to set this!
 
     static expiryTimes = ["09:00", "09:40", "09:50", "10:30", "10:40", "11:20", "11:30", "12:10", "12:20", "13:00", "13:45", "14:25", "14:35", "15:15", "15:20", "16:00"]; // Expiry times in hour:minute format. Note: The order should be from first to last.
 
-    static maximumAge = 2300; // Maximum validition time to be used with expiryTimes.
+    static maximumAge = 2392; // Maximum validition time to be used with expiryTimes.
 
     static fixedValidity = false; // If you don't going to use expiryTimes, you should enable this.
 
