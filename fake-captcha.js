@@ -1008,8 +1008,6 @@ class reCAPTCHA {
                 const currentDate = new Date();
 
                 for (let date of this.expiryDates) {
-                    console.log(date, currentDate);
-
                     if (currentDate <= date) {
                         if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
                             document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
