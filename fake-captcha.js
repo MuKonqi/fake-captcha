@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.5.1
+// @version      1.6.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -336,7 +336,7 @@ class Config { // Do not forget to set this!
 
     static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
 
-    static footer = "Bu sitenin performansı ve güvenliği <a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a> tarafından sağlanmaktadır";
+    static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
 
     static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
 }
@@ -346,78 +346,62 @@ class Main {
     constructor() {
         document.title = Config.title;
 
+        document.querySelectorAll("script").forEach(child => child.remove());
         document.querySelectorAll("link[rel*='icon'").forEach(favicon => favicon.setAttribute("href", "data:image/x-icon;base64,"));
-        document.querySelectorAll('style, link[rel*="stylesheet"]').forEach(css => css.remove());
 
-        document.documentElement.style.display = "block";
-        document.documentElement.style.fontFamily = "Calibri, sans-serif";
-        document.documentElement.style.backgroundColor = "#222";
+        Array.from(document.head.children).forEach(child => {
+            if (child.tagName !== 'TITLE' && !child.matches("link[rel*='icon'")) {
+                child.remove();
+            }
+        }); 
+
+        Array.from(document.body.children).forEach(child => child.remove());
+
         document.documentElement.style.display = "flex";
-        document.documentElement.style.minHeight = "100%";
+        document.documentElement.style.width = "100vw";
+        document.documentElement.style.height = "100vh";
+        document.documentElement.style.boxSizing = "border-box";
+        document.documentElement.style.margin = "0";
+        document.documentElement.style.padding = "0";
+        document.documentElement.style.fontFamily = "system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji";
 
-        document.body.style.fontFamily = "Calibri, sans-serif";
-        document.body.backgroundColor = "#222";
-        document.body.style.margin = "0";
-
-        for (let element of document.body.getElementsByTagName("*")) {
-            element.style.display = "none";
-        }
+        document.body.style.width = "100%";
+        document.body.style.height = "100%";
+        document.body.style.margin = "0px";
 
         this.body = document.createElement("div");
-        this.body.style.width = "100vw";
-        this.body.style.height = "100vh";
-        this.body.style.top = "0";
-        this.body.style.right = "0";
-        this.body.style.bottom = "0";
-        this.body.style.left = "0";
-        this.body.style.margin = "0";
-        this.body.style.padding = "0";
-        this.body.style.flexDirection = "column";
-        this.body.style.flex = "1";
-        this.body.style.alignItems = "center";
+        this.body.style.width = "100%";
+        this.body.style.height = "100%";
         this.body.style.display = "flex";
-        this.body.style.position = "sticky";
-        this.body.style.zIndex = "2147483647";
-        this.body.style.backgroundColor = "#222";
-        this.body.style.color = "#d9d9d9";
+        this.body.style.flexDirection = "column";
+        this.body.style.alignItems = "center";
         document.body.appendChild(this.body);
 
         this.frame = document.createElement("div");
         this.frame.style.maxWidth = "60rem";
-        this.frame.style.margin = "8rem auto";
-        this.frame.style.flex = "1";
         this.frame.style.boxSizing = "border-box";
+        this.frame.style.margin = "8rem auto";
         this.frame.style.padding = "0px 1.5rem";
+        this.frame.style.flex = "1";
         this.frame.setAttribute("role", "main");
         this.body.appendChild(this.frame);
 
         this.name = document.createElement("h1");
         this.name.style.textAlign = "left";
         this.name.style.fontSize = "2.5rem";
-        this.name.style.fontWeight = "700";
+        this.name.style.fontWeight = "500";
         this.name.style.lineHeight = "3.75rem";
-        this.name.style.padding = "0px";
         this.name.style.margin = "0px";
         this.name.innerText = window.location.hostname;
         this.frame.appendChild(this.name);
 
         this.label = document.createElement("p");
         this.label.style.fontSize = "1.5rem";
-        this.label.style.fontWeight = "900";
+        this.label.style.fontWeight = "500";
         this.label.style.marginTop = "0px";
         this.label.style.marginBottom = "2rem";
         this.label.innerText = Config.label;
         this.frame.appendChild(this.label);
-
-        this.box = document.createElement("div");
-        this.box.style.width = "300px"
-        this.box.style.height = "65px";
-        this.box.style.display = "flex";
-        this.box.style.border = "1px solid #e0e0e0";
-        this.box.style.alignItems = "center";
-        this.box.style.backgroundColor = "#232323";
-        this.box.style.borderColor = "#797979";
-        this.frame.appendChild(this.box);
 
         this.description = document.createElement("div");
         this.description.style.marginTop = "4rem";
@@ -432,17 +416,11 @@ class Main {
         this.footer.style.maxHeight = "80px";
         this.footer.style.boxSizing = "border-box";
         this.footer.style.padding = "0px 1.5rem";
-        this.footer.style.flexDirection = "column";
-        this.footer.style.flex = "1";
-        this.footer.style.alignItems = "center";
-        this.footer.style.display = "flex";
-        this.footer.style.backgroundColor = "#222";
-        this.footer.style.color = "#d9d9d9";
-        this.footer.style.borderTop = "1px solid #d9d9d9";
         this.footer.style.textAlign = "center";
         this.footer.style.fontSize = ".75rem";
         this.footer.style.lineHeight = "1.125rem";
-        this.body.appendChild(this.footer)
+        this.footer.style.borderTop = "1px solid #d9d9d9";
+        this.body.appendChild(this.footer);
 
         let rayId = "";
         const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -457,44 +435,71 @@ class Main {
         this.rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
         this.footer.appendChild(this.rayIdText);
 
+        this.rayIdText.getElementsByTagName("code").item(0).style.fontFamily = "monaco,courier,monospace";
+
         this.information = document.createElement("p");
-        this.information.innerHTML = Config.footer;
+        this.information.innerHTML = Config.footer.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a>");
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
         this.link.style.textDecoration = "none";
         this.link.style.transition = "color .15s";
-        this.link.style.color = "#fff";
         this.link.addEventListener("mouseover", this.focusToLink.bind(this));
         this.link.addEventListener("mouseleave", this.unfocusToLink.bind(this));
+
+        window.matchMedia("screen and (prefers-color-scheme: light)").addEventListener("change", this.setColors.bind(this));
+        this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
     }
 
     focusToLink() {
-        this.link.style.color = "#F48120";
+        this.link.style.color = "#f48120";
+
         this.link.style.textDecoration = "underline";
     }
 
     unfocusToLink() {
-        this.link.style.color = "#fff";
+        if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
+            this.link.style.color = "#0051c3";
+        }
+
+        else {
+            this.link.style.color = "#ffffff";
+        }
+
         this.link.style.textDecoration = "none";
+    }
+
+    setColors(event) {
+        if (event.matches) {
+            document.documentElement.style.backgroundColor = "#ffffff";
+            document.documentElement.style.color = "#313131";
+            this.link.style.color = "#0051c3";
+        }
+
+        else {
+            document.documentElement.style.backgroundColor = "#222222";
+            document.documentElement.style.color = "#d9d9d9";
+            this.link.style.color = "#ffffff";
+        }
     }
 }
 
 
 class Tunnel {
-    constructor(box, label, recaptcha) {
-        this.box = box;
+    constructor(label, main, description, recaptcha) {
         this.label = label;
+        this.main = main;
+        this.description = description;
         this.recaptcha = recaptcha;
 
         this.status = 0;
 
         this.frame = document.createElement("div");
-        this.frame.style.width = "100%"
-        this.frame.style.height = "100%";
+        this.frame.style.width = "300px"
+        this.frame.style.height = "65px";
         this.frame.style.display = "flex";
         this.frame.style.alignItems = "center";
-        this.box.appendChild(this.frame);
+        this.main.insertBefore(this.frame, this.description);
 
         this.content = document.createElement("div");
         this.content.style.display = "flex";
@@ -526,8 +531,8 @@ class Tunnel {
 
         this.verifying = document.createElement("label");
         this.verifying.style.alignItems = "center";
-        this.verifying.style.color = "#fff"
         this.verifying.style.marginLeft = "8px";
+        this.verifying.style.fontSize = "14px";
         this.verifying.innerText = Config.verifying;
         this.content.appendChild(this.verifying);
 
@@ -558,7 +563,6 @@ class Tunnel {
         this.privacy.setAttribute("target", "_blank");
         this.privacy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
         this.privacy.style.textDecoration = "underline";
-        this.privacy.style.color = "#bbbbbb";
         this.privacy.innerText = Config.privacy;
         this.links.appendChild(this.privacy)
 
@@ -571,9 +575,11 @@ class Tunnel {
         this.terms.setAttribute("target", "_blank");
         this.terms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
         this.terms.style.textDecoration = "underline";
-        this.terms.style.color = "#bbbbbb";
         this.terms.innerText = Config.terms;
         this.links.appendChild(this.terms);
+
+        window.matchMedia("screen and (prefers-color-scheme: light)").addEventListener("change", this.setColors.bind(this));
+        this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
     }
 
     change() {
@@ -588,10 +594,7 @@ class Tunnel {
         }
 
         else if (this.status === 2) {
-            this.box.style.width = "400px";
-            this.box.style.height = "582px";
-            this.frame.style.display = "none";
-            this.recaptcha.style.display = "flex";
+            this.main.replaceChild(this.recaptcha, this.frame);
         }
     }
 
@@ -609,11 +612,29 @@ class Tunnel {
         this.verifying.innerText = Config.verifyYou;
         this.label.innerText = Config.label2;
     }
+
+    setColors(event) {
+        if (event.matches) {
+            this.frame.style.backgroundColor = "#fafafa";
+            this.frame.style.border = "1px solid #e0e0e0";
+            this.verifying.style.color = "#232323"
+            this.privacy.style.color = "#232323";
+            this.terms.style.color = "#232323";
+        }   
+
+        else {
+            this.frame.style.backgroundColor = "#232323";
+            this.frame.style.border = "1px solid #797979";
+            this.verifying.style.color = "#ffffff"
+            this.privacy.style.color = "#bbbbbb";
+            this.terms.style.color = "#bbbbbb";
+        }
+    }
 }
 
 
 class reCAPTCHA {
-    constructor(box) {
+    constructor() {
         this.expiryDates = [];
 
         for (let time of Config.expiryTimes) {
@@ -624,34 +645,31 @@ class reCAPTCHA {
             this.expiryDates.push(date);
         }
 
-        this.box = box;
-
         this.frame = document.createElement("div");
-        this.frame.style.width = "100%"
-        this.frame.style.height = "100%";
-        this.frame.style.backgroundColor = "#fff";
-        this.frame.style.border = "1px solid #a9a9a9";
-        this.frame.style.display = "none";
+        this.frame.style.width = "400px"
+        this.frame.style.height = "582px";
+        this.frame.style.display = "flex";
         this.frame.style.flexDirection = "column";
         this.frame.style.alignContent = "center";
         this.frame.style.alignItems = "center";
         this.frame.style.justifyContent = "space-between";
-        this.box.appendChild(this.frame);
+        this.frame.style.backgroundColor = "#ffffff";
+        this.frame.style.border = "2px solid #376296";
 
         this.header = document.createElement("div");
         this.header.style.width = "382px";
         this.header.style.height = "113px";
         this.header.style.marginTop = "7px";
-        this.header.style.backgroundColor = "#1a73e8";
         this.header.style.alignContent = "center";
         this.header.style.alignItems = "center";
+        this.header.style.backgroundColor = "#1a73e8";
         this.frame.appendChild(this.header);
 
         this.texts = document.createElement("p");
         this.texts.style.margin = "24px";
         this.texts.style.float = "left";
         this.texts.style.fontSize = "16px";
-        this.texts.style.color = "#fff";
+        this.texts.style.color = "#ffffff";
         this.header.appendChild(this.texts);
 
         if (Config.captchaHeader === 0) {
@@ -683,7 +701,7 @@ class reCAPTCHA {
         this.example.style.aspectRatio = "1 / 1";
         this.example.style.margin = "9.8px 24px 9.8px auto";
         this.example.style.float = "right";
-        this.example.style.border = "1px solid #fff";
+        this.example.style.border = "1px solid #ffffff";
         this.header.appendChild(this.example);
 
         this.images = document.createElement("div");
@@ -700,8 +718,8 @@ class reCAPTCHA {
         this.text.style.margin = "0px 0px 7px 0px";
         this.text.style.padding = "0px";
         this.text.style.textAlign = "center";
-        this.text.style.color = "#d93025";
         this.text.style.fontSize = "14px";
+        this.text.style.color = "#d93025";
         this.frame.appendChild(this.text);
 
         this.seperator = document.createElement("div");
@@ -767,10 +785,10 @@ class reCAPTCHA {
         this.button.style.cursor = "pointer";
         this.button.style.textAlign = "center";
         this.button.style.transition = "all .5s ease";
-        this.button.style.background = "#1a73e8";
         this.button.style.fontSize = "14px";
         this.button.style.fontWeight = "500";
         this.button.style.textTransform = "uppercase";
+        this.button.style.background = "#1a73e8";
         this.button.addEventListener("click", this.verify.bind(this));
         this.footer.appendChild(this.button);
 
@@ -786,7 +804,7 @@ class reCAPTCHA {
         this.helpText.style.padding = "5px 20px 5px 20px";
         this.helpText.style.fontSize = "12px";
         this.helpText.style.fontWeight = "400";
-        this.helpText.style.color = "#000";
+        this.helpText.style.color = "#000000";
         this.helpText.innerText = `${Config.help} `;
         this.frame.appendChild(this.helpText);
 
@@ -811,7 +829,7 @@ class reCAPTCHA {
     }
 
     message(message) {
-        this.box.style.height = this.helpText.style.display == "block" ? "683px" : "613px";
+        this.frame.style.height = this.helpText.style.display == "block" ? "683px" : "613px";
         this.text.style.display = "block";
 
         if (typeof message == "string") {
@@ -833,7 +851,7 @@ class reCAPTCHA {
     }
 
     reset() {
-        this.box.style.height = "582px";
+        this.frame.style.height = "582px";
         this.text.style.display = "none";
         this.helpText.style.display = "none";
 
@@ -979,7 +997,7 @@ class reCAPTCHA {
     }
 
     showHelp() {
-        this.box.style.height = this.text.style.display == "block" ? "683px" : "652px";
+        this.frame.style.height = this.text.style.display == "block" ? "683px" : "652px";
         this.helpText.style.display = "block";
     }
 
@@ -1044,11 +1062,9 @@ class reCAPTCHA {
 
         addEventListener("load", (event) => {
             const main = new Main();
-            const recaptcha = new reCAPTCHA(main.box, main.label);
-            const tunnel = new Tunnel(main.box, main.label, recaptcha.frame);
+            const recaptcha = new reCAPTCHA();
+            const tunnel = new Tunnel(main.label, main.frame, main.description, recaptcha.frame);
 
             recaptcha.set();
             setTimeout(tunnel.start.bind(tunnel), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : Config.cooldown);
-        })
-    }
-})();
+        })}})();
