@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.6.0
+// @version      1.6.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -654,12 +654,12 @@ class reCAPTCHA {
         this.frame.style.alignItems = "center";
         this.frame.style.justifyContent = "space-between";
         this.frame.style.backgroundColor = "#ffffff";
-        this.frame.style.border = "2px solid #376296";
+        this.frame.style.border = "2px solid #a9a9a9";
 
         this.header = document.createElement("div");
-        this.header.style.width = "382px";
+        this.header.style.width = "386px";
         this.header.style.height = "113px";
-        this.header.style.marginTop = "7px";
+        this.header.style.margin = "7px 0px 5px 0px";
         this.header.style.alignContent = "center";
         this.header.style.alignItems = "center";
         this.header.style.backgroundColor = "#1a73e8";
@@ -705,8 +705,7 @@ class reCAPTCHA {
         this.header.appendChild(this.example);
 
         this.images = document.createElement("div");
-        this.images.style.width = "386px";
-        this.images.style.height = "386px";
+        this.images.style.width = "390px";
         this.images.style.aspectRatio = "1 / 1";
         this.images.style.display = "grid";
         this.images.style.alignItems = "center";
@@ -715,7 +714,7 @@ class reCAPTCHA {
 
         this.text = document.createElement("p");
         this.text.style.display = "none";
-        this.text.style.margin = "0px 0px 7px 0px";
+        this.text.style.margin = "3.5px 0px";
         this.text.style.padding = "0px";
         this.text.style.textAlign = "center";
         this.text.style.fontSize = "14px";
@@ -724,8 +723,8 @@ class reCAPTCHA {
 
         this.seperator = document.createElement("div");
         this.seperator.style.width = "100%";
-        this.seperator.style.height = "4px";
-        this.seperator.style.margin = "0px";
+        this.seperator.style.height = "100%";
+        this.seperator.style.margin = "5px 0px 0px 0px";
         this.seperator.style.backgroundColor = "#999999";
         this.frame.appendChild(this.seperator);
 
@@ -788,7 +787,8 @@ class reCAPTCHA {
         this.button.style.fontSize = "14px";
         this.button.style.fontWeight = "500";
         this.button.style.textTransform = "uppercase";
-        this.button.style.background = "#1a73e8";
+        this.button.style.backgroundColor = "#1a73e8";
+        this.button.style.color = "#d9d9d9";
         this.button.addEventListener("click", this.verify.bind(this));
         this.footer.appendChild(this.button);
 
@@ -798,10 +798,11 @@ class reCAPTCHA {
         this.button.appendChild(this.buttonText);
 
         this.helpText = document.createElement("p");
-        this.helpText.style.height = "70px";
+        this.helpText.style.height = "60px";
         this.helpText.style.display = "none";
         this.helpText.style.margin = "0px";
-        this.helpText.style.padding = "5px 20px 5px 20px";
+        this.helpText.style.padding = "5px 20px";
+        this.helpText.style.fontFamily = "Roboto,helvetica,arial,sans-serif";
         this.helpText.style.fontSize = "12px";
         this.helpText.style.fontWeight = "400";
         this.helpText.style.color = "#000000";
@@ -829,7 +830,7 @@ class reCAPTCHA {
     }
 
     message(message) {
-        this.frame.style.height = this.helpText.style.display == "block" ? "683px" : "613px";
+        this.frame.style.height = this.helpText.style.display == "block" ? "677px" : "607px";
         this.text.style.display = "block";
 
         if (typeof message == "string") {
@@ -997,7 +998,7 @@ class reCAPTCHA {
     }
 
     showHelp() {
-        this.frame.style.height = this.text.style.display == "block" ? "683px" : "652px";
+        this.frame.style.height = this.text.style.display == "block" ? "677px" : "652px";
         this.helpText.style.display = "block";
     }
 
