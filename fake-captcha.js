@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.6.1
+// @version      1.7.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -206,9 +206,9 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown for Tunnel's first step and cooldown / 2 for Tunnel's second step in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step and value / 4 for redirecting in miliseconds.
 
-    static validity = 230; // Validity for challange in seconds.
+    static validity = 529; // Validity time of challange in seconds.
 
     static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
 
@@ -336,6 +336,10 @@ class Config { // Do not forget to set this!
 
     static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
 
+    static successful = "Doğrulama başarılı";
+
+    static waiting = `${window.location.hostname} adresinin yanıt vermesi bekleniyor...`;
+
     static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
 
     static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
@@ -378,6 +382,7 @@ class Main {
         document.body.appendChild(this.body);
 
         this.frame = document.createElement("div");
+        this.frame.style.width = "100%";
         this.frame.style.maxWidth = "60rem";
         this.frame.style.boxSizing = "border-box";
         this.frame.style.margin = "8rem auto";
@@ -403,12 +408,64 @@ class Main {
         this.label.innerText = Config.label;
         this.frame.appendChild(this.label);
 
+        this.loading = document.createElement("div");
+        this.loading.style.height = "76.391px";
+        this.loading.style.margin = "2rem 0px";
+        this.frame.appendChild(this.loading);
+
+        this.spinner = document.createElement("div");
+        this.spinner.style.width = "1.875rem";
+        this.spinner.style.aspectRatio = "1 / 1";
+        this.loading.appendChild(this.spinner);
+
+        this.quarters = [];
+
+        for (let i = 0; i < 4; i++) {
+            let quarter = document.createElement("div");
+            quarter.style.width = "1.875rem";
+            quarter.style.aspectRatio = "1 / 1";
+            quarter.style.position = "absolute";
+            quarter.style.border = "0.3rem solid #0000";
+            quarter.style.borderRadius = "50%";
+            quarter.animate([{transform: "rotate(0)"}, {transform: "rotate(360deg)"}], {duration: 1200, easing: "cubic-bezier(0.5, 0, 0.5, 1)", iterations: Infinity});
+            this.spinner.appendChild(quarter);
+            this.quarters.push(quarter);
+        }
+
+        this.quarters[0].style.animationDelay = "-0.45s";
+        this.quarters[1].style.animationDelay = "-0.3s";
+        this.quarters[2].style.animationDelay = "-0.15s";
+
         this.description = document.createElement("div");
         this.description.style.marginTop = "4rem";
         this.description.style.fontSize = "1.5rem";
         this.description.style.lineHeight = "2.25rem";
         this.description.innerText = Config.description;
         this.frame.appendChild(this.description);
+
+        this.completed = document.createElement("div");
+        this.completed.style.display = "none";
+        this.frame.appendChild(this.completed);
+
+        this.successful = document.createElement("div");
+        this.successful.style.paddingLeft = "42px";
+        this.successful.style.backgroundRepeat = "no-repeat";
+        this.successful.style.backgroundSize = "contain";
+        this.successful.style.paddingLeft = "42px";
+        this.successful.style.fontSize = "1.5rem";
+        this.successful.style.fontWeight = "500";
+        this.successful.style.lineHeight = "2.25rem";
+        this.successful.innerText = Config.successful;
+        this.completed.appendChild(this.successful);
+
+        this.waiting = document.createElement("div");
+        this.waiting.style.margin = "2rem 0px";
+        this.waiting.style.overflowWrap = "break-word";
+        this.waiting.style.fontSize = "1.5rem";
+        this.waiting.style.fontWeight = "400";
+        this.waiting.style.lineHeight = "2.25rem";
+        this.waiting.innerText = Config.waiting;
+        this.completed.appendChild(this.waiting);
 
         this.footer = document.createElement("div");
         this.footer.style.width = "100%";
@@ -417,7 +474,7 @@ class Main {
         this.footer.style.boxSizing = "border-box";
         this.footer.style.padding = "0px 1.5rem";
         this.footer.style.textAlign = "center";
-        this.footer.style.fontSize = ".75rem";
+        this.footer.style.fontSize = "0.75rem";
         this.footer.style.lineHeight = "1.125rem";
         this.footer.style.borderTop = "1px solid #d9d9d9";
         this.body.appendChild(this.footer);
@@ -473,24 +530,39 @@ class Main {
         if (event.matches) {
             document.documentElement.style.backgroundColor = "#ffffff";
             document.documentElement.style.color = "#313131";
+            this.successful.style.backgroundImage = "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=)"; // Source: Cloudflare
             this.link.style.color = "#0051c3";
+
+            for (let quarter of this.quarters) {
+                quarter.style.borderTopColor = "#313131";
+            }
         }
 
         else {
             document.documentElement.style.backgroundColor = "#222222";
             document.documentElement.style.color = "#d9d9d9";
+            this.successful.style.backgroundImage = "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4)"; // Source: Cloudflare
             this.link.style.color = "#ffffff";
+
+            for (let quarter of this.quarters) {
+                quarter.style.borderTopColor = "#999999";
+            }
         }
+    }
+
+    start(tunnel) {
+        this.loading.style.display = "none";
+        this.frame.insertBefore(tunnel.frame, this.description);
+        setTimeout(tunnel.start.bind(tunnel), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : Config.cooldown);
     }
 }
 
 
 class Tunnel {
-    constructor(label, main, description, recaptcha) {
-        this.label = label;
-        this.main = main;
-        this.description = description;
-        this.recaptcha = recaptcha;
+    constructor(label, frame, recaptcha) {
+        this.label_ = label;
+        this.frame_ = frame;
+        this.recaptcha_ = recaptcha;
 
         this.status = 0;
 
@@ -499,10 +571,10 @@ class Tunnel {
         this.frame.style.height = "65px";
         this.frame.style.display = "flex";
         this.frame.style.alignItems = "center";
-        this.main.insertBefore(this.frame, this.description);
+        this.frame.style.justifyContent = "space-between";
 
         this.content = document.createElement("div");
-        this.content.style.display = "flex";
+        this.content.style.display = "grid";
         this.content.style.placeItems = "center";
         this.content.style.marginLeft = "16px";
         this.frame.appendChild(this.content);
@@ -514,23 +586,36 @@ class Tunnel {
         this.spinner.style.height = "30px";
         this.spinner.style.border = "5px dotted #038127";
         this.spinner.style.borderRadius = "50%";
-        this.spinner.animate(
-            [{transform: "rotate(0deg)"}, {transform: 'rotate(360deg)'}], 
-            {duration: 5000, iterations: Infinity}
-        );
+        this.spinner.animate([{transform: "rotate(0deg)"}, {transform: "rotate(360deg)"}], {duration: Config.cooldown, iterations: Infinity});
         this.content.appendChild(this.spinner);
 
         this.checkbox = document.createElement("input");
         this.checkbox.style.width = "24px";
-        this.checkbox.style.height = "24px";
+        this.checkbox.style.aspectRatio = "1 / 1";
+        this.checkbox.style.gridArea = "1 / 1";
+        this.checkbox.style.zIndex = "46";
+        this.checkbox.style.margin = "0";
         this.checkbox.style.cursor = "pointer";
+        this.checkbox.style.opacity = "0";
         this.checkbox.style.display = "none";
         this.checkbox.setAttribute("type", "checkbox");
-        this.checkbox.addEventListener("change", this.change.bind(this))
+        this.checkbox.addEventListener("change", this.change.bind(this));
         this.content.appendChild(this.checkbox);
 
+        this.button = document.createElement("span");
+        this.button.style.width = "24px";
+        this.button.style.aspectRatio = "1 / 1";
+        this.button.style.gridArea = "1 / 1";
+        this.button.style.zIndex = "23";
+        this.button.style.margin = "0";
+        this.button.style.boxSizing = "border-box";
+        this.button.style.borderRadius = "3px";
+        this.button.style.transition = "all .1s ease-in";
+        this.button.style.display = "none";
+        this.content.appendChild(this.button);
+
         this.verifying = document.createElement("label");
-        this.verifying.style.alignItems = "center";
+        this.verifying.style.gridColumn = "2";
         this.verifying.style.marginLeft = "8px";
         this.verifying.style.fontSize = "14px";
         this.verifying.innerText = Config.verifying;
@@ -586,15 +671,16 @@ class Tunnel {
         if (this.status === 1) {
             this.spinner.style.display = "block";
             this.checkbox.style.display = "none";
+            this.button.style.display = "none";
             this.verifying.innerText = Config.verifying;
 
             setTimeout(this.continue.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 2))
-
+            
             this.status = 2;
         }
 
         else if (this.status === 2) {
-            this.main.replaceChild(this.recaptcha, this.frame);
+            this.frame_.replaceChild(this.recaptcha_, this.frame);
         }
     }
 
@@ -602,6 +688,8 @@ class Tunnel {
         this.checkbox.checked = false;
         this.spinner.style.display = "none";
         this.checkbox.style.display = "block";
+        this.button.style.display = "block";
+        this.button.animate([{transform: "scale(0.1)"}, {transform: "scale(1)"}], {duration: 400, iterations: 1});
         this.verifying.innerText = Config.tryAgain;
     }
 
@@ -609,15 +697,19 @@ class Tunnel {
         this.status = 1;
         this.spinner.style.display = "none";
         this.checkbox.style.display = "block";
+        this.button.style.display = "block";
+        this.button.animate([{transform: "scale(0.1)"}, {transform: "scale(1)"}], {duration: 400, iterations: 1});
         this.verifying.innerText = Config.verifyYou;
-        this.label.innerText = Config.label2;
+        this.label_.innerText = Config.label2;
     }
 
     setColors(event) {
         if (event.matches) {
             this.frame.style.backgroundColor = "#fafafa";
             this.frame.style.border = "1px solid #e0e0e0";
-            this.verifying.style.color = "#232323"
+            this.button.style.backgroundColor = "#ffffff";
+            this.button.style.border = "2px solid #6d6d6d";
+            this.verifying.style.color = "#232323";
             this.privacy.style.color = "#232323";
             this.terms.style.color = "#232323";
         }   
@@ -625,7 +717,9 @@ class Tunnel {
         else {
             this.frame.style.backgroundColor = "#232323";
             this.frame.style.border = "1px solid #797979";
-            this.verifying.style.color = "#ffffff"
+            this.button.style.backgroundColor = "#222222";
+            this.button.style.border = "2px solid #dadada";
+            this.verifying.style.color = "#ffffff";
             this.privacy.style.color = "#bbbbbb";
             this.terms.style.color = "#bbbbbb";
         }
@@ -634,7 +728,11 @@ class Tunnel {
 
 
 class reCAPTCHA {
-    constructor() {
+    constructor(label, description, completed) {
+        this.label_ = label;
+        this.description_ = description;
+        this.completed_ = completed;
+
         this.expiryDates = [];
 
         for (let time of Config.expiryTimes) {
@@ -747,7 +845,7 @@ class reCAPTCHA {
         this.reload.style.margin = "8px";
         this.reload.style.float = "left";
         this.reload.style.cursor = "pointer";
-        this.reload.style.opacity = ".55";
+        this.reload.style.opacity = "0.55";
         this.reload.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/refresh_2x.png");
         this.reload.addEventListener("click", this.reset.bind(this));
         this.controls.appendChild(this.reload);
@@ -758,7 +856,7 @@ class reCAPTCHA {
         this.audio.style.margin = "8px";
         this.audio.style.float = "left";
         this.audio.style.cursor = "pointer";
-        this.audio.style.opacity = ".55";
+        this.audio.style.opacity = "0.55";
         this.audio.message = Config.tryAgainLater;
         this.audio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
         this.audio.addEventListener("click", this.message.bind(this));
@@ -770,7 +868,7 @@ class reCAPTCHA {
         this.help.style.margin = "8px";
         this.help.style.float = "left";
         this.help.style.cursor = "pointer";
-        this.help.style.opacity = ".55";
+        this.help.style.opacity = "0.55";
         this.help.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
         this.help.addEventListener("click", this.showHelp.bind(this));
         this.controls.appendChild(this.help);
@@ -1043,7 +1141,12 @@ class reCAPTCHA {
                 }
             }
 
-            location.reload();
+            this.label_.style.display = "none";
+            this.frame.style.display = "none";
+            this.description_.style.display = "none";
+            this.completed_.style.display = "block";
+
+            setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4));
         }
 
         else {
@@ -1063,9 +1166,9 @@ class reCAPTCHA {
 
         addEventListener("load", (event) => {
             const main = new Main();
-            const recaptcha = new reCAPTCHA();
-            const tunnel = new Tunnel(main.label, main.frame, main.description, recaptcha.frame);
+            const recaptcha = new reCAPTCHA(main.label, main.description, main.completed);
+            const tunnel = new Tunnel(main.label, main.frame, recaptcha.frame);
 
             recaptcha.set();
-            setTimeout(tunnel.start.bind(tunnel), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : Config.cooldown);
+            setTimeout(main.start.bind(main), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4), tunnel);
         })}})();
