@@ -206,7 +206,7 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step and value / 4 for redirecting in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step and value / 3 for redirecting in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
 
@@ -1146,7 +1146,7 @@ class reCAPTCHA {
             this.description_.style.display = "none";
             this.completed_.style.display = "block";
 
-            setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4));
+            setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 3));
         }
 
         else {
