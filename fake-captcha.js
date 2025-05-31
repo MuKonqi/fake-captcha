@@ -438,7 +438,7 @@ class Main {
         this.quarters[2].style.animationDelay = "-0.15s";
 
         this.description = document.createElement("div");
-        this.description.style.marginTop = "4rem";
+        this.description.style.marginTop = "calc(4rem + 3.7px)";
         this.description.style.fontSize = "1.5rem";
         this.description.style.lineHeight = "2.25rem";
         this.description.innerText = Config.description;
@@ -503,7 +503,7 @@ class Main {
 
         this.information = document.createElement("p");
         this.information.style.margin = "0px 0px 1rem 0px";
-        this.information.innerHTML = Config.footer.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a>");
+        this.information.innerHTML = Config.footer.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudflare</a>");
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
@@ -580,6 +580,7 @@ class Tunnel {
         this.frame.style.display = "flex";
         this.frame.style.alignItems = "center";
         this.frame.style.justifyContent = "space-between";
+        this.frame.style.boxSizing = "border-box";
 
         this.content = document.createElement("div");
         this.content.style.display = "grid";
