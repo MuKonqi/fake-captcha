@@ -193,8 +193,7 @@ content-script.js:104:25
 final = ""
 
 for line in main.splitlines():
-    if line.startswith("http") and not line in final:
-        link = line.replace(" Get-News-Website-Links.user.js:27:17", "")
-        final += f"\n// @match        {link.replace("://www." if "://www." in link else "://", "://*.")}{"*" if link.endswith("/") else "/*"}"
+    if line.startswith("http") and not f"\n// @match        {line.replace(" Get-News-Website-Links.user.js:27:17", "").replace("://www." if "://www." in line.replace(" Get-News-Website-Links.user.js:27:17", "") else "://", "://*.")}{"*" if line.replace(" Get-News-Website-Links.user.js:27:17", "").endswith("/") else "/*"}" in final:
+        final += f"\n// @match        {line.replace(" Get-News-Website-Links.user.js:27:17", "").replace("://www." if "://www." in line.replace(" Get-News-Website-Links.user.js:27:17", "") else "://", "://*.")}{"*" if line.replace(" Get-News-Website-Links.user.js:27:17", "").endswith("/") else "/*"}"
         
 print(final.removeprefix("\n"))
