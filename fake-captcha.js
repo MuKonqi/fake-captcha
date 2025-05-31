@@ -377,15 +377,9 @@ class Main {
 
         document.body.style.width = "100%";
         document.body.style.height = "100%";
+        document.body.style.display = "flex";
+        document.body.style.flexDirection = "column";
         document.body.style.margin = "0px";
-
-        this.body = document.createElement("div");
-        this.body.style.width = "100%";
-        this.body.style.height = "100%";
-        this.body.style.display = "flex";
-        this.body.style.flexDirection = "column";
-        this.body.style.alignItems = "center";
-        document.body.appendChild(this.body);
 
         this.frame = document.createElement("div");
         this.frame.style.width = "100%";
@@ -395,7 +389,7 @@ class Main {
         this.frame.style.padding = "0px 1.5rem";
         this.frame.style.flex = "1";
         this.frame.setAttribute("role", "main");
-        this.body.appendChild(this.frame);
+        document.body.appendChild(this.frame);
 
         this.name = document.createElement("h1");
         this.name.style.textAlign = "left";
@@ -478,12 +472,18 @@ class Main {
         this.footer.style.maxWidth = "60rem";
         this.footer.style.maxHeight = "80px";
         this.footer.style.boxSizing = "border-box";
+        this.footer.style.margin = "0 auto";
         this.footer.style.padding = "0px 1.5rem";
         this.footer.style.textAlign = "center";
         this.footer.style.fontSize = "0.75rem";
         this.footer.style.lineHeight = "1.125rem";
-        this.footer.style.borderTop = "1px solid #d9d9d9";
-        this.body.appendChild(this.footer);
+        document.body.appendChild(this.footer);
+
+        this.seperator = document.createElement("div");
+        this.seperator.style.width = "100%";
+        this.seperator.style.height = "1px";
+        this.seperator.style.backgroundColor = "#a9a9a9";
+        this.footer.appendChild(this.seperator);
 
         let rayId = "";
         const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
