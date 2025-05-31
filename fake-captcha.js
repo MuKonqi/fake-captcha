@@ -494,13 +494,14 @@ class Main {
         }
 
         this.rayIdText = document.createElement("p");
-        this.rayIdText.style.marginBottom = "0";
+        this.rayIdText.style.margin = "1rem 0px 0.5rem 0px";
         this.rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
         this.footer.appendChild(this.rayIdText);
 
         this.rayIdText.getElementsByTagName("code").item(0).style.fontFamily = "monaco,courier,monospace";
 
         this.information = document.createElement("p");
+        this.information.style.margin = "0px 0px 1rem 0px";
         this.information.innerHTML = Config.footer.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudfare</a>");
         this.footer.appendChild(this.information);
 
