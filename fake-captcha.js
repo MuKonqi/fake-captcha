@@ -403,6 +403,7 @@ class Main {
         this.label = document.createElement("p");
         this.label.style.fontSize = "1.5rem";
         this.label.style.fontWeight = "500";
+        this.label.style.lineHeight = "2.25rem";
         this.label.style.marginTop = "0px";
         this.label.style.marginBottom = "2rem";
         this.label.innerText = Config.label;
@@ -482,7 +483,7 @@ class Main {
         this.seperator = document.createElement("div");
         this.seperator.style.width = "100%";
         this.seperator.style.height = "1px";
-        this.seperator.style.backgroundColor = "#a9a9a9";
+        this.seperator.style.backgroundColor = "#d9d9d9";
         this.footer.appendChild(this.seperator);
 
         let rayId = "";
