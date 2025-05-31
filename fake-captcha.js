@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.7.0
+// @version      1.7.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -206,7 +206,7 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step and value / 3 for redirecting in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
 
@@ -306,19 +306,35 @@ class Config { // Do not forget to set this!
 
     static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
 
+    // Main UI
+
     static title = "Bir dakika lütfen...";
 
     static label = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
 
     static label2 = "Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.";
 
+    static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`; // ${window.location.hostname} means domain of the URL.
+
+    static successful = "Doğrulama başarılı";
+
+    static waiting = `${window.location.hostname} adresinin yanıt vermesi bekleniyor...`; // ${window.location.hostname} means domain of the URL.
+
+    static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
+
+    // Tunnel
+
     static verifying = "Doğrulanıyor...";
+
+    static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
 
     static tryAgain = "Tekrar deneyin";
 
     static privacy = "Gizlilik";
 
     static terms = "Koşullar";
+
+    // reCAPTCHA
 
     static select = "içeren tüm resimleri seçin";
 
@@ -333,16 +349,6 @@ class Config { // Do not forget to set this!
     static skip = "Atla";
 
     static verify = "Doğrula";
-
-    static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`;
-
-    static successful = "Doğrulama başarılı";
-
-    static waiting = `${window.location.hostname} adresinin yanıt vermesi bekleniyor...`;
-
-    static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
-
-    static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
 }
 
 
@@ -593,13 +599,13 @@ class Tunnel {
         this.checkbox.style.width = "24px";
         this.checkbox.style.aspectRatio = "1 / 1";
         this.checkbox.style.gridArea = "1 / 1";
-        this.checkbox.style.zIndex = "46";
+        this.checkbox.style.zIndex = "69";
         this.checkbox.style.margin = "0";
         this.checkbox.style.cursor = "pointer";
         this.checkbox.style.opacity = "0";
         this.checkbox.style.display = "none";
         this.checkbox.setAttribute("type", "checkbox");
-        this.checkbox.addEventListener("change", this.change.bind(this));
+        this.checkbox.addEventListener("change", this.focused.bind(this));
         this.content.appendChild(this.checkbox);
 
         this.button = document.createElement("span");
@@ -613,6 +619,17 @@ class Tunnel {
         this.button.style.transition = "all .1s ease-in";
         this.button.style.display = "none";
         this.content.appendChild(this.button);
+
+        this.tick = document.createElement("span");
+        this.tick.style.width = "9px";
+        this.tick.style.height = "16px";
+        this.tick.style.gridArea = "1 / 1";
+        this.tick.style.zIndex = "46";
+        this.tick.style.margin = "3px auto 6px auto";
+        this.tick.style.boxSizing = "border-box";
+        this.tick.style.transform = "rotate(45deg)";
+        this.tick.style.display = "none";
+        this.content.appendChild(this.tick);
 
         this.verifying = document.createElement("label");
         this.verifying.style.gridColumn = "2";
@@ -667,12 +684,17 @@ class Tunnel {
         this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
     }
 
-    change() {
+    changed() {
         if (this.status === 1) {
             this.spinner.style.display = "block";
             this.checkbox.style.display = "none";
             this.button.style.display = "none";
+            this.tick.style.display = "none";
             this.verifying.innerText = Config.verifying;
+
+            if (!window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
+                this.button.style.backgroundColor = "#222222";
+            }
 
             setTimeout(this.continue.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 2))
             
@@ -684,6 +706,21 @@ class Tunnel {
         }
     }
 
+    clicked() {
+        if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
+            this.button.style.border = "2px solid #6d6d6d";
+        }
+
+        else {
+            this.button.style.backgroundColor = "#6d6d6d";
+            this.button.style.border = "2px solid #dadada";
+        }
+
+        this.tick.style.display = "block";
+
+        setTimeout(this.changed.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
+    }
+
     continue() {
         this.checkbox.checked = false;
         this.spinner.style.display = "none";
@@ -691,6 +728,18 @@ class Tunnel {
         this.button.style.display = "block";
         this.button.animate([{transform: "scale(0.1)"}, {transform: "scale(1)"}], {duration: 400, iterations: 1});
         this.verifying.innerText = Config.tryAgain;
+    }
+
+    focused() {
+        if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
+            this.button.style.border = "2px solid #c44d0e";
+        }
+
+        else {
+            this.button.style.border = "2px solid #fbad41";
+        }
+
+        setTimeout(this.clicked.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
     }
 
     start() {
@@ -709,6 +758,8 @@ class Tunnel {
             this.frame.style.border = "1px solid #e0e0e0";
             this.button.style.backgroundColor = "#ffffff";
             this.button.style.border = "2px solid #6d6d6d";
+            this.tick.style.borderRight = "4px solid #c44d0e";
+            this.tick.style.borderBottom = "4px solid #c44d0e";
             this.verifying.style.color = "#232323";
             this.privacy.style.color = "#232323";
             this.terms.style.color = "#232323";
@@ -719,6 +770,8 @@ class Tunnel {
             this.frame.style.border = "1px solid #797979";
             this.button.style.backgroundColor = "#222222";
             this.button.style.border = "2px solid #dadada";
+            this.tick.style.borderRight = "4px solid #fbad41";
+            this.tick.style.borderBottom = "4px solid #fbad41";
             this.verifying.style.color = "#ffffff";
             this.privacy.style.color = "#bbbbbb";
             this.terms.style.color = "#bbbbbb";
