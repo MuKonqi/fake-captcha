@@ -645,8 +645,8 @@ class Tunnel {
         this.frame.appendChild(this.branding);
 
         this.cloudflare = document.createElement("a");
-        this.cloudflare.style.width = "72px";
-        this.cloudflare.style.height = "24px";
+        this.cloudflare.style.width = "73px";
+        this.cloudflare.style.height = "30.5px";
         this.cloudflare.setAttribute("target", "_blank");
         this.cloudflare.setAttribute("href", "https://www.cloudflare.com/application-services/products/turnstile/");
         this.branding.appendChild(this.cloudflare);
@@ -774,6 +774,9 @@ class Tunnel {
             this.privacy.style.color = "#bbbbbb";
             this.terms.style.color = "#bbbbbb";
         }
+
+        this.cloudflare.getElementsByTagName("svg").item(0).style.width = "73px";
+        this.cloudflare.getElementsByTagName("svg").item(0).style.height = "25px";
     }
 }
 
