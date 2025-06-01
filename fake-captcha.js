@@ -183,7 +183,7 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 5 for changing between progress bar and progress text for reCAPTCHA, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 2.5 for changing between progress bar and progress text for reCAPTCHA, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
 
@@ -1004,7 +1004,7 @@ class reCAPTCHA {
         this.start();
 
         // Change between progress bar and progress text.
-        setInterval(this.change.bind(this), Config.cooldown / 3.5);
+        setInterval(this.change.bind(this), Config.cooldown / 2.5);
 
     }
 
