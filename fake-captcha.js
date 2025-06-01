@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.7.2
+// @version      1.8.0
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -183,7 +183,7 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 5 for changing between progress bar and progress text for reCAPTCHA, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
 
@@ -279,6 +279,12 @@ class Config { // Do not forget to set this!
         "16": 50
     };
 
+    static steps = {
+        // Possibilities for reCAPTCHA's steps.
+        // Note: The total should add up to 100!
+        "3": 100
+    };
+
     static multiplier = 1.777777777777778; // Multiplier value of the values in 9 adapted to 16.
 
     static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
@@ -326,22 +332,30 @@ class Config { // Do not forget to set this!
     static skip = "Atla";
 
     static verify = "Doğrula";
+
+    static progress = "{n} taneden {x} tanesi tamamlandı"; // {n} is number of total steps, {x} is number of current step.
 }
 
 
 class Main {
     constructor() {
+        // Rechange the title because some scripts change it while loading.
         document.title = Config.title;
 
+        // Remove all scripts because some scripts add some elements to DOM.
         document.querySelectorAll("script").forEach(child => child.remove());
+
+        // Try to get rid of the icon of the website.
         document.querySelectorAll("link[rel*='icon'").forEach(favicon => favicon.setAttribute("href", "data:image/x-icon;base64,"));
 
+        // Clear head except title and icons.
         Array.from(document.head.children).forEach(child => {
             if (child.tagName !== 'TITLE' && !child.matches("link[rel*='icon'")) {
                 child.remove();
             }
         }); 
 
+        // Remove all elements in body.
         Array.from(document.body.children).forEach(child => child.remove());
 
         document.documentElement.style.display = "flex";
@@ -463,6 +477,7 @@ class Main {
         this.seperator.style.backgroundColor = "#d9d9d9";
         this.footer.appendChild(this.seperator);
 
+        // Set a random text which starts with 9.
         let rayId = "";
         const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -661,6 +676,8 @@ class Tunnel {
     }
 
     changed() {
+        // Start switching to new step. This shows the spinner and hides the checkbox.
+
         if (this.status === 1) {
             this.spinner.style.display = "block";
             this.checkbox.style.display = "none";
@@ -672,6 +689,7 @@ class Tunnel {
                 this.button.style.backgroundColor = "#222222";
             }
 
+            // Wait, after hide the spinnex and show the checkbox.
             setTimeout(this.continue.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 2))
             
             this.status = 2;
@@ -683,6 +701,8 @@ class Tunnel {
     }
 
     clicked() {
+        // Simulate "outfocus" event and "click" event for checkbox. This restores border to original state, and for dark theme it changes background color.
+
         if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
             this.button.style.border = "2px solid #6d6d6d";
         }
@@ -694,6 +714,7 @@ class Tunnel {
 
         this.tick.style.display = "block";
 
+        // Wait, after start switching to new step. This shows the spinner and hides the checkbox.
         setTimeout(this.changed.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
     }
 
@@ -707,6 +728,8 @@ class Tunnel {
     }
 
     focused() {
+        // Simulate the orange-like colored border for the checkbox. The original one does this with "focus"-like event probably.
+
         if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
             this.button.style.border = "2px solid #c44d0e";
         }
@@ -715,10 +738,13 @@ class Tunnel {
             this.button.style.border = "2px solid #fbad41";
         }
 
+        // Wait, after simulate "outfocus" event and "click" event for checkbox. This restores border to original state, and for dark theme it changes background color.
         setTimeout(this.clicked.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
     }
 
     start() {
+        // Switch to first step after first spinning.
+
         this.status = 1;
         this.spinner.style.display = "none";
         this.checkbox.style.display = "block";
@@ -769,6 +795,7 @@ class reCAPTCHA {
 
         this.expiryDates = [];
 
+        // Convert expiry times to Date object.
         for (let time of Config.expiryTimes) {
             const date = new Date();
 
@@ -792,14 +819,39 @@ class reCAPTCHA {
         this.header.style.width = "386px";
         this.header.style.height = "113px";
         this.header.style.margin = "7px 0px 5px 0px";
-        this.header.style.alignContent = "center";
-        this.header.style.alignItems = "center";
+        this.header.style.display = "grid";
+        this.header.style.justifyContent = "space-between";
+        this.header.style.placeItems = "center";
         this.header.style.backgroundColor = "#1a73e8";
         this.frame.appendChild(this.header);
 
+        this.currentProgressBar = document.createElement("div");
+        this.currentProgressBar.style.width = "calc(100% - 30px)";
+        this.currentProgressBar.style.height = "20px";
+        this.currentProgressBar.style.gridRow = "1";
+        this.currentProgressBar.style.gridColumn = "1 / 3";
+        this.currentProgressBar.style.margin = "1.5px 0px";
+        this.currentProgressBar.style.boxSizing = "border-box";
+        this.currentProgressBar.style.borderRadius = "20px";
+        this.currentProgressBar.style.display = "flex";
+        this.currentProgressBar.style.flexDirection = "row";
+        this.currentProgressBar.style.backgroundColor = "#003f48";
+        this.header.appendChild(this.currentProgressBar);
+
+        this.currentProgressText = document.createElement("p");
+        this.currentProgressText.style.height = "23px";
+        this.currentProgressText.style.gridRow = "2";
+        this.currentProgressText.style.gridColumn = "1 / 3";
+        this.currentProgressText.style.margin = "0px";
+        this.currentProgressText.style.alignContent = "center";
+        this.currentProgressText.style.boxSizing = "border-box";
+        this.currentProgressText.style.borderBottom = "2px solid #ffffff";
+        this.currentProgressText.style.display = "none";
+        this.header.appendChild(this.currentProgressText);
+
         this.texts = document.createElement("p");
-        this.texts.style.margin = "24px";
-        this.texts.style.float = "left";
+        this.texts.style.gridArea = "3 / 1";
+        this.texts.style.margin = "auto 15px";
         this.texts.style.fontSize = "16px";
         this.texts.style.color = "#ffffff";
         this.header.appendChild(this.texts);
@@ -829,10 +881,12 @@ class reCAPTCHA {
         }
 
         this.example = document.createElement("img");
-        this.example.style.height = "calc(100% - (2 * 9.8px))";
+        this.example.style.gridArea = "3 / 2";
+        this.example.style.height = "60px";
         this.example.style.aspectRatio = "1 / 1";
-        this.example.style.margin = "9.8px 24px 9.8px auto";
+        this.example.style.margin = "15px";
         this.example.style.float = "right";
+        this.example.style.boxSizing = "border-box";
         this.example.style.border = "1px solid #ffffff";
         this.header.appendChild(this.example);
 
@@ -947,13 +1001,25 @@ class reCAPTCHA {
         this.helpTextlink.setAttribute("href", "https://support.google.com/recaptcha");
         this.helpText.appendChild(this.helpTextlink);
 
+        this.start();
+
+        // Change between progress bar and progress text.
+        setInterval(this.change.bind(this), Config.cooldown / 3.5);
+
+    }
+
+    change() {
+        // Change between progress bar and progress text.
+
+        this.currentProgressBar.style.display = this.currentProgressText.style.display === "none" ? "none" : "flex";
+        this.currentProgressText.style.display = this.currentProgressText.style.display === "none" ? "block" : "none";
     }
 
     focusToImage(event) {
         if (!event.currentTarget.clicked) {
             event.currentTarget.clicked = true;
             event.currentTarget.style.width = "80%";
-            event.currentTarget.style.border = "2px solid #2cde85";
+            event.currentTarget.style.border = "2px solid #29dd84";
         }
 
         else {
@@ -962,6 +1028,8 @@ class reCAPTCHA {
     }
 
     message(message) {
+        // Display some message like "Please try again." in bottom of images.
+
         this.frame.style.height = this.helpText.style.display == "block" ? "677px" : "607px";
         this.text.style.display = "block";
 
@@ -984,15 +1052,10 @@ class reCAPTCHA {
     }
 
     reset() {
-        this.frame.style.height = "582px";
-        this.text.style.display = "none";
-        this.helpText.style.display = "none";
+        this.currentProgressBar.querySelectorAll("*").forEach(element => element.remove());
 
-        for (let captcha of this.imageElements) {
-            this.images.removeChild(captcha);
-        }
-
-        this.set();
+        this.restore();
+        this.start();
     }
 
     resetImage(image) {
@@ -1001,12 +1064,23 @@ class reCAPTCHA {
         image.style.border = "0px";
     }
 
+    restore() {
+        this.frame.style.height = "582px";
+        this.text.style.display = "none";
+        this.helpText.style.display = "none";
+
+        for (let captcha of this.imageElements) {
+            this.images.removeChild(captcha);
+        }
+    }
+
     set() {
         this.correctImagePaths = [];
         this.wrongImagePaths = [];
         this.imagePaths = [];
         this.imageElements = [];
 
+        // Create a Object which does not contain the "__others__". This is required for selecting a category.
         const wantedCategories = {...Config.categories};
         delete wantedCategories.__others__;
 
@@ -1025,7 +1099,30 @@ class reCAPTCHA {
             }
         }
 
-        for (const [category_, [active, number, paths]] of Object.entries(Config.categories)) {
+        /* 
+        First, start the for loop of Config.categories. This contains whether the category is category; if it is set, the number of photos to be displayed from that category; and the links to the images.
+        
+        After, check the category active or if it is “__others__”.
+
+        After checking, Check whether the number has been adjusted or not.
+
+        If the category is wanted category:
+            If a number set:
+                Randomize and add them into correct image paths.
+                Add them to final list in the specified number from correct image paths.
+                Create a list containing whether the category with the specified number is the correct category, and the specified number.
+
+            If not:
+                Add them into correct image paths.
+        
+        If not:
+            If a number set:
+                Randomize and add them into final list. (#note-1)
+                Create a list containing whether the category with the specified number is the correct category, and the specified number.
+
+            Add them into wrong image paths. (#note-2)
+        */
+        for (const [category_, [active, number, paths]] of Object.entries(Config.categories)) {            
             if (active || category_ === "__others__") {
                 if (category_ === category) {
                     if (number !== null) {
@@ -1055,6 +1152,27 @@ class reCAPTCHA {
 
         this.randomizeImages(this.wrongImagePaths);
 
+        /* 
+        If no category has a set number, or if the category with the set number is not the correct category:
+            Randomize the correct image paths.
+
+            Set how many images to select.
+
+            If a category has a set number and the sum of the number of images to be selected and the set number is greater than the total number of images:
+                Set the correct number to difference between total number of images and set number. Note: This ensures that the number of images selected is not random.
+            
+            Add some (correct number) correct images to final list.
+            
+            If no category has a set number:
+                Add some (difference between total number of images and correct number) wrong images to final list.
+
+            If not:
+                Remove duplicates of images which are in the category where the number is set from wrong image paths. Now, wrong image paths only contains those in the category where the number is not set. For the reason, see #note-1 and #note-2.
+                Add some (difference between total number of images, correct number and the specified number) wrong images to final list.
+            
+        If not:
+            Add some (difference between total number of images and the specified number) wrong images to final list.
+        */
         if (this.numberStatus === undefined || !this.numberStatus[0]) {
             this.randomizeImages(this.correctImagePaths);
 
@@ -1075,8 +1193,9 @@ class reCAPTCHA {
                 this.correctNumber = this.grid - this.numberStatus[1];
             }
 
+            this.setImages(this.correctImagePaths, this.correctNumber);
+            
             if (this.numberStatus === undefined) {
-                this.setImages(this.correctImagePaths, this.correctNumber);
                 this.setImages(this.wrongImagePaths, this.grid - this.correctNumber);
             }
 
@@ -1087,7 +1206,6 @@ class reCAPTCHA {
                     }
                 }
 
-                this.setImages(this.correctImagePaths, this.correctNumber);
                 this.setImages(this.wrongImagePaths, this.grid - this.correctNumber - this.numberStatus[1]);
             }
         }
@@ -1096,10 +1214,7 @@ class reCAPTCHA {
             this.setImages(this.wrongImagePaths, this.grid - this.numberStatus[1]);
         }
 
-        for (let currentIndex = this.imagePaths.length - 1; currentIndex > 0; currentIndex--) {
-            const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-            [this.imagePaths[currentIndex], this.imagePaths[randomIndex]] = [this.imagePaths[randomIndex], this.imagePaths[currentIndex]];
-        }
+        this.randomizeImages(this.imagePaths);
 
         for (let path of this.imagePaths) {
             let image = document.createElement("img");
@@ -1121,17 +1236,61 @@ class reCAPTCHA {
 
         const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
         this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
+
+        this.progresses[this.progress].style.backgroundColor = "#29dd84";
+        this.currentProgressText.innerText = Config.progress.replace("{x}", this.progress).replace("{n}", this.step);
     }
 
     setImages(array, value) {
         for (let i = 0; i < value; i++) {
-            this.imagePaths.push(array[i])
+            this.imagePaths.push(array[i]);
         }
     }
 
     showHelp() {
         this.frame.style.height = this.text.style.display == "block" ? "677px" : "652px";
         this.helpText.style.display = "block";
+    }
+
+    start() {
+        this.progress = 0;
+        this.progresses = [];
+
+        const randomStepNumber = Math.random() * 100;
+
+        let value_ = 0;
+
+        for (const [step, value] of Object.entries(Config.steps)) {
+            value_ += value;
+
+            if (randomStepNumber < value_) {
+                this.step = parseInt(step);
+                break;
+            }
+        }
+
+        for (let i = 0; i < this.step; i++) {
+            if (i !== 0) {
+                let seperator = document.createElement("span");
+                seperator.style.width = "5px";
+                seperator.style.height = "100%";
+                seperator.style.backgroundColor = "#a9a9a9";
+                this.currentProgressBar.appendChild(seperator);
+            }
+
+            let progress = document.createElement("span");
+            progress.style.width = `calc((100% - 5 * ${this.step - 1}px) / ${this.step})`;
+            progress.style.height = "100%";
+            this.currentProgressBar.appendChild(progress);
+            this.progresses.push(progress);
+        }
+
+        this.progresses[0].style.borderTopLeftRadius = "20px";
+        this.progresses[0].style.borderBottomLeftRadius = "20px";
+        this.progresses[this.progresses.length - 1].style.borderTopRightRadius = "20px";
+        this.progresses[this.progresses.length - 1].style.borderBottomRightRadius = "20px";
+
+        this.set();
     }
 
     verify() {
@@ -1148,39 +1307,49 @@ class reCAPTCHA {
                 }
         }
 
-        if (successful === (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])) {
-            if (Config.fixedValidity) {
-                document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
-            }
+        if (successful === ((this.numberStatus === undefined || !this.numberStatus[0]) ? this.correctNumber : this.numberStatus[1])) {
+            this.progress += 1;
 
-            else {
-                const currentDate = new Date();
+            if (this.progress === this.step) {
+                if (Config.fixedValidity) {
+                    document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                }
 
-                for (let date of this.expiryDates) {
-                    if (currentDate <= date) {
-                        if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
-                            document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                else {
+                    const currentDate = new Date();
+
+                    for (let date of this.expiryDates) {
+                        if (currentDate <= date) {
+                            if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
+                                document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                            }
+
+                            else {
+                                document.cookie = `captchaPassed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
+                            }
+
+                            break
                         }
+                    }
 
-                        else {
-                            document.cookie = `captchaPassed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
-                        }
-
-                        break
+                    if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
+                        document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
                     }
                 }
 
-                if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
-                    document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
-                }
+                this.label_.style.display = "none";
+                this.frame.style.display = "none";
+                this.description_.style.display = "none";
+                this.completed_.style.display = "block";
+
+                setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 3));
             }
 
-            this.label_.style.display = "none";
-            this.frame.style.display = "none";
-            this.description_.style.display = "none";
-            this.completed_.style.display = "block";
-
-            setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 3));
+            else {
+                this.text.style.display = "none";
+                this.restore();
+                this.set();
+            }
         }
 
         else {
@@ -1203,6 +1372,5 @@ class reCAPTCHA {
             const recaptcha = new reCAPTCHA(main.label, main.description, main.completed);
             const tunnel = new Tunnel(main.label, main.frame, recaptcha.frame);
 
-            recaptcha.set();
             setTimeout(main.start.bind(main), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4), tunnel);
         })}})();
