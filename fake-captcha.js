@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.8.0
+// @version      1.8.1
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -183,7 +183,7 @@
 
 
 class Config { // Do not forget to set this!
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 2.5 for changing between progress bar and progress text for reCAPTCHA, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
+    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 2.5 for showing progress bar text, value / 5 animating progress bar, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
 
@@ -559,10 +559,11 @@ class Main {
 
 
 class Tunnel {
-    constructor(label, frame, recaptcha) {
+    constructor(label, frame, recaptcha, animate) {
         this.label_ = label;
         this.frame_ = frame;
         this.recaptcha_ = recaptcha;
+        this.animate_ = animate;
 
         this.status = 0;
 
@@ -697,6 +698,7 @@ class Tunnel {
 
         else if (this.status === 2) {
             this.frame_.replaceChild(this.recaptcha_, this.frame);
+            this.animate_();
         }
     }
 
@@ -1002,17 +1004,13 @@ class reCAPTCHA {
         this.helpText.appendChild(this.helpTextlink);
 
         this.start();
-
-        // Change between progress bar and progress text.
-        setInterval(this.change.bind(this), Config.cooldown / 2.5);
-
     }
 
-    change() {
-        // Change between progress bar and progress text.
-
-        this.currentProgressBar.style.display = this.currentProgressText.style.display === "none" ? "none" : "flex";
-        this.currentProgressText.style.display = this.currentProgressText.style.display === "none" ? "block" : "none";
+    animate() {
+        this.currentProgressBar.style.display = "none";
+        this.currentProgressText.style.display = "block";
+        this.currentProgressText.innerText = Config.progress.replace("{x}", this.progress).replace("{n}", this.step);
+        setTimeout(this.switch.bind(this), Config.cooldown / 2.5);
     }
 
     focusToImage(event) {
@@ -1237,8 +1235,9 @@ class reCAPTCHA {
         const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
         this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
 
-        this.progresses[this.progress].style.backgroundColor = "#29dd84";
-        this.currentProgressText.innerText = Config.progress.replace("{x}", this.progress).replace("{n}", this.step);
+        if (this.frame.parentElement !== null) {
+            this.animate();
+        }
     }
 
     setImages(array, value) {
@@ -1278,19 +1277,37 @@ class reCAPTCHA {
                 this.currentProgressBar.appendChild(seperator);
             }
 
-            let progress = document.createElement("span");
-            progress.style.width = `calc((100% - 5 * ${this.step - 1}px) / ${this.step})`;
-            progress.style.height = "100%";
-            this.currentProgressBar.appendChild(progress);
-            this.progresses.push(progress);
+            let parent = document.createElement("span");
+            parent.style.width = `calc((100% - 5 * ${this.step - 1}px) / ${this.step})`;
+            parent.style.height = "100%";
+            parent.style.display = "flex";
+            this.currentProgressBar.appendChild(parent);
+
+            let child = document.createElement("span");
+            child.style.width = "0px";
+            child.style.height = "100%";
+            child.style.backgroundColor = "#29dd84";
+            parent.appendChild(child);
+            this.progresses.push(child);
         }
 
         this.progresses[0].style.borderTopLeftRadius = "20px";
         this.progresses[0].style.borderBottomLeftRadius = "20px";
         this.progresses[this.progresses.length - 1].style.borderTopRightRadius = "20px";
         this.progresses[this.progresses.length - 1].style.borderBottomRightRadius = "20px";
+        this.progresses[0].parentElement.style.borderTopLeftRadius = "20px";
+        this.progresses[0].parentElement.style.borderBottomLeftRadius = "20px";
+        this.progresses[this.progresses.length - 1].parentElement.style.borderTopRightRadius = "20px";
+        this.progresses[this.progresses.length - 1].parentElement.style.borderBottomRightRadius = "20px";
 
         this.set();
+    }
+
+    switch() {
+        this.currentProgressText.style.display = "none";
+        this.currentProgressBar.style.display = "flex";
+        this.progresses[this.progress].animate([{width: "0px"}, {width: "100%"}], {duration: Config.cooldown / 5, iterations: 1});
+        this.progresses[this.progress].style.width = "100%";
     }
 
     verify() {
@@ -1370,7 +1387,7 @@ class reCAPTCHA {
         addEventListener("load", (event) => {
             const main = new Main();
             const recaptcha = new reCAPTCHA(main.label, main.description, main.completed);
-            const tunnel = new Tunnel(main.label, main.frame, recaptcha.frame);
+            const tunnel = new Tunnel(main.label, main.frame, recaptcha.frame, recaptcha.animate.bind(recaptcha), );
 
             setTimeout(main.start.bind(main), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4), tunnel);
         })}})();
