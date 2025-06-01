@@ -333,7 +333,7 @@ class Config { // Do not forget to set this!
 
     static verify = "Doğrula";
 
-    static progress = "{n} taneden {x} tanesi tamamlandı"; // {n} is number of total steps, {x} is number of current step.
+    static progress = "{n} aşamadan {x} tanesi tamamlandı"; // {n} is number of total steps, {x} is number of current step.
 }
 
 
