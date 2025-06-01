@@ -834,7 +834,7 @@ class reCAPTCHA {
         this.currentProgressBar.style.gridColumn = "1 / 3";
         this.currentProgressBar.style.margin = "7.5px 0px 0px 0px";
         this.currentProgressBar.style.borderRadius = "15px";
-        this.currentProgressBar.style.border = "0.5px solid #a9a9a9";
+        this.currentProgressBar.style.border = "0.5px solid #ffffff";
         this.currentProgressBar.style.display = "flex";
         this.currentProgressBar.style.flexDirection = "row";
         this.currentProgressBar.style.backgroundColor = "#003f48";
