@@ -89,7 +89,6 @@ https://www.neoldu.com/ Get-News-Website-Links.user.js:27:17
 http://www.incisozluk.com.tr/ Get-News-Website-Links.user.js:27:17
 https://www.eksisozluk.com/ Get-News-Website-Links.user.js:27:17
 https://listelist.com/ Get-News-Website-Links.user.js:27:17
-https://tr.pinterest.com/ Get-News-Website-Links.user.js:27:17
 https://www.fikircografyasi.com/ Get-News-Website-Links.user.js:27:17
 https://www.fikriyat.com Get-News-Website-Links.user.js:27:17
 http://Kızlarsoruyor.com Get-News-Website-Links.user.js:27:17

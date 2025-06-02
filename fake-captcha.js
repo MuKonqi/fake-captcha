@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.8.1
+// @version      1.8.2
 // @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
 // @author       Cloudflare, Google
 // @match        https://islamansiklopedisi.org.tr/*
@@ -86,7 +86,6 @@
 // @match        http://*.incisozluk.com.tr/*
 // @match        https://*.eksisozluk.com/*
 // @match        https://*.listelist.com/*
-// @match        https://*.tr.pinterest.com/*
 // @match        https://*.fikircografyasi.com/*
 // @match        https://*.fikriyat.com/*
 // @match        http://*.Kızlarsoruyor.com/*
@@ -183,19 +182,31 @@
 
 
 class Config { // Do not forget to set this!
+    // Special Variables
+
+    static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
+
+    static pinterestSize = "236x";
+
+    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
+    
+    // ###
+
+    // Timing
+
     static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 2.5 for showing progress bar text, value / 5 animating progress bar, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
     static validity = 529; // Validity time of challange in seconds.
-
-    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
-
-    static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
     static expiryTimes = ["09:00", "09:40", "09:50", "10:30", "10:40", "11:20", "11:30", "12:10", "12:20", "13:00", "13:45", "14:25", "14:35", "15:15", "15:20", "16:00"]; // Expiry times in hour:minute format. Note: The order should be from first to last.
 
     static maximumAge = 2392; // Maximum validition time to be used with expiryTimes.
 
     static fixedValidity = false; // If you don't going to use expiryTimes, you should enable this.
+    
+    // ###
+
+    // Image URLs
 
     static categories = {
         // Format: "name": [true or false (activation), int or null (how much of that category to show (null means random)), ["link1", ..., "linkn" (for image links)],
@@ -225,36 +236,50 @@ class Config { // Do not forget to set this!
         ]],
         "İnsan": [true, 5, [
             `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/236x/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/6a/f3/09/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/51/61/d1/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/f2/e6/2c/f2e62c62df7937c5665feaffb9151b16.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/7b/67/a0/7b67a025a104f2f11a991af0f46f4643.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/7f/58/5c/7f585c1fdc14fa25b6960b759e5ba686.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/fb/3c/2f/fb3c2fca26e69371df0ac7dca4946bb1.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/ec/97/59/ec9759530cdfcf6de96b500a8d206445.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/83/11/e1/8311e1b1e8efe53eb257c906587f2875.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/db/c1/21/dbc1218d8f79d6ca4e0d2f430c763213.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/37/f0/08/37f008932fa7b7a3006f2b05dd8d5586.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/7f/d3/17/7fd317b367625ca0a2b5e58d4aeb8096.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/f3/99/74/f399749fe6049b388175d93f52f242be.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/67/5f/44/675f440c9a058ee828bddded814f8157.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/33/c2/91/33c2911138c375dd7774ee210a526993.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/30/65/63/3065634ed2151184076be79cdb719c46.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/39/1d/01/391d01c9ddc3be77fe08ab8fe3a97bd5.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/8f/5c/7f/8f5c7fe9601a92d710d85f1b2d1ab6e9.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/9f/9b/d8/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/24/a0/45/24a0450592fdf051307842148c640ecb.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/0a/c4/40/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/736x/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/6a/f3/09/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/51/61/d1/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/f2/e6/2c/f2e62c62df7937c5665feaffb9151b16.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7b/67/a0/7b67a025a104f2f11a991af0f46f4643.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7f/58/5c/7f585c1fdc14fa25b6960b759e5ba686.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/fb/3c/2f/fb3c2fca26e69371df0ac7dca4946bb1.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/ec/97/59/ec9759530cdfcf6de96b500a8d206445.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/83/11/e1/8311e1b1e8efe53eb257c906587f2875.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/db/c1/21/dbc1218d8f79d6ca4e0d2f430c763213.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/37/f0/08/37f008932fa7b7a3006f2b05dd8d5586.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7f/d3/17/7fd317b367625ca0a2b5e58d4aeb8096.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/f3/99/74/f399749fe6049b388175d93f52f242be.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/67/5f/44/675f440c9a058ee828bddded814f8157.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/33/c2/91/33c2911138c375dd7774ee210a526993.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/30/65/63/3065634ed2151184076be79cdb719c46.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/39/1d/01/391d01c9ddc3be77fe08ab8fe3a97bd5.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/8f/5c/7f/8f5c7fe9601a92d710d85f1b2d1ab6e9.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/9f/9b/d8/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/a0/45/24a0450592fdf051307842148c640ecb.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/0a/c4/40/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/77/45/bf/7745bf533891bfb4bfa69a9ea1fd8d79.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/b3/e3/cf/b3e3cf4411aeb13d7d3c44a5759b6f95.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/17/ee/ca/17eeca5c09009567747378b05a548eae.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/14/91/67/149167758f571c1fbbf5bfef79aa70a1.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/97/08/e0/9708e0c0e035e0ff4fb02b8e0a66fd9f.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c6/91/aa/c691aaf9a9a2a12e4076866a97e334a5.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/70/53/89/7053894de9172eae1e508085cf86175a.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
+            //`${Config.pinterestLink}`,
         ]]
     };
+    
+    // ###
 
+    // Image Selection Area
+    
     static ratios = {
         // The ratios of how many images are the correct image for 3x3 layout.
         // Note: Do not add or delete any key!
@@ -282,15 +307,17 @@ class Config { // Do not forget to set this!
     static steps = {
         // Possibilities for reCAPTCHA's steps.
         // Note: The total should add up to 100!
-        "3": 100
+        "3": 69,
+        "5": 23,
+        "31": 8
     };
 
     static multiplier = 1.777777777777778; // Multiplier value of the values in 9 adapted to 16.
+    
+    // ###
 
-    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
-
-    // Main UI
-
+    // Texts of Main UI
+    
     static title = "Bir dakika lütfen...";
 
     static label = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
@@ -304,8 +331,10 @@ class Config { // Do not forget to set this!
     static waiting = `${window.location.hostname} adresinin yanıt vermesi bekleniyor...`; // ${window.location.hostname} means domain of the URL.
 
     static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
+    
+    // ###
 
-    // Tunnel
+    // Texts of Tunnel
 
     static verifying = "Doğrulanıyor...";
 
@@ -317,7 +346,9 @@ class Config { // Do not forget to set this!
 
     static terms = "Koşullar";
 
-    // reCAPTCHA
+    // ###
+
+    // Texts of reCAPTCHA
 
     static select = "içeren tüm resimleri seçin";
 
@@ -334,6 +365,10 @@ class Config { // Do not forget to set this!
     static verify = "Doğrula";
 
     static progress = "{n} aşamadan {x} tanesi tamamlandı"; // {n} is number of total steps, {x} is number of current step.
+
+    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+
+    // ###
 }
 
 
@@ -510,43 +545,32 @@ class Main {
 
     focusToLink() {
         this.link.style.color = "#f48120";
-
         this.link.style.textDecoration = "underline";
     }
 
     unfocusToLink() {
-        if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
-            this.link.style.color = "#0051c3";
-        }
-
-        else {
-            this.link.style.color = "#ffffff";
-        }
-
+        this.link.style.color = window.matchMedia("screen and (prefers-color-scheme: light)").matches ? "#0051c3" : "#ffffff";
         this.link.style.textDecoration = "none";
     }
 
     setColors(event) {
-        if (event.matches) {
-            document.documentElement.style.backgroundColor = "#ffffff";
-            document.documentElement.style.color = "#313131";
-            this.successful.style.backgroundImage = "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=)"; // Source: Cloudflare
-            this.link.style.color = "#0051c3";
+        function set(bg, fg, svg, link, border) {
+            document.documentElement.style.backgroundColor = bg;
+            document.documentElement.style.color = fg;
+            this.successful.style.backgroundImage = svg; // Source: Cloudflare
+            this.link.style.color = link;
 
             for (let quarter of this.quarters) {
-                quarter.style.borderTopColor = "#313131";
+                quarter.style.borderTopColor = border;
             }
         }
 
-        else {
-            document.documentElement.style.backgroundColor = "#222222";
-            document.documentElement.style.color = "#d9d9d9";
-            this.successful.style.backgroundImage = "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4)"; // Source: Cloudflare
-            this.link.style.color = "#ffffff";
+        if (event.matches) {
+            set.bind(this)("#ffffff", "#313131", "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=)", "#0051c3", "#313131") // Image Source: Cloudflare
+        }
 
-            for (let quarter of this.quarters) {
-                quarter.style.borderTopColor = "#999999";
-            }
+        else {
+            set.bind(this)("#222222", "#d9d9d9", "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4)", "#ffffff", "#999999") // Image Source: Cloudflare
         }
     }
 
@@ -757,30 +781,25 @@ class Tunnel {
     }
 
     setColors(event) {
+        function set(bg1, border1, bg2, border2, border3, fg1, svg, fg2) {
+            this.frame.style.backgroundColor = bg1;
+            this.frame.style.border = `1px solid ${border1}`;
+            this.button.style.backgroundColor = bg2;
+            this.button.style.border = `2px solid ${border2}`;
+            this.tick.style.borderRight = `4px solid ${border3}`;
+            this.tick.style.borderBottom = `4px solid ${border3}`;
+            this.verifying.style.color = fg1;
+            this.cloudflare.innerHTML = svg;
+            this.privacy.style.color = fg2;
+            this.terms.style.color = fg2;
+        }
+
         if (event.matches) {
-            this.frame.style.backgroundColor = "#fafafa";
-            this.frame.style.border = "1px solid #e0e0e0";
-            this.button.style.backgroundColor = "#ffffff";
-            this.button.style.border = "2px solid #6d6d6d";
-            this.tick.style.borderRight = "4px solid #c44d0e";
-            this.tick.style.borderBottom = "4px solid #c44d0e";
-            this.verifying.style.color = "#232323";
-            this.cloudflare.innerHTML = '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>'; // Source: Cloudflare
-            this.privacy.style.color = "#232323";
-            this.terms.style.color = "#232323";
+            set.bind(this)("#fafafa", "#e0e0e0", "#ffffff", "#6d6d6d", "#c44d0e", "#232323", '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>', "#232323") // Image Source: Cloudflare
         }   
 
         else {
-            this.frame.style.backgroundColor = "#232323";
-            this.frame.style.border = "1px solid #797979";
-            this.button.style.backgroundColor = "#222222";
-            this.button.style.border = "2px solid #dadada";
-            this.tick.style.borderRight = "4px solid #fbad41";
-            this.tick.style.borderBottom = "4px solid #fbad41";
-            this.verifying.style.color = "#ffffff";
-            this.cloudflare.innerHTML = '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}.cls-3{fill:#fff;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon class="cls-3" points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path class="cls-3" d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path class="cls-3" d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path class="cls-3" d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon class="cls-3" points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon class="cls-3" points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path class="cls-3" d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path class="cls-3" d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon class="cls-3" points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path class="cls-3" d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>'; // Source: Cloudflare
-            this.privacy.style.color = "#bbbbbb";
-            this.terms.style.color = "#bbbbbb";
+            set.bind(this)("#232323", "#797979", "#222222", "#dadada", "#fbad41", "#ffffff", '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}.cls-3{fill:#fff;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon class="cls-3" points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path class="cls-3" d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path class="cls-3" d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path class="cls-3" d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon class="cls-3" points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon class="cls-3" points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path class="cls-3" d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path class="cls-3" d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon class="cls-3" points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path class="cls-3" d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>', "#bbbbbb") // Image Source: Cloudflare
         }
 
         this.cloudflare.getElementsByTagName("svg").item(0).style.width = "73px";
@@ -1084,18 +1103,7 @@ class reCAPTCHA {
 
         const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
 
-        const randomGridNumber = Math.random() * 100;
-
-        let value_ = 0;
-
-        for (const [grid, value] of Object.entries(Config.grids)) {
-            value_ += value;
-
-            if (randomGridNumber < value_) {
-                this.grid = parseInt(grid);
-                break;
-            }
-        }
+        this.grid = this.setRandom(Config.grids);
 
         /* 
         First, start the for loop of Config.categories. This contains whether the category is category; if it is set, the number of photos to be displayed from that category; and the links to the images.
@@ -1174,18 +1182,7 @@ class reCAPTCHA {
         if (this.numberStatus === undefined || !this.numberStatus[0]) {
             this.randomizeImages(this.correctImagePaths);
 
-            const randomCorrectNumber = Math.random() * 100;
-
-            let ratio_ = 0;
-
-            for (const [number, ratio]  of Object.entries(Config.ratios)) {
-                ratio_ += ratio;
-
-                if (randomCorrectNumber < ratio_) {
-                    this.correctNumber = parseInt(Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
-                    break;
-                }
-            }
+            this.correctNumber = this.setRandom(Config.ratios, true);
 
             if (this.numberStatus !== undefined && this.correctNumber + this.numberStatus[1] > this.grid) {
                 this.correctNumber = this.grid - this.numberStatus[1];
@@ -1246,6 +1243,20 @@ class reCAPTCHA {
         }
     }
 
+    setRandom(object, expand = false) {
+        const randomNumber = Math.random() * 100;
+
+        let value_ = 0;
+
+        for (const [key, value] of Object.entries(object)) {
+            value_ += value;
+
+            if (randomNumber < value_) {
+                return parseInt(expand ? Math.round(key * (this.grid === 16 ? Config.multiplier : 1)) : key);
+            }
+        }
+    }
+
     showHelp() {
         this.frame.style.height = this.text.style.display == "block" ? "677px" : "652px";
         this.helpText.style.display = "block";
@@ -1255,18 +1266,7 @@ class reCAPTCHA {
         this.progress = 0;
         this.progresses = [];
 
-        const randomStepNumber = Math.random() * 100;
-
-        let value_ = 0;
-
-        for (const [step, value] of Object.entries(Config.steps)) {
-            value_ += value;
-
-            if (randomStepNumber < value_) {
-                this.step = parseInt(step);
-                break;
-            }
-        }
+        this.step = this.setRandom(Config.steps);
 
         for (let i = 0; i < this.step; i++) {
             if (i !== 0) {
@@ -1279,13 +1279,11 @@ class reCAPTCHA {
 
             let parent = document.createElement("span");
             parent.style.width = `calc((100% - 5 * ${this.step - 1}px) / ${this.step})`;
-            parent.style.height = "100%";
             parent.style.display = "flex";
             this.currentProgressBar.appendChild(parent);
 
             let child = document.createElement("span");
             child.style.width = "0px";
-            child.style.height = "100%";
             child.style.backgroundColor = "#29dd84";
             parent.appendChild(child);
             this.progresses.push(child);
@@ -1295,10 +1293,6 @@ class reCAPTCHA {
         this.progresses[0].style.borderBottomLeftRadius = "15px";
         this.progresses[this.progresses.length - 1].style.borderTopRightRadius = "15px";
         this.progresses[this.progresses.length - 1].style.borderBottomRightRadius = "15px";
-        this.progresses[0].parentElement.style.borderTopLeftRadius = "15px";
-        this.progresses[0].parentElement.style.borderBottomLeftRadius = "15px";
-        this.progresses[this.progresses.length - 1].parentElement.style.borderTopRightRadius = "15px";
-        this.progresses[this.progresses.length - 1].parentElement.style.borderBottomRightRadius = "15px";
 
         this.set();
     }
@@ -1306,7 +1300,12 @@ class reCAPTCHA {
     switch() {
         this.currentProgressText.style.display = "none";
         this.currentProgressBar.style.display = "flex";
-        this.progresses[this.progress].animate([{width: "0px"}, {width: "100%"}], {duration: Config.cooldown / 5, iterations: 1});
+
+        // FIXME: If the user resets so much, it can animate two times. Yes, this is better now but it isn't perfect.
+        if (!Object.hasOwn(this, "currentAnimation") || (this.currentAnimation.playState !== "running")) {
+            this.currentAnimation = this.progresses[this.progress].animate([{width: "0px"}, {width: "100%"}], {duration: Config.cooldown / 5, iterations: 1});
+        }
+
         this.progresses[this.progress].style.width = "100%";
     }
 
