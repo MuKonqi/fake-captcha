@@ -186,7 +186,7 @@ class Config { // Do not forget to set this!
 
     static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
-    static pinterestSize = "236x";
+    static pinterestSize = "236x"; // Size of images in Pinterest.
 
     static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
     
@@ -271,7 +271,7 @@ class Config { // Do not forget to set this!
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c6/91/aa/c691aaf9a9a2a12e4076866a97e334a5.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/70/53/89/7053894de9172eae1e508085cf86175a.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
+            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/a9/e3/a8/a9e3a8af17dcc28ab43dbf6ce9cbed6d.jpg`,
             //`${Config.pinterestLink}`,
         ]]
     };
