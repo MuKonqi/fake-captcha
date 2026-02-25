@@ -1,10 +1,15 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.8.3
-// @description  Cloudflare Tunnel Security + Google reCAPTCHA Challange
-// @author       Cloudflare, Google
-// @match        https://islamansiklopedisi.org.tr/*
+// @version      1.9.0
+// @author       MuKonqi
+// @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
+// @copyright    Copyright (C) 2025-2026 MuKonqi
+// @homepageURL  https://github.com/mukonqi/fake-captcha
+// @supportURL   https://github.com/mukonqi/fake-captcha/issues
+// @updateURL    https://raw.githubusercontent.com/mukonqi/fake-captcha/main/script.meta.js
+// @downloadURL  https://raw.githubusercontent.com/mukonqi/fake-captcha/main/script.user.js
+// @match        https://*.islamansiklopedisi.org.tr/*
 // @match        https://*.medyajans.com/*
 // @match        https://*.superhaber.tv/*
 // @match        https://*.ntv.com.tr/*
@@ -159,7 +164,7 @@
 
 // MIT License
 
-// Copyright (C) 2025 MuKonqi
+// Copyright (C) 2026 MuKonqi
 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -184,7 +189,7 @@
 class Config { // Do not forget to set this!
     // Special Variables
 
-    static pinterestLink = "https://bn.bloat.cat/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
+    static pinterestLink = "https://binternet.4o1x5.dev/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
     static pinterestSize = "236x"; // Size of images in Pinterest.
 
