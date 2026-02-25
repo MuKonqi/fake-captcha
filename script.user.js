@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    http://tampermonkey.net/
-// @version      1.9.0
+// @version      1.9.1
 // @author       MuKonqi
 // @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
 // @copyright    Copyright (C) 2025-2026 MuKonqi
@@ -164,7 +164,7 @@
 
 // MIT License
 
-// Copyright (C) 2026 MuKonqi
+// Copyright (C) 2025-2026 MuKonqi
 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
