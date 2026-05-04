@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
-// @namespace    http://tampermonkey.net/
-// @version      1.9.1
+// @namespace    https://tampermonkey.net/
+// @version      1.10.0
 // @author       MuKonqi
 // @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
 // @copyright    Copyright (C) 2025-2026 MuKonqi
@@ -50,50 +50,50 @@
 // @match        https://*.medyafaresi.com/*
 // @match        https://*.medyascope.tv/*
 // @match        https://*.mynet.com/*
-// @match        http://*.turktime.com/*
-// @match        http://*.hurhaber.com/*
-// @match        http://*.objektifhaber.com/*
+// @match        https://*.turktime.com/*
+// @match        https://*.hurhaber.com/*
+// @match        https://*.objektifhaber.com/*
 // @match        https://*.habervakti.com/*
 // @match        https://*.eurovizyon.co.uk/*
 // @match        https://*.habervitrini.com/*
 // @match        https://*.bigpara.com/*
-// @match        http://*.arkeolojikhaber.com/*
+// @match        https://*.arkeolojikhaber.com/*
 // @match        https://*.acunn.com/*
 // @match        https://*.bianet.org/*
 // @match        https://*.tgrthaber.com.tr/*
 // @match        https://*.haber.sol.org.tr/*
 // @match        https://*.haberet.com/*
-// @match        http://*.agos.com.tr/*
-// @match        http://*.aksam.com.tr/*
-// @match        http://*.posta.com.tr/*
-// @match        http://*.karar.com/*
-// @match        http://*.aydinlik.com.tr/*
-// @match        http://*.sabah.com.tr/*
-// @match        http://*.cumhuriyet.com.tr/*
-// @match        http://*.yenisafak.com.tr/*
-// @match        http://*.yenimesaj.com.tr/*
+// @match        https://*.agos.com.tr/*
+// @match        https://*.aksam.com.tr/*
+// @match        https://*.posta.com.tr/*
+// @match        https://*.karar.com/*
+// @match        https://*.aydinlik.com.tr/*
+// @match        https://*.sabah.com.tr/*
+// @match        https://*.cumhuriyet.com.tr/*
+// @match        https://*.yenisafak.com.tr/*
+// @match        https://*.yenimesaj.com.tr/*
 // @match        https://*.gazetebirlik.com/*
 // @match        https://*.balkangunlugu.com.tr/*
-// @match        http://*.medyaradar.com/*
-// @match        http://*.televizyongazetesi.com/*
-// @match        http://*.medyatava.com/*
-// @match        http://*.marketingturkiye.com/*
-// @match        http://*.gazeteciler.com/*
-// @match        http://*.mediacatonline.com/*
-// @match        http://*.dorduncukuvvetmedya.com/*
-// @match        http://*.ranini.tv/*
-// @match        http://*.medyaloji.net/*
+// @match        https://*.medyaradar.com/*
+// @match        https://*.televizyongazetesi.com/*
+// @match        https://*.medyatava.com/*
+// @match        https://*.marketingturkiye.com/*
+// @match        https://*.gazeteciler.com/*
+// @match        https://*.mediacatonline.com/*
+// @match        https://*.dorduncukuvvetmedya.com/*
+// @match        https://*.ranini.tv/*
+// @match        https://*.medyaloji.net/*
 // @match        https://*.journo.com.tr/*
-// @match        http://*.medyakafe.com/*
-// @match        http://*.onedio.com/*
+// @match        https://*.medyakafe.com/*
+// @match        https://*.onedio.com/*
 // @match        https://*.gzt.com/*
 // @match        https://*.neoldu.com/*
-// @match        http://*.incisozluk.com.tr/*
+// @match        https://*.incisozluk.com.tr/*
 // @match        https://*.eksisozluk.com/*
 // @match        https://*.listelist.com/*
 // @match        https://*.fikircografyasi.com/*
 // @match        https://*.fikriyat.com/*
-// @match        http://*.Kızlarsoruyor.com/*
+// @match        https://*.kizlarsoruyor.com/*
 // @match        https://*.abcgazetesi.com/*
 // @match        https://*.aksam.com.tr/*
 // @match        https://*.artigercek.com/*
@@ -153,7 +153,7 @@
 // @match        https://*.haberchannel.com/*
 // @match        https://*.hurriyetdailynews.com/*
 // @match        https://*.isghaber.com.tr/*
-// @match        http://*.isigmeclisi.org/*
+// @match        https://*.isigmeclisi.org/*
 // @match        https://*.medimagazin.com.tr/*
 // @match        https://*.sendika.org/*
 // @match        https://*.sputnikglobe.com/*
@@ -186,38 +186,53 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-class Config { // Do not forget to set this!
+class Config {
+    /* 
+        Do not forget to set this!
+    */
+
+    // ###
+
     // Special Variables
 
-    static pinterestLink = "https://binternet.4o1x5.dev/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
+    static pinterestLink = "https://binternet.lunar.icu/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
 
     static pinterestSize = "236x"; // Size of images in Pinterest.
 
-    static isLinuxTargeted = false; // I added this because I'm using openSUSE Tumbleweed and I'm lazy to change the cooldown value. If you target Linux distributions, of course you should enable it (by the way I think Linux users don't deserve this :))
+    static isCheatsEnabled = false; // Skip all timeouts, aka dev mode.
+
+    static useCF2025 = false; // Use Cloudflare's old main page design (2025) instead of new version (2026).
     
     // ###
 
     // Timing
 
-    static cooldown = 4600; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 23 for Tunnel's checkbox effects, value / 2.5 for showing progress bar text, value / 5 animating progress bar, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
+    static cooldown = 5000; // Cooldown of value / 4 for load animation, value / 1 Tunnel's first step, value / 2 for Tunnel's second step, value / 25 for Tunnel's checkbox effects, value / 2.5 for showing progress bar text, value / 5 animating progress bar, and value / 3 for redirecting to website after passing reCAPTCHA in miliseconds.
 
-    static validity = 529; // Validity time of challange in seconds.
+    static validity = 600; // Validity time of challange in seconds.
 
     static expiryTimes = ["09:00", "09:40", "09:50", "10:30", "10:40", "11:20", "11:30", "12:10", "12:20", "13:00", "13:45", "14:25", "14:35", "15:15", "15:20", "16:00"]; // Expiry times in hour:minute format. Note: The order should be from first to last.
 
-    static maximumAge = 2392; // Maximum validition time to be used with expiryTimes.
+    static maximumAge = 2400; // Maximum validition time to be used with expiryTimes.
 
-    static fixedValidity = false; // If you don't going to use expiryTimes, you should enable this.
+    static useFixedValidity = false; // If you won't to use expiryTimes, you should enable this.
     
     // ###
 
     // Image URLs
 
     static categories = {
-        // Format: "name": [true or false (activation), int or null (how much of that category to show (null means random)), ["link1", ..., "linkn" (for image links)],
-        // Note: The second value should only be set for one category!
+        /* Format:
+            "key": 
+                activation boolean, 
+                {"en": English name, "tr": Turkish name}, 
+                number for specifing minumum selection number for this category (int or null (null for random)),
+                ["imagelink1", ..., "imagelinkn"]
+        */
+        // "name": [true or false (activation), {"en": English, "tr": Turkish} (translation), int or null (how much of that category to show (null means random)), ["link1", ..., "linkn" (for image links)],
+        // Note: The third value ("number") should only be set for one category!
         // Note: The relevant category must have 1 more content than the second value!
-        "__others__": [true, null, [
+        "__others__": [true, null, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg/330px-Walking_The_Streets_Of_Old_Lyon_%28166236703%29.jpeg",
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Fourteen_traffic_lights.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Fire_Engine_33_%286225707251%29.jpg/330px-Fire_Engine_33_%286225707251%29.jpg",
@@ -225,7 +240,7 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Downtown_Charlottesville_fire_hydrant.jpg/250px-Downtown_Charlottesville_fire_hydrant.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Pune_green_bus.jpg/250px-Pune_green_bus.jpg"
         ]], // Do not change __others__'s name or do not delete it! Note: The images here will never be correct image for reCAPTCHA.
-        "Cami": [true, null, [
+        "mosque": [true, {"en": "mosque", "tr": "cami"}, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg/330px-Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/330px-Hagia_Sophia_Mars_2013.jpg",
@@ -239,8 +254,7 @@ class Config { // Do not forget to set this!
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Sultan_Ahmet_Mosque_February_2013.jpg/250px-Sultan_Ahmet_Mosque_February_2013.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
         ]],
-        "İnsan": [true, 5, [
-            `https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQPUk0oDBJkRG-Frn1MXLyqXAfGAcSKSYpkcjXWZbO9SDtipVvk`,
+        "human": [true, {"en": "human", "tr": "insan"}, 5, [
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
@@ -277,7 +291,7 @@ class Config { // Do not forget to set this!
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/70/53/89/7053894de9172eae1e508085cf86175a.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/a9/e3/a8/a9e3a8af17dcc28ab43dbf6ce9cbed6d.jpg`,
-            //`${Config.pinterestLink}`,
+            //`${Config.pinterestLink}`, //placeholder
         ]]
     };
     
@@ -291,12 +305,12 @@ class Config { // Do not forget to set this!
         // Note: The total should add up to 100!
         "0": 0,
         "1": 0,
-        "2": 10.625,
-        "3": 34.5,
-        "4": 23,
-        "5": 10.625,
-        "6": 10.625,
-        "7": 10.625,
+        "2": 12.5,
+        "3": 25,
+        "4": 25,
+        "5": 12.5,
+        "6": 12.5,
+        "7": 12.5,
         "8": 0,
         "9": 0
     };
@@ -311,76 +325,135 @@ class Config { // Do not forget to set this!
 
     static steps = {
         // Possibilities for reCAPTCHA's steps.
+        // Note: You can change keys.
         // Note: The total should add up to 100!
-        "3": 69,
-        "5": 23,
-        "31": 8
+        "3": 49.5,
+        "5": 49.5,
+        "15": 1
     };
+}
 
-    static multiplier = 1.777777777777778; // Multiplier value of the values in 9 adapted to 16.
-    
+
+class i18n {
     // ###
 
-    // Texts of Main UI
-    
-    static title = "Bir dakika lütfen...";
+    // Placeholders
 
-    static label = "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.";
-
-    static label2 = "Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.";
-
-    static description = `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`; // ${window.location.hostname} means domain of the URL.
-
-    static successful = "Doğrulama başarılı";
-
-    static waiting = `${window.location.hostname} adresinin yanıt vermesi bekleniyor...`; // ${window.location.hostname} means domain of the URL.
-
-    static footer = "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır";
-    
+    // Cloudflare 2025
+    static title_25 = ""
+    static label1_25 = "";
+    static label2_25 = "";
+    static description_25 = `${window.location.hostname}`; // ${window.location.hostname} is the domain part of the URL.
+    static successful_25 = "";
+    static waiting_25 = `${window.location.hostname}`; // ${window.location.hostname} is the domain part of the URL.
+    static footer_25 = "";
+    // Cloudflare 2026
+    static label_26 = "";
+    static description_26 = "";
+    static completed_26 = `${window.location.hostname}`; // ${window.location.hostname} is the domain part of the URL.
+    static footerMain_26 = "";
+    static footerPrivacy_26 = ""
+    // Cloudflare Tunnel
+    static verifying = "";
+    static verifyYou = "";
+    static tryAgain = "";
+    static privacy = "";
+    static help = "";
+    // Google reCAPTCHA
+    static select = "";
+    static tryAgainLater = "";
+    static error = "";
+    static about = "";
+    static skip = "";
+    static verify = "";
+    static progress = "{n} {x}"; // {n} is number of total steps, {x} is number of current step.
+    static captchaHeader = 0; // For example, in Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+  
     // ###
 
-    // Texts of Tunnel
-
-    static verifying = "Doğrulanıyor...";
-
-    static verifyYou = "Gerçek kişi olduğunuzu\ndoğrulayın";
-
-    static tryAgain = "Tekrar deneyin";
-
-    static privacy = "Gizlilik";
-
-    static terms = "Koşullar";
+    // English language translation.
+    static en = {
+        // Cloudflare 2025
+        "title_25": "Just a moment...",
+        "label1_25": "Verifying you are human. This may take a few seconds.",
+        "label2_25": "Verify you are human by completing the action below.",
+        "description_25": `${window.location.hostname} needs to review the security of your connection before proceeding.`, // ${window.location.hostname} is the domain part of the URL.
+        "successful_25": "Verification successful",
+        "waiting_25": `Waiting for ${window.location.hostname} to respond`, // ${window.location.hostname} is the domain part of the URL.
+        "footer_25": "Performance & security by Cloudflare",
+        // Cloudflare 2026
+        "label_26": "Performing security verification",
+        "description_26": "This website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot.",
+        "completed_26": `Verification successful. Waiting for ${window.location.hostname} to respond`, // ${window.location.hostname} is the domain part of the URL.
+        "footerMain_26": "Performance and Security by Cloudflare",
+        "footerPrivacy_26": "Privacy",
+        // Cloudflare Tunnel
+        "verifying": "Verifying...",
+        "verifyYou": "Verify you are human",
+        "tryAgain": "Please try again",
+        "privacy": "Privacy",
+        "help": "Help",
+        // Google reCAPTCHA
+        "select": "Select all images with",
+        "tryAgainLater": "Try again later",
+        "error": "Please select all matching images.",
+        "about": `Select any image that contains the object described in the text at the top of the user interface or shown in the image. Then, click "Verify". To request a new reCAPTCHA test, click the reload icon.`,
+        "skip": "Skip",
+        "verify": "Verify",
+        "progress": "{x} of {n} steps have been completed", // {n} is number of total steps, {x} is number of current step.
+        "captchaHeader": 0 // For example, in Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+    }
 
     // ###
 
-    // Texts of reCAPTCHA
-
-    static select = "içeren tüm resimleri seçin";
-
-    static tryAgainLater = "Lütfen daha sonra tekrar deneyin.";
-
-    static error = "Lütfen tüm eşleşen resimleri seçin.";
-
-    static help = "Kullanıcı arayüzünün üst tarafında yer alan metinde tasvir edilen veya resimde görülen nesneyi içeren her resmi seçin. Ardından, Doğrula'yı tıklayın. Yeni bir reCAPTCHA testi istemek için yeniden yükle simgesini tıklayın.";
-
-    static learnMore = "Daha fazla bilgi edinin.";
-
-    static skip = "Atla";
-
-    static verify = "Doğrula";
-
-    static progress = "{n} aşamadan {x} tanesi tamamlandı"; // {n} is number of total steps, {x} is number of current step.
-
-    static captchaHeader = 1; // In Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
-
-    // ###
+    // Turkish language translation.
+    static tr = {
+        // Cloudflare 2025
+        "title_25": "Bir dakika lütfen...",
+        "label1_25": "İnsan olduğunuz doğrulanıyor. Bu işlem birkaç saniye sürebilir.",
+        "label2_25": "Aşağıdaki işlemi tamamlayarak insan olduğunuzu doğrulayın.",
+        "description_25": `${window.location.hostname} adresinin devam etmeden önce bağlantınızın güvenliğini gözden geçirmesi gerekiyor.`, // ${window.location.hostname} is the domain part of the URL.
+        "successful_25": "Doğrulama başarılı",
+        "waiting_25": `${window.location.hostname} adresinin yanıt vermesi bekleniyor`, // ${window.location.hostname} is the domain part of the URL.
+        "footer_25": "Bu sitenin performansı ve güvenliği Cloudflare tarafından sağlanmaktadır",
+        // Cloudflare 2026
+        "label_26": "Güvenlik doğrulaması yapılıyor",
+        "description_26": "Bu web sitesi, kötü niyetli botlara karşı korunmak için bir güvenlik hizmeti kullanıyor. Web sitesi bir bot olmadığınızı doğrularken bu sayfa görüntülenir.",
+        "completed_26": `Doğrulama başarılı. ${window.location.hostname} adresinin yanıt vermesi bekleniyor`, // ${window.location.hostname} is the domain part of the URL.
+        "footerMain_26": "Cloudflare ile Performans ve Güvenlik",
+        "footerPrivacy_26": "Gizlilik",
+        // Cloudflare Tunnel
+        "verifying": "Doğrulanıyor...",
+        "verifyYou": "Gerçek kişi olduğunuzu\ndoğrulayın",
+        "tryAgain": "Lütfen tekrar deneyin",
+        "privacy": "Gizlilik",
+        "help": "Yardım",
+        // Google reCAPTCHA
+        "select": "içeren tüm resimleri seçin",
+        "tryAgainLater": "Daha sonra tekrar deneyin",
+        "error": "Lütfen tüm eşleşen resimleri seçin.",
+        "about": `Metinde nesnenin açıklamasını gördüğünüz herhangi bir parçayı tıklayın. Aynı nesneyle birlikte yeni resimler görüntülenirse onları da tıklayın. Seçilmemiş resim kalmadığında "Doğrula"yı tıklayın.`,
+        "skip": "Atla",
+        "verify": "Doğrula",
+        "progress": "{n} aşamadan {x} tanesi tamamlandı", // {n} is number of total steps, {x} is number of current step.
+        "captchaHeader": 1 // For example, in Turkish the item to be selected is at the top, while in English it is at the bottom. 0 for bottom, 1 for top.
+    }
 }
 
 
 class Main {
-    constructor() {
+    constructor(lang) {
         // Rechange the title because some scripts change it while loading.
-        document.title = Config.title;
+        document.title = i18n.title_25;
+
+        // Try to get original shortcut icon.
+        var favicon = null;
+        if (document.querySelector("link[rel*='icon'") !== null) {
+            favicon = document.querySelector("link[rel*='icon'").getAttribute("href");
+        }
+        else {
+            favicon = "/favicon.ico"
+        }
 
         // Remove all scripts because some scripts add some elements to DOM.
         document.querySelectorAll("script").forEach(child => child.remove());
@@ -388,29 +461,48 @@ class Main {
         // Try to get rid of the icon of the website.
         document.querySelectorAll("link[rel*='icon'").forEach(favicon => favicon.setAttribute("href", "data:image/x-icon;base64,"));
 
-        // Clear head except title and icons.
+        // Clear HEAD except title and icons.
         Array.from(document.head.children).forEach(child => {
             if (child.tagName !== 'TITLE' && !child.matches("link[rel*='icon'")) {
                 child.remove();
             }
         }); 
 
-        // Remove all elements in body.
-        Array.from(document.body.children).forEach(child => child.remove());
+        // Remove body. We will use our custom body.
+        document.body.remove();
 
+        // Restore HTML element.
         document.documentElement.style.display = "flex";
         document.documentElement.style.width = "100vw";
         document.documentElement.style.height = "100vh";
         document.documentElement.style.boxSizing = "border-box";
         document.documentElement.style.margin = "0";
         document.documentElement.style.padding = "0";
-        document.documentElement.style.fontFamily = "system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji";
+        document.documentElement.setAttribute("lang", lang);
 
-        document.body.style.width = "100%";
-        document.body.style.height = "100%";
-        document.body.style.display = "flex";
-        document.body.style.flexDirection = "column";
-        document.body.style.margin = "0px";
+        // Define our custom body.
+        var body = document.createElement("div");
+        body.style.width = "100%";
+        body.style.height = "100%";
+        body.style.display = "flex";
+        body.style.flexDirection = "column";
+        body.style.margin = "0px";
+        document.documentElement.appendChild(body);
+
+        // Load main page.
+        if (Config.useCF2025) {
+            this.page = new CF25(body, favicon);
+        }   
+        else {
+            this.page = new CF26(body, favicon);
+        }
+    }
+}
+
+
+class CF25 {
+    constructor(body, favicon) {
+        document.documentElement.style.fontFamily = "system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji";
 
         this.frame = document.createElement("div");
         this.frame.style.width = "100%";
@@ -420,16 +512,29 @@ class Main {
         this.frame.style.padding = "0px 1.5rem";
         this.frame.style.flex = "1";
         this.frame.setAttribute("role", "main");
-        document.body.appendChild(this.frame);
+        body.appendChild(this.frame);
+
+        this.topBox = document.createElement("div");
+        this.topBox.style.display = "flex";
+        this.topBox.style.gap = "16px";
+        this.topBox.style.alignItems = "center";
+        this.frame.appendChild(this.topBox);
 
         this.name = document.createElement("h1");
         this.name.style.textAlign = "left";
         this.name.style.fontSize = "2.5rem";
-        this.name.style.fontWeight = "500";
-        this.name.style.lineHeight = "3.75rem";
+        this.name.style.fontWeight = "600";
+        this.name.style.lineHeight = "125%";
         this.name.style.margin = "0px";
         this.name.innerText = window.location.hostname;
-        this.frame.appendChild(this.name);
+        this.topBox.appendChild(this.name);
+
+        this.favicon = document.createElement("img");
+        this.favicon.style.marginRight = "0.5rem";
+        this.favicon.style.width = "2rem";
+        this.favicon.style.aspectRatio = "1/1";
+        this.favicon.setAttribute("src", favicon);
+        fetch(favicon).then((response) => {if (response.ok) {this.topBox.insertBefore(this.favicon, this.name);}});
 
         this.label = document.createElement("p");
         this.label.style.fontSize = "1.5rem";
@@ -437,7 +542,7 @@ class Main {
         this.label.style.lineHeight = "2.25rem";
         this.label.style.marginTop = "0px";
         this.label.style.marginBottom = "2rem";
-        this.label.innerText = Config.label;
+        this.label.innerText = i18n.label1_25;
         this.frame.appendChild(this.label);
 
         this.loading = document.createElement("div");
@@ -457,7 +562,7 @@ class Main {
             quarter.style.width = "1.875rem";
             quarter.style.aspectRatio = "1 / 1";
             quarter.style.position = "absolute";
-            quarter.style.border = "0.3rem solid #0000";
+            quarter.style.border = "0.3rem solid #00000000";
             quarter.style.borderRadius = "50%";
             quarter.animate([{transform: "rotate(0)"}, {transform: "rotate(360deg)"}], {duration: 1200, easing: "cubic-bezier(0.5, 0, 0.5, 1)", iterations: Infinity});
             this.spinner.appendChild(quarter);
@@ -472,7 +577,7 @@ class Main {
         this.description.style.marginTop = "calc(4rem + 3.7px)";
         this.description.style.fontSize = "1.5rem";
         this.description.style.lineHeight = "2.25rem";
-        this.description.innerText = Config.description;
+        this.description.innerText = i18n.description_25;
         this.frame.appendChild(this.description);
 
         this.completed = document.createElement("div");
@@ -487,7 +592,7 @@ class Main {
         this.successful.style.fontSize = "1.5rem";
         this.successful.style.fontWeight = "500";
         this.successful.style.lineHeight = "2.25rem";
-        this.successful.innerText = Config.successful;
+        this.successful.innerText = i18n.successful_25;
         this.completed.appendChild(this.successful);
 
         this.waiting = document.createElement("div");
@@ -496,66 +601,63 @@ class Main {
         this.waiting.style.fontSize = "1.5rem";
         this.waiting.style.fontWeight = "400";
         this.waiting.style.lineHeight = "2.25rem";
-        this.waiting.innerText = Config.waiting;
+        this.waiting.innerText = i18n.waiting_25;
         this.completed.appendChild(this.waiting);
 
+        this.footer_box = document.createElement("div");
+        this.footer_box.style.width = "100%";
+        this.footer_box.style.maxWidth = "60rem";
+        this.footer_box.style.maxHeight = "80px";
+        this.footer_box.style.boxSizing = "border-box";
+        this.footer_box.style.margin = "0px auto";
+        this.footer_box.style.padding = "0px 1.5rem";
+        this.footer_box.style.textAlign = "center";
+        this.footer_box.style.fontSize = "0.75rem";
+        this.footer_box.style.lineHeight = "1.125rem";
+        body.appendChild(this.footer_box);
+
         this.footer = document.createElement("div");
-        this.footer.style.width = "100%";
-        this.footer.style.maxWidth = "60rem";
-        this.footer.style.maxHeight = "80px";
-        this.footer.style.boxSizing = "border-box";
-        this.footer.style.margin = "0 auto";
-        this.footer.style.padding = "0px 1.5rem";
-        this.footer.style.textAlign = "center";
-        this.footer.style.fontSize = "0.75rem";
-        this.footer.style.lineHeight = "1.125rem";
-        document.body.appendChild(this.footer);
+        this.footer.style.display = "grid";
+        this.footer.style.justifyContent = "center";
+        this.footer.style.borderTop = "1px solid";
+        this.footer_box.appendChild(this.footer);
 
-        this.seperator = document.createElement("div");
-        this.seperator.style.width = "100%";
-        this.seperator.style.height = "1px";
-        this.seperator.style.backgroundColor = "#d9d9d9";
-        this.footer.appendChild(this.seperator);
-
-        // Set a random text which starts with 9.
         let rayId = "";
         const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-
         for (let i = 0; i < 15; i++) {
             const randomInd = Math.floor(Math.random() * characters.length);
             rayId += characters.charAt(randomInd);
         }
-
         this.rayIdText = document.createElement("p");
-        this.rayIdText.style.margin = "1rem 0px 0.5rem 0px";
+        this.rayIdText.style.margin = "1rem 0px 0px 0px";
         this.rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
         this.footer.appendChild(this.rayIdText);
 
-        this.rayIdText.getElementsByTagName("code").item(0).style.fontFamily = "monaco,courier,monospace";
-
         this.information = document.createElement("p");
         this.information.style.margin = "0px 0px 1rem 0px";
-        this.information.innerHTML = Config.footer.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudflare</a>");
+        this.information.innerHTML = i18n.footer_25.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudflare</a>");
         this.footer.appendChild(this.information);
 
         this.link = this.information.getElementsByTagName("a").item(0);
         this.link.style.textDecoration = "none";
         this.link.style.transition = "color .15s";
-        this.link.addEventListener("mouseover", this.focusToLink.bind(this));
-        this.link.addEventListener("mouseleave", this.unfocusToLink.bind(this));
+        this.link.addEventListener("mouseenter", this.focusLink.bind(this));
+        this.link.addEventListener("mouseleave", this.defocusLink.bind(this));
 
         window.matchMedia("screen and (prefers-color-scheme: light)").addEventListener("change", this.setColors.bind(this));
         this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
+        window.matchMedia("screen and (width <= 720px)").addEventListener("change", this.setSizes.bind(this));
+        this.setSizes(window.matchMedia("screen and (width <= 720px)"));
     }
 
-    focusToLink() {
-        this.link.style.color = "#f48120";
-        this.link.style.textDecoration = "underline";
-    }
-
-    unfocusToLink() {
+    defocusLink() {
         this.link.style.color = window.matchMedia("screen and (prefers-color-scheme: light)").matches ? "#0051c3" : "#ffffff";
         this.link.style.textDecoration = "none";
+    }
+
+    focusLink() {
+        this.link.style.color = "#f48120";
+        this.link.style.textDecoration = "underline";
     }
 
     setColors(event) {
@@ -563,30 +665,224 @@ class Main {
         document.documentElement.style.color = event.matches ? "#313131" : "#d9d9d9";
         this.successful.style.backgroundImage = event.matches ? "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=)" : "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4)"; // Source: Cloudflare
         this.link.style.color = event.matches ? "#00b1c3" : "#ffffff";
-
         for (let quarter of this.quarters) {
             quarter.style.borderTopColor = event.matches ? "#313131" : "#999999";
         }
+        this.footer.style.borderColor = event.matches ? "#d9d9d9" : "#f2f2f2";
     }
 
     setSizes(event) {
-
+        this.frame.style.padding = !event.matches ? "0px 1.5rem" : "0px 1rem"
+        this.footer_box.style.padding = !event.matches ? "0px 1.5rem" : "0px 1rem"
     }
 
     start(tunnel) {
         this.loading.style.display = "none";
         this.frame.insertBefore(tunnel.frame, this.description);
-        setTimeout(tunnel.start.bind(tunnel), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : Config.cooldown);
+        setTimeout(tunnel.start.bind(tunnel), Config.isCheatsEnabled ? 0 : Config.cooldown);
+    }
+}
+
+
+class CF26 {
+    constructor(body, favicon) {
+        document.documentElement.style.fontFamily = 'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"';
+
+        this.frame = document.createElement("div");
+        this.frame.style.width = "100%";
+        this.frame.style.maxWidth = "60rem";
+        this.frame.style.boxSizing = "border-box";
+        this.frame.style.margin = "8rem auto";
+        this.frame.style.padding = "0px 2rem";
+        this.frame.style.flex = "1";
+        this.frame.setAttribute("role", "main");
+        body.appendChild(this.frame);
+
+        this.topBox = document.createElement("div");
+        this.topBox.style.display = "flex";
+        this.topBox.style.gap = "16px";
+        this.topBox.style.alignItems = "center";
+        this.frame.appendChild(this.topBox);
+
+        this.name = document.createElement("h1");
+        this.name.style.textAlign = "left";
+        this.name.style.fontSize = "2.5rem";
+        this.name.style.fontWeight = "600";
+        this.name.style.lineHeight = "125%";
+        this.name.style.margin = "0px";
+        this.name.innerText = window.location.hostname;
+        this.topBox.appendChild(this.name);
+
+        this.favicon = document.createElement("img");
+        this.favicon.style.marginRight = "0.5rem";
+        this.favicon.style.width = "2rem";
+        this.favicon.style.aspectRatio = "1/1";
+        this.favicon.setAttribute("src", favicon);
+        fetch(favicon).then((response) => {if (response.ok) {this.topBox.insertBefore(this.favicon, this.name);}});
+
+        this.label = document.createElement("h2");
+        this.label.style.margin = "8px 0px";
+        this.label.style.fontSize = "1.5rem";
+        this.label.style.fontWeight = "600";
+        this.label.style.lineHeight = "125%";
+        this.label.innerText = i18n.label_26;
+        this.frame.appendChild(this.label);
+
+        this.description = document.createElement("h2");
+        this.description.style.margin = "0px 0px 2rem 0px";
+        this.description.style.fontSize = "1rem";
+        this.description.style.fontWeight = "400";
+        this.description.style.lineHeight = "150%";
+        this.description.style.marginBottom = "2rem";
+        this.description.innerText = i18n.description_26;
+        this.frame.appendChild(this.description);
+
+        this.completed = document.createElement("h2");
+        this.completed.style.display = "none";
+        this.completed.style.margin = "2rem 0px 0.5rem 0px";
+        this.completed.style.fontSize = "1.5rem";
+        this.completed.style.fontWeight = "600";
+        this.completed.style.lineHeight = "125%";
+        this.completed.innerText = i18n.completed_26;
+        this.frame.appendChild(this.completed);
+
+        this.loading = document.createElement("div");
+        this.loading.style.height = "76.391px";
+        this.loading.style.margin = "2rem 0px";
+        this.frame.appendChild(this.loading);
+
+        this.spinner = document.createElement("div");
+        this.spinner.style.width = "1.875rem";
+        this.spinner.style.aspectRatio = "1 / 1";
+        this.loading.appendChild(this.spinner);
+
+        this.quarters = [];
+
+        for (let i = 0; i < 4; i++) {
+            let quarter = document.createElement("div");
+            quarter.style.width = "1.875rem";
+            quarter.style.aspectRatio = "1 / 1";
+            quarter.style.position = "absolute";
+            quarter.style.border = "0.3rem solid #00000000";
+            quarter.style.borderRadius = "50%";
+            quarter.style.borderColor = "#313131 #00000000 #00000000 #00000000"
+            quarter.animate([{transform: "rotate(0)"}, {transform: "rotate(360deg)"}], {duration: 1200, easing: "cubic-bezier(0.5, 0, 0.5, 1)", iterations: Infinity});
+            this.spinner.appendChild(quarter);
+            this.quarters.push(quarter);
+        }
+
+        this.quarters[0].style.animationDelay = "-0.45s";
+        this.quarters[1].style.animationDelay = "-0.3s";
+        this.quarters[2].style.animationDelay = "-0.15s";
+
+        this.footer_box = document.createElement("div");
+        this.footer_box.style.width = "100%";
+        this.footer_box.style.maxWidth = "60rem";
+        this.footer_box.style.maxHeight = "80px";
+        this.footer_box.style.boxSizing = "border-box";
+        this.footer_box.style.margin = "0px auto";
+        this.footer_box.style.padding = "0px 2rem";
+        this.footer_box.style.textAlign = "center";
+        this.footer_box.style.fontSize = "0.75rem";
+        this.footer_box.style.lineHeight = "1.125rem";
+        body.appendChild(this.footer_box);
+
+        this.footer = document.createElement("div");
+        this.footer.style.display = "grid";
+        this.footer.style.justifyContent = "center";
+        this.footer.style.borderTop = "1px solid";
+        this.footer_box.appendChild(this.footer);
+
+        let rayId = "";
+        const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < 15; i++) {
+            const randomInd = Math.floor(Math.random() * characters.length);
+            rayId += characters.charAt(randomInd);
+        }
+        this.rayIdText = document.createElement("span");
+        this.rayIdText.style.paddingTop = "1rem";
+        this.rayIdText.innerHTML = `Ray ID: <code>9${rayId}</code>`;
+        this.footer.appendChild(this.rayIdText);
+
+        this.information = document.createElement("div");
+        this.information.style.paddingBottom = "1rem";
+        this.information.style.display = "flex";
+        this.information.style.gap = "8px";
+        this.information.style.alignItems = "center";
+        this.footer.appendChild(this.information);
+
+        this.informationMain = document.createElement("span");
+        this.informationMain.innerHTML = i18n.footerMain_26.replace("Cloudflare", "<a target='_blank' href='https://www.cloudflare.com/'>Cloudflare</a>");
+        this.information.appendChild(this.informationMain);
+
+        this.informationSeperator = document.createElement("span");
+        this.informationSeperator.style.boxSizing = "border-box";
+        this.informationSeperator.style.border = "1px solid";
+        this.informationSeperator.style.height = "12px";
+        this.information.appendChild(this.informationSeperator);
+
+        this.informationPrivacy = document.createElement("span");
+        this.informationPrivacy.innerHTML = `<a target='_blank' href='https://www.cloudflare.com/privacypolicy/'>${i18n.footerPrivacy_26}</a>`;
+        this.information.append(this.informationPrivacy);
+
+        window.matchMedia("screen and (prefers-color-scheme: light)").addEventListener("change", this.setColors.bind(this));
+        this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
+        window.matchMedia("screen and (width <= 720px)").addEventListener("change", this.setSizes720.bind(this));
+        this.setSizes720(window.matchMedia("screen and (width <= 720px)"));
+        window.matchMedia("screen and (width > 720px) and (width <= 1024px)").addEventListener("change", this.setSizes1024.bind(this));
+        this.setSizes1024(window.matchMedia("screen and (width > 720px) and (width <= 1024px)"));
+    }
+
+    finish(count) {
+        if (count === 9) {location.reload();};
+        this.completed.innerText = i18n.completed_26 + (".".repeat(count % 4));
+        setTimeout(this.finish.bind(this), Config.isCheatsEnabled ? 0 : (Config.cooldown / 27), count + 1);
+    }
+
+    setColors(event) {
+        document.documentElement.style.backgroundColor = event.matches ? "#ffffff" : "#000000";
+        document.documentElement.style.color = event.matches ? "#313131" : "#f2f2f2";
+        this.description.style.color = event.matches ? "#313131" : "#b6b6b6";
+        for (let link of this.footer.getElementsByTagName("a")) {
+            link.style.color = event.matches ? "#0000EE" : "#82b6ff";
+        }
+        for (let quarter of this.quarters) {
+            quarter.style.borderTopColor = event.matches ? "#313131" : "#999999";
+        }
+        this.footer.style.borderColor = event.matches ? "#d9d9d9" : "#f2f2f2";
+        this.informationSeperator.style.borderColor = event.matches ? "#d9d9d9" : "#f2f2f2";
+    }
+
+    setSizes720(event) {
+        if (event.matches || window.matchMedia("screen and (width > 1024px)").matches) {
+            this.frame.style.padding = event.matches ? "0px 1rem" : "0px 2rem"
+            this.footer_box.style.padding = event.matches ? "0px 1rem" : "0px 2rem"
+        }
+    }
+
+    setSizes1024(event) {
+        if (event.matches || window.matchMedia("screen and (width > 1024px)").matches) {
+            this.frame.style.padding = event.matches ? "0px 1.5rem" : "0px 2rem"
+            this.footer_box.style.padding = event.matches ? "0px 1.5rem" : "0px 2rem"
+        }
+    }
+
+    start(tunnel) {
+        this.loading.style.display = "none";
+        this.frame.insertBefore(tunnel.frame, this.completed);
+        setTimeout(tunnel.start.bind(tunnel), Config.isCheatsEnabled ? 0 : Config.cooldown);
     }
 }
 
 
 class Tunnel {
-    constructor(label, frame, recaptcha, animate) {
-        this.label_ = label;
-        this.frame_ = frame;
-        this.recaptcha_ = recaptcha;
-        this.animate_ = animate;
+    constructor(main, recaptcha, animate) {
+        this.main = main;
+        this.recaptcha = recaptcha;
+        this.animate = animate;
+
+        this.label_ = this.main.label;
+        this.frame_ = this.main.frame;
 
         this.status = 0;
 
@@ -597,11 +893,13 @@ class Tunnel {
         this.frame.style.alignItems = "center";
         this.frame.style.justifyContent = "space-between";
         this.frame.style.boxSizing = "border-box";
+        this.frame.style.border = "1px solid";
+        this.frame.style.borderRadius = "2px";
 
         this.content = document.createElement("div");
         this.content.style.display = "grid";
-        this.content.style.placeItems = "center";
-        this.content.style.marginLeft = "16px";
+        this.content.style.alignItems = "center";
+        this.content.style.marginLeft = "8px";
         this.frame.appendChild(this.content);
 
         this.spinner = document.createElement("div");
@@ -623,6 +921,7 @@ class Tunnel {
         this.checkbox.style.cursor = "pointer";
         this.checkbox.style.opacity = "0";
         this.checkbox.style.display = "none";
+        this.checkbox.clicked = false;
         this.checkbox.setAttribute("type", "checkbox");
         this.checkbox.addEventListener("change", this.focused.bind(this));
         this.content.appendChild(this.checkbox);
@@ -634,6 +933,7 @@ class Tunnel {
         this.button.style.zIndex = "23";
         this.button.style.margin = "0";
         this.button.style.boxSizing = "border-box";
+        this.button.style.border = "2px solid";
         this.button.style.borderRadius = "3px";
         this.button.style.transition = "all .1s ease-in";
         this.button.style.display = "none";
@@ -646,6 +946,8 @@ class Tunnel {
         this.tick.style.zIndex = "46";
         this.tick.style.margin = "3px auto 6px auto";
         this.tick.style.boxSizing = "border-box";
+        this.tick.style.borderRight = "4px solid";
+        this.tick.style.borderBottom = "4px solid";
         this.tick.style.transform = "rotate(45deg)";
         this.tick.style.display = "none";
         this.content.appendChild(this.tick);
@@ -654,18 +956,19 @@ class Tunnel {
         this.verifying.style.gridColumn = "2";
         this.verifying.style.marginLeft = "8px";
         this.verifying.style.fontSize = "14px";
-        this.verifying.innerText = Config.verifying;
+        this.verifying.innerText = i18n.verifying;
         this.content.appendChild(this.verifying);
 
         this.branding = document.createElement("div");
-        this.branding.style.margin = "0px 16px 0px auto";
+        this.branding.style.margin = "0px 8px 0px auto";
         this.branding.style.display = "grid";
         this.branding.style.textAlign = "right";
         this.frame.appendChild(this.branding);
 
         this.cloudflare = document.createElement("a");
         this.cloudflare.style.width = "73px";
-        this.cloudflare.style.height = "30.5px";
+        this.cloudflare.style.height = "25px";
+        this.cloudflare.style.marginBottom = "1px";
         this.cloudflare.setAttribute("target", "_blank");
         this.cloudflare.setAttribute("href", "https://www.cloudflare.com/application-services/products/turnstile/");
         this.branding.appendChild(this.cloudflare);
@@ -679,8 +982,10 @@ class Tunnel {
         this.privacy = document.createElement("a");
         this.privacy.setAttribute("target", "_blank");
         this.privacy.setAttribute("href", "https://www.cloudflare.com/privacypolicy/");
+        this.privacy.addEventListener("mouseenter", this.focusLink.bind(this.privacy));
+        this.privacy.addEventListener("mouseleave", this.defocusLink.bind(this.privacy));
         this.privacy.style.textDecoration = "underline";
-        this.privacy.innerText = Config.privacy;
+        this.privacy.innerText = i18n.privacy;
         this.links.appendChild(this.privacy)
 
         this.seperator = document.createElement("span");
@@ -688,15 +993,25 @@ class Tunnel {
         this.seperator.innerText = "•";
         this.links.appendChild(this.seperator)
 
-        this.terms = document.createElement("a");
-        this.terms.setAttribute("target", "_blank");
-        this.terms.setAttribute("href", "https://www.cloudflare.com/website-terms/");
-        this.terms.style.textDecoration = "underline";
-        this.terms.innerText = Config.terms;
-        this.links.appendChild(this.terms);
+        this.help = document.createElement("a");
+        this.help.setAttribute("target", "_blank");
+        this.help.setAttribute("href", "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/help");
+        this.help.addEventListener("mouseenter", this.focusLink.bind(this.help));
+        this.help.addEventListener("mouseleave", this.defocusLink.bind(this.help));
+        this.help.style.textDecoration = "underline";
+        this.help.innerText = i18n.help;
+        this.links.appendChild(this.help);
 
         window.matchMedia("screen and (prefers-color-scheme: light)").addEventListener("change", this.setColors.bind(this));
         this.setColors(window.matchMedia("screen and (prefers-color-scheme: light)"));
+    }
+
+    defocusLink() {
+        this.style.color = window.matchMedia("screen and (prefers-color-scheme: light)").matches ? "#0a0a0a" : "#f2f2f2";
+    }
+
+    focusLink() {
+        this.style.color = window.matchMedia("screen and (prefers-color-scheme: light)").matches ? "#0000EE" : "#82b6ff";
     }
 
     changed() {
@@ -707,21 +1022,20 @@ class Tunnel {
             this.checkbox.style.display = "none";
             this.button.style.display = "none";
             this.tick.style.display = "none";
-            this.verifying.innerText = Config.verifying;
+            this.verifying.innerText = i18n.verifying;
 
             if (!window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
                 this.button.style.backgroundColor = "#222222";
             }
 
-            // Wait, after hide the spinnex and show the checkbox.
-            setTimeout(this.continue.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 2))
-            
-            this.status = 2;
+            // First wait, after that hide the spinner and show the checkbox.
+            setTimeout(this.continue.bind(this), Config.isCheatsEnabled ? 0 : (Config.cooldown / 2))
         }
 
         else if (this.status === 2) {
-            this.frame_.replaceChild(this.recaptcha_, this.frame);
-            this.animate_();
+            this.recaptcha.date_img = new Date();
+            this.frame_.replaceChild(this.recaptcha.frame, this.frame);
+            this.animate();
         }
     }
 
@@ -740,31 +1054,39 @@ class Tunnel {
         this.tick.style.display = "block";
 
         // Wait, after start switching to new step. This shows the spinner and hides the checkbox.
-        setTimeout(this.changed.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
+        setTimeout(this.changed.bind(this), Config.cooldown / 25)
     }
 
     continue() {
-        this.checkbox.checked = false;
+        // Hide the spinner and show the checkbox.
+
         this.spinner.style.display = "none";
         this.checkbox.style.display = "block";
         this.button.style.display = "block";
         this.button.animate([{transform: "scale(0.1)"}, {transform: "scale(1)"}], {duration: 400, iterations: 1});
-        this.verifying.innerText = Config.tryAgain;
+        this.verifying.innerText = i18n.tryAgain;
+        this.status = 2;
+        this.checkbox.checked = false;
+        this.checkbox.clicked = false;
     }
 
     focused() {
         // Simulate the orange-like colored border for the checkbox. The original one does this with "focus"-like event probably.
 
-        if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
-            this.button.style.border = "2px solid #c44d0e";
-        }
+        if (!this.checkbox.clicked) {
+            this.checkbox.clicked = true;
+    
+            if (window.matchMedia("screen and (prefers-color-scheme: light)").matches) {
+                this.button.style.border = "2px solid #c44d0e";
+            }
 
-        else {
-            this.button.style.border = "2px solid #fbad41";
-        }
+            else {
+                this.button.style.border = "2px solid #fbad41";
+            }
 
-        // Wait, after simulate "outfocus" event and "click" event for checkbox. This restores border to original state, and for dark theme it changes background color.
-        setTimeout(this.clicked.bind(this), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 23))
+            // Wait, after simulate "outfocus" event and "click" event for checkbox. This restores border to original state, and for dark theme it changes background color.
+            setTimeout(this.clicked.bind(this), Config.cooldown / 25)
+        }
     }
 
     start() {
@@ -775,59 +1097,66 @@ class Tunnel {
         this.checkbox.style.display = "block";
         this.button.style.display = "block";
         this.button.animate([{transform: "scale(0.1)"}, {transform: "scale(1)"}], {duration: 400, iterations: 1});
-        this.verifying.innerText = Config.verifyYou;
-        this.label_.innerText = Config.label2;
+        this.verifying.innerText = i18n.verifyYou;
+        if (Config.useCF2025) {this.label_.innerText = i18n.label2_25;};
     }
 
     setColors(event) {
-        this.frame.style.backgroundColor = event.matches ? "#fafafa" : "#232323";
-        this.frame.style.border = `1px solid ${event.matches ? "#e0e0e0" : "#797979"}`;
-        this.button.style.backgroundColor = event.matches ? "#ffffff" : "#222222";
-        this.button.style.border = `2px solid ${event.matches ? "#6d6d6d" : "#dadada"}`;
-        this.tick.style.borderRight = `4px solid ${event.matches ? "#c44d0e" : "#fbad41"}`;
-        this.tick.style.borderBottom = `4px solid ${event.matches ? "#c44d0e" : "#fbad41"}`;
-        this.verifying.style.color = event.matches ? "#232323" : "#ffffff";
-        this.cloudflare.innerHTML = event.matches ? '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>' : '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}.cls-3{fill:#fff;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon class="cls-3" points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path class="cls-3" d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path class="cls-3" d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path class="cls-3" d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon class="cls-3" points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon class="cls-3" points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path class="cls-3" d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path class="cls-3" d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon class="cls-3" points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path class="cls-3" d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>';
+        this.frame.style.backgroundColor = event.matches ? "#f8f8f8" : "#313131";
+        this.frame.style.borderColor = event.matches ? "#d9d9d9" : "#d9d9d9";
+        this.button.style.backgroundColor = event.matches ? "#ffffff" : "#0a0a0a";
+        this.button.style.borderColor = event.matches ? "#4a4a4a" : "#999999";
+        this.tick.style.borderRightColor = event.matches ? "#c44d0e" : "#fbad41";
+        this.tick.style.borderBottomColor = event.matches ? "#c44d0e" : "#fbad41";
+        this.verifying.style.color = event.matches ? "#0a0a0a" : "#f2f2f2";
+        this.cloudflare.innerHTML = event.matches ? '<svg id="Layer_1" data-name="Layer 1" xmlns="https://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>' : '<svg id="Layer_1" data-name="Layer 1" xmlns="https://www.w3.org/2000/svg" viewBox="0 0 425.6 143.63"><defs><style>.cls-1{fill:#f78100;}.cls-2{fill:#fcad32;}.cls-3{fill:#fff;}</style></defs><path class="cls-1" d="M360.8,90.69l1-3.6c1.24-4.28.78-8.24-1.3-11.15a11.32,11.32,0,0,0-9-4.43l-73.35-.94a1.49,1.49,0,0,1-1.16-.61,1.51,1.51,0,0,1-.15-1.33,2,2,0,0,1,1.7-1.3l74-.94c8.78-.4,18.29-7.53,21.62-16.22l4.22-11a2.51,2.51,0,0,0,.16-.94,2.35,2.35,0,0,0-.05-.52,48.21,48.21,0,0,0-92.7-5,21.69,21.69,0,0,0-34.58,15.15,22,22,0,0,0,.56,7.59,30.83,30.83,0,0,0-29.93,30.82,31.22,31.22,0,0,0,.32,4.46A1.44,1.44,0,0,0,223.68,92H359.13A1.79,1.79,0,0,0,360.8,90.69Z"/><path class="cls-2" d="M385.24,40c-.68,0-1.36,0-2,0a1.55,1.55,0,0,0-.31.07,1.14,1.14,0,0,0-.74.78l-2.89,10c-1.24,4.28-.77,8.24,1.31,11.14a11.3,11.3,0,0,0,9,4.44l15.63.94a1.44,1.44,0,0,1,1.12.6,1.5,1.5,0,0,1,.16,1.34,2,2,0,0,1-1.7,1.3l-16.24.94c-8.82.4-18.33,7.52-21.66,16.21l-1.17,3.07a.87.87,0,0,0,.77,1.18h55.94a1.49,1.49,0,0,0,1.45-1.07A40.15,40.15,0,0,0,385.24,40Z"/><polygon class="cls-3" points="47.34 108.53 56.88 108.53 56.88 134.59 73.54 134.59 73.54 142.94 47.34 142.94 47.34 108.53"/><path class="cls-3" d="M83.42,125.84v-.1c0-9.88,8-17.9,18.58-17.9s18.48,7.92,18.48,17.8v.1c0,9.88-8,17.89-18.58,17.89s-18.48-7.91-18.48-17.79m27.33,0v-.1c0-5-3.59-9.29-8.85-9.29s-8.7,4.23-8.7,9.19v.1c0,5,3.59,9.29,8.8,9.29s8.75-4.23,8.75-9.19"/><path class="cls-3" d="M132.15,127.85V108.53h9.69v19.13c0,5,2.51,7.32,6.34,7.32s6.34-2.26,6.34-7.08V108.53h9.69v19.08c0,11.11-6.34,16-16.13,16s-15.93-5-15.93-15.73"/><path class="cls-3" d="M178.8,108.53h13.27c12.29,0,19.42,7.08,19.42,17v.1c0,9.93-7.22,17.3-19.61,17.3H178.8Zm13.42,26c5.71,0,9.49-3.15,9.49-8.7v-.1c0-5.51-3.78-8.7-9.49-8.7h-3.88v17.5Z"/><polygon class="cls-3" points="225.35 108.53 252.88 108.53 252.88 116.89 234.89 116.89 234.89 122.74 251.16 122.74 251.16 130.65 234.89 130.65 234.89 142.94 225.35 142.94 225.35 108.53"/><polygon class="cls-3" points="266.15 108.53 275.69 108.53 275.69 134.59 292.35 134.59 292.35 142.94 266.15 142.94 266.15 108.53"/><path class="cls-3" d="M317.27,108.29h9.19l14.65,34.65H330.89l-2.51-6.14H315.11l-2.46,6.14h-10Zm8.36,21.09-3.84-9.79-3.88,9.79Z"/><path class="cls-3" d="M353.4,108.53h16.27c5.26,0,8.89,1.38,11.21,3.74a10.69,10.69,0,0,1,3,8v.1A10.89,10.89,0,0,1,376.85,131l8.21,12H374l-6.93-10.42h-4.18v10.42H353.4Zm15.83,16.52c3.24,0,5.11-1.57,5.11-4.08v-.1c0-2.7-2-4.08-5.16-4.08h-6.25v8.26Z"/><polygon class="cls-3" points="397.68 108.53 425.36 108.53 425.36 116.64 407.12 116.64 407.12 121.85 423.64 121.85 423.64 129.38 407.12 129.38 407.12 134.83 425.61 134.83 425.61 142.94 397.68 142.94 397.68 108.53"/><path class="cls-3" d="M26.46,129.87A8.44,8.44,0,0,1,18.58,135c-5.21,0-8.8-4.33-8.8-9.29v-.1c0-5,3.49-9.19,8.7-9.19a8.63,8.63,0,0,1,8.18,5.7H36.72c-1.61-8.19-8.81-14.31-18.14-14.31C8,107.84,0,115.86,0,125.74v.09c0,9.89,7.86,17.8,18.48,17.8,9.08,0,16.18-5.88,18.05-13.76Z"/></svg>';
         this.cloudflare.getElementsByTagName("svg").item(0).style.width = "73px";
         this.cloudflare.getElementsByTagName("svg").item(0).style.height = "25px";
-        this.privacy.style.color = event.matches ? "#232323" : "#bbbbbb";
-        this.terms.style.color = event.matches ? "#232323" : "#bbbbbb";
+        this.privacy.style.color = event.matches ? "#0a0a0a" : "#f2f2f2";
+        this.help.style.color = event.matches ? "#0a0a0a" : "#f2f2f2";
     }
 }
 
 
 class reCAPTCHA {
-    constructor(label, description, completed) {
-        this.label_ = label;
-        this.description_ = description;
-        this.completed_ = completed;
+    constructor(lang, main, date_all) {
+        this.lang = lang;
+        this.main = main;
+        this.date_all = date_all;
+
+        this.label_ = main.label;
+        this.description_ = main.description;
+        this.completed_ = main.completed;
+
+        this.deaths = 0;
+        this.sizes = {
+            "frame_width": 400,
+            "frame_height": 580,
+            "images_size": 390,
+        };
 
         this.expiryDates = [];
-
         // Convert expiry times to Date object.
         for (let time of Config.expiryTimes) {
             const date = new Date();
-
             date.setHours(parseInt(time.split(":")[0]), parseInt(time.split(":")[1]), 0, 0);
-
             this.expiryDates.push(date);
         }
 
         this.frame = document.createElement("div");
-        this.frame.style.width = "400px"
-        this.frame.style.height = "582px";
+        this.frame.style.width = `${this.sizes["frame_width"]}px`;
+        this.frame.style.height = `${this.sizes["frame_height"]}px`;
         this.frame.style.display = "flex";
         this.frame.style.flexDirection = "column";
-        this.frame.style.alignContent = "center";
         this.frame.style.alignItems = "center";
         this.frame.style.justifyContent = "space-between";
         this.frame.style.backgroundColor = "#ffffff";
         this.frame.style.border = "2px solid #a9a9a9";
 
         this.header = document.createElement("div");
-        this.header.style.width = "386px";
+        this.header.style.width = "calc(100% - 14px)";
         this.header.style.height = "113px";
-        this.header.style.margin = "7px 0px 5px 0px";
+        this.header.style.margin = "7px 0px 5px";
         this.header.style.display = "grid";
         this.header.style.justifyContent = "space-between";
         this.header.style.placeItems = "center";
@@ -848,13 +1177,13 @@ class reCAPTCHA {
         this.header.appendChild(this.currentProgressBar);
 
         this.currentProgressText = document.createElement("p");
-        this.currentProgressText.style.height = "23px";
+        this.currentProgressText.style.height = "20px";
         this.currentProgressText.style.gridRow = "2";
         this.currentProgressText.style.gridColumn = "1 / 3";
         this.currentProgressText.style.margin = "0px";
-        this.currentProgressText.style.alignContent = "center";
         this.currentProgressText.style.boxSizing = "border-box";
         this.currentProgressText.style.borderBottom = "2px solid #ffffff";
+        this.currentProgressText.style.color = "#ffffff";
         this.currentProgressText.style.display = "none";
         this.header.appendChild(this.currentProgressText);
 
@@ -865,9 +1194,9 @@ class reCAPTCHA {
         this.texts.style.color = "#ffffff";
         this.header.appendChild(this.texts);
 
-        if (Config.captchaHeader === 0) {
+        if (i18n.captchaHeader === 0) {
             this.description = document.createElement("span");
-            this.description.innerText = Config.select;
+            this.description.innerText = i18n.select;
             this.texts.appendChild(this.description);
 
             this.texts.appendChild(document.createElement("br"));
@@ -877,15 +1206,16 @@ class reCAPTCHA {
             this.texts.appendChild(this.label);
         }
 
-        else if (Config.captchaHeader === 1) {
+        else if (i18n.captchaHeader === 1) {
             this.label = document.createElement("strong");
+            this.label.style.textTransform = "capitalize";
             this.label.style.fontSize = "24px";
             this.texts.appendChild(this.label);
 
             this.texts.appendChild(document.createElement("br"));
 
             this.description = document.createElement("span");
-            this.description.innerText = Config.select;
+            this.description.innerText = i18n.select;
             this.texts.appendChild(this.description);
         }
 
@@ -900,40 +1230,37 @@ class reCAPTCHA {
         this.header.appendChild(this.example);
 
         this.images = document.createElement("div");
-        this.images.style.width = "390px";
+        this.images.style.width = `${this.sizes["images_size"]}px`;
         this.images.style.aspectRatio = "1 / 1";
         this.images.style.display = "grid";
-        this.images.style.alignItems = "center";
-        this.images.style.justifyItems = "center";
+        this.images.style.placeItems = "center";
         this.frame.appendChild(this.images);
 
         this.text = document.createElement("p");
         this.text.style.display = "none";
-        this.text.style.margin = "3.5px 0px";
+        this.text.style.margin = "4.5px 0px";
         this.text.style.padding = "0px";
-        this.text.style.textAlign = "center";
         this.text.style.fontSize = "14px";
         this.text.style.color = "#d93025";
         this.frame.appendChild(this.text);
 
         this.seperator = document.createElement("div");
         this.seperator.style.width = "100%";
-        this.seperator.style.height = "100%";
+        this.seperator.style.height = "1px";
         this.seperator.style.margin = "5px 0px 0px 0px";
         this.seperator.style.backgroundColor = "#999999";
         this.frame.appendChild(this.seperator);
 
         this.footer = document.createElement("div");
-        this.footer.style.width = "400px";
-        this.footer.style.height = "60px";
+        this.footer.style.width = "100%";
+        this.footer.style.height = "59px";
         this.frame.appendChild(this.footer);
 
         this.controls = document.createElement("div");
         this.controls.style.height = "48px";
-        this.controls.style.margin = "6px";
+        this.controls.style.margin = "5px 6px 6px 6px";
         this.controls.style.float = "left";
         this.controls.style.display = "flex";
-        this.controls.style.alignItems = "center";
         this.footer.appendChild(this.controls);
 
         this.reload = document.createElement("img");
@@ -954,9 +1281,9 @@ class reCAPTCHA {
         this.audio.style.float = "left";
         this.audio.style.cursor = "pointer";
         this.audio.style.opacity = "0.55";
-        this.audio.message = Config.tryAgainLater;
+        this.audio.message = i18n.tryAgainLater;
         this.audio.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/audio_2x.png");
-        this.audio.addEventListener("click", this.message.bind(this));
+        this.audio.addEventListener("click", this.showMessage.bind(this));
         this.controls.appendChild(this.audio);
 
         this.help = document.createElement("img");
@@ -967,21 +1294,20 @@ class reCAPTCHA {
         this.help.style.cursor = "pointer";
         this.help.style.opacity = "0.55";
         this.help.setAttribute("src", "https://www.gstatic.com/recaptcha/api2/info_2x.png");
-        this.help.addEventListener("click", this.showHelp.bind(this));
+        this.help.addEventListener("click", this.showAboutText.bind(this));
         this.controls.appendChild(this.help);
 
         this.button = document.createElement("div");
         this.button.style.width = "100px";
         this.button.style.height = "42px";
-        this.button.style.margin = "9px 8px 9px auto";
+        this.button.style.margin = "8px 8px 9px auto";
         this.button.style.float = "right";
         this.button.style.borderRadius = "2px";
         this.button.style.cursor = "pointer";
-        this.button.style.textAlign = "center";
+        this.button.style.alignContent = "center";
         this.button.style.transition = "all .5s ease";
         this.button.style.fontSize = "14px";
         this.button.style.fontWeight = "500";
-        this.button.style.textTransform = "uppercase";
         this.button.style.backgroundColor = "#1a73e8";
         this.button.style.color = "#d9d9d9";
         this.button.addEventListener("click", this.verify.bind(this));
@@ -990,33 +1316,31 @@ class reCAPTCHA {
         this.buttonText = document.createElement("p");
         this.buttonText.style.margin = "12px";
         this.buttonText.style.textAlign = "center";
+        this.buttonText.style.textTransform = "uppercase";
         this.button.appendChild(this.buttonText);
 
-        this.helpText = document.createElement("p");
-        this.helpText.style.height = "60px";
-        this.helpText.style.display = "none";
-        this.helpText.style.margin = "0px";
-        this.helpText.style.padding = "5px 20px";
-        this.helpText.style.fontFamily = "Roboto,helvetica,arial,sans-serif";
-        this.helpText.style.fontSize = "12px";
-        this.helpText.style.fontWeight = "400";
-        this.helpText.style.color = "#000000";
-        this.helpText.innerText = `${Config.help} `;
-        this.frame.appendChild(this.helpText);
-
-        this.helpTextlink = document.createElement("a");
-        this.helpTextlink.innerText = Config.learnMore;
-        this.helpTextlink.setAttribute("target", "_blank");
-        this.helpTextlink.setAttribute("href", "https://support.google.com/recaptcha");
-        this.helpText.appendChild(this.helpTextlink);
+        this.aboutText = document.createElement("p");
+        this.aboutText.style.height = "60px";
+        this.aboutText.style.display = "none";
+        this.aboutText.style.margin = "0px";
+        this.aboutText.style.padding = "5px 20px";
+        this.aboutText.style.fontFamily = "Roboto,helvetica,arial,sans-serif";
+        this.aboutText.style.fontSize = "12px";
+        this.aboutText.style.fontWeight = "400";
+        this.aboutText.style.color = "#000000";
+        this.aboutText.innerText = `${i18n.about} `;
+        this.frame.appendChild(this.aboutText);
 
         this.start();
+
+        window.matchMedia("screen and (width <= 720px)").addEventListener("change", this.setSizes.bind(this));
+        this.setSizes(window.matchMedia("screen and (width <= 720px)"));
     }
 
     animate() {
         this.currentProgressBar.style.display = "none";
         this.currentProgressText.style.display = "block";
-        this.currentProgressText.innerText = Config.progress.replace("{x}", this.progress).replace("{n}", this.step);
+        this.currentProgressText.innerText = i18n.progress.replace("{x}", this.progress).replace("{n}", this.step);
         setTimeout(this.switch.bind(this), Config.cooldown / 2.5);
     }
 
@@ -1032,21 +1356,6 @@ class reCAPTCHA {
         }
     }
 
-    message(message) {
-        // Display some message like "Please try again." in bottom of images.
-
-        this.frame.style.height = this.helpText.style.display == "block" ? "677px" : "607px";
-        this.text.style.display = "block";
-
-        if (typeof message == "string") {
-            this.text.innerText = message;
-        }
-
-        else {
-            this.text.innerText = message.currentTarget.message;
-        }
-    }
-
     randomizeImages(array) {
         for (let currentIndex = array.length - 1; currentIndex > 0; currentIndex--) {
             const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
@@ -1057,6 +1366,8 @@ class reCAPTCHA {
     }
 
     reset() {
+        this.deaths++;
+
         this.currentProgressBar.querySelectorAll("*").forEach(element => element.remove());
 
         this.restore();
@@ -1070,9 +1381,10 @@ class reCAPTCHA {
     }
 
     restore() {
-        this.frame.style.height = "582px";
+        this.frame.style.height = `${this.sizes["frame_height"] - (window.matchMedia("screen and (width <= 720px)").matches ? 80 : 0)}px`;
+
         this.text.style.display = "none";
-        this.helpText.style.display = "none";
+        this.aboutText.style.display = "none";
 
         for (let captcha of this.imageElements) {
             this.images.removeChild(captcha);
@@ -1080,49 +1392,109 @@ class reCAPTCHA {
     }
 
     set() {
+        /*
+        Create a Object which does not contain the "__others__". This is required for random(selecting a category).
+
+        random(grid)
+
+        First, start the looping Config.categories. The "number" key specifies how much image from this category should be displayed.
+        The "__others__" category will never be correct category.
+
+        Looping:
+            If the current category is correct category:
+                If a "number" set for this category:
+                    random(correct number)
+                    If "number" > selected correct number:
+                        Set correct number to "number".
+                            Because this category is correct and a number for minumum already specified. We should use that.
+
+                    Add correct number of random(this images) to final list and correct images list.
+
+                If not:
+                    Add this images only to correct images list.
+
+            If not:
+                If a "number" set for this category:
+                    Add "number" of random(this images) to final list and wrong images list (because "number" is for minumum).
+                        But this introduces a problem: Since these images already added in both lists, in the final wrong images addition this images will duplicated.
+                        We will remove that duplications.
+            
+                If not:
+                    Add this images only to wrong images list.
+
+        random(wrong images list)
+        
+        Final additions & settings:
+            We can handle two statuses in one:
+                a. No "number" specified for any category.
+                b. A "number" specified but it is not correct category.
+
+                random(correct images list)
+
+                random(correct number)
+                Special status for "b" and if the correct number + "number" > grid number:
+                    Set correct number to 'grid - "number"'.
+                        We shouldn't change "number", but we can change correct number.
+                
+                Add 'correct number' of correct images to final list.
+
+                For "a":
+                    Add 'grid - correct number' of all wrong images to final list.
+                
+                For "b":
+                    Remove already added (duplicated) images (not these category's all images) from wrong images list. 
+
+                    Add 'grid - correct number - "number"' of all wrong images to final list.
+                        Because we already added "number" specified wrong images to final list, this is minumum.
+                
+            The "number" specified for correct images:
+                Add 'grid - "number"' of all wrong images to final list.
+        
+        random(final list)
+
+        Make image elements via final list.
+
+        Set grid and texts.
+
+        Selecting a random(example image):
+            This image should be from correct images list.
+
+            We will select the example image from:
+                correct number (we shouldn't select example image from grid)
+                - 1 (because indexes starts from 0)
+                + random(correct images list's length - if a "number" specified for correct category: "number", if not: correct number)
+        
+        Start progress bar animation.
+        */
+
         this.correctImagePaths = [];
-        this.wrongImagePaths = [];
-        this.imagePaths = [];
+        this.correctNumber = null;
         this.imageElements = [];
+        this.imagePaths = [];
 
-        // Create a Object which does not contain the "__others__". This is required for selecting a category.
-        const wantedCategories = {...Config.categories};
-        delete wantedCategories.__others__;
+        var wrongImagePaths = [];
 
-        const category = Object.keys(wantedCategories)[Math.floor(Math.random() * Object.keys(wantedCategories).length)];
+        const selectableCategories = {...Config.categories};
+        delete selectableCategories.__others__;
+
+        const correctCategory = Object.keys(selectableCategories)[Math.floor(Math.random() * Object.keys(selectableCategories).length)];
 
         this.grid = this.setRandom(Config.grids);
 
-        /* 
-        First, start the for loop of Config.categories. This contains whether the category is category; if it is set, the number of photos to be displayed from that category; and the links to the images.
-        
-        After, check the category active or if it is “__others__”.
+        for (const [categoryLoop, [active, categoryPretty, number, paths]] of Object.entries(Config.categories)) {     
+            if (active || categoryLoop === "__others__") {
+                if (categoryLoop === correctCategory) {
+                    var correctCategoryPretty = categoryPretty[this.lang];
 
-        After checking, Check whether the number has been adjusted or not.
-
-        If the category is wanted category:
-            If a number set:
-                Randomize and add them into correct image paths.
-                Add them to final list in the specified number from correct image paths.
-                Create a list containing whether the category with the specified number is the correct category, and the specified number.
-
-            If not:
-                Add them into correct image paths.
-        
-        If not:
-            If a number set:
-                Randomize and add them into final list. (#note-1)
-                Create a list containing whether the category with the specified number is the correct category, and the specified number.
-
-            Add them into wrong image paths. (#note-2)
-        */
-        for (const [category_, [active, number, paths]] of Object.entries(Config.categories)) {            
-            if (active || category_ === "__others__") {
-                if (category_ === category) {
                     if (number !== null) {
-                        this.correctImagePaths.push(...this.randomizeImages([...paths]));
-
-                        this.setImages(this.correctImagePaths, Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
+                        this.correctNumber = this.setRandom(Config.ratios, true);
+                        if (Math.round(number * (this.grid === 16 ? (16 / 9) : 1)) > this.correctNumber) {
+                            this.correctNumber = Math.round(number * (this.grid === 16 ? (16 / 9) : 1)); 
+                        }
+                        
+                        let random_paths = this.randomizeImages([...paths])
+                        this.correctImagePaths.push(...random_paths);
+                        this.setImages(random_paths, this.correctNumber);
                     }
 
                     else {
@@ -1132,41 +1504,24 @@ class reCAPTCHA {
 
                 else {
                     if (number !== null) {
-                        this.setImages(this.randomizeImages([...paths]), Math.round(number * (this.grid === 16 ? Config.multiplier : 1)));
+                        let random_paths = this.randomizeImages([...paths])
+                        wrongImagePaths.push(...random_paths);
+                        this.setImages(random_paths, Math.round(number * (this.grid === 16 ? (16 / 9) : 1)));
                     }
 
-                    this.wrongImagePaths.push(...paths);
+                    else {
+                        wrongImagePaths.push(...paths)
+                    }
                 }
 
                 if (number !== null) {
-                    this.numberStatus = [category_ === category, Math.round(number * (this.grid === 16 ? Config.multiplier : 1))];
+                    this.numberStatus = [categoryLoop === correctCategory, Math.round(number * (this.grid === 16 ? (16 / 9) : 1))];
                 }
             }
         }
 
-        this.randomizeImages(this.wrongImagePaths);
+        this.randomizeImages(wrongImagePaths);
 
-        /* 
-        If no category has a set number, or if the category with the set number is not the correct category:
-            Randomize the correct image paths.
-
-            Set how many images to select.
-
-            If a category has a set number and the sum of the number of images to be selected and the set number is greater than the total number of images:
-                Set the correct number to difference between total number of images and set number. Note: This ensures that the number of images selected is not random.
-            
-            Add some (correct number) correct images to final list.
-            
-            If no category has a set number:
-                Add some (difference between total number of images and correct number) wrong images to final list.
-
-            If not:
-                Remove duplicates of images which are in the category where the number is set from wrong image paths. Now, wrong image paths only contains those in the category where the number is not set. For the reason, see #note-1 and #note-2.
-                Add some (difference between total number of images, correct number and the specified number) wrong images to final list.
-            
-        If not:
-            Add some (difference between total number of images and the specified number) wrong images to final list.
-        */
         if (this.numberStatus === undefined || !this.numberStatus[0]) {
             this.randomizeImages(this.correctImagePaths);
 
@@ -1179,24 +1534,24 @@ class reCAPTCHA {
             this.setImages(this.correctImagePaths, this.correctNumber);
             
             if (this.numberStatus === undefined) {
-                this.setImages(this.wrongImagePaths, this.grid - this.correctNumber);
+                this.setImages(wrongImagePaths, this.grid - this.correctNumber);
             }
 
             else {
                 for (let image of this.imagePaths) {
-                    if (this.wrongImagePaths.includes(image)) {
-                        this.wrongImagePaths.splice(this.wrongImagePaths.indexOf(image), 1);
+                    if (wrongImagePaths.includes(image)) {
+                        wrongImagePaths.splice(wrongImagePaths.indexOf(image), 1);
                     }
                 }
 
-                this.setImages(this.wrongImagePaths, this.grid - this.correctNumber - this.numberStatus[1]);
+                this.setImages(wrongImagePaths, this.grid - this.correctNumber - this.numberStatus[1]);
             }
         }
 
         else {
-            this.setImages(this.wrongImagePaths, this.grid - this.numberStatus[1]);
+            this.setImages(wrongImagePaths, this.grid - this.correctNumber);
         }
-
+    
         this.randomizeImages(this.imagePaths);
 
         for (let path of this.imagePaths) {
@@ -1211,14 +1566,13 @@ class reCAPTCHA {
             this.imageElements.push(image);
         }
 
-        this.buttonText.innerText = self.correctNumber === 0 ? Config.skip : Config.verify;
+        this.buttonText.innerText = this.correctNumber === 0 ? i18n.skip : i18n.verify;
 
         this.images.style.gridTemplateColumns = `repeat(${Math.sqrt(this.grid)}, 1fr)`;
 
-        this.label.innerText = category;
+        this.label.innerText = correctCategoryPretty;
 
-        const randomExampleNumber = (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1]) - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])));
-        this.example.setAttribute("src", this.correctImagePaths[randomExampleNumber > 0 ? randomExampleNumber : (this.numberStatus === undefined || !this.numberStatus[0] ? this.correctNumber : this.numberStatus[1])]);
+        this.example.setAttribute("src", this.correctImagePaths[this.correctNumber - 1 + Math.ceil(Math.random() * (this.correctImagePaths.length - this.correctNumber))]);
 
         if (this.frame.parentElement !== null) {
             this.animate();
@@ -1240,19 +1594,47 @@ class reCAPTCHA {
             value_ += value;
 
             if (randomNumber < value_) {
-                return parseInt(expand ? Math.round(key * (this.grid === 16 ? Config.multiplier : 1)) : key);
+                return parseInt(expand ? Math.round(key * (this.grid === 16 ? (16 / 9) : 1)) : key);
             }
         }
     }
 
-    showHelp() {
-        this.frame.style.height = this.text.style.display == "block" ? "677px" : "652px";
-        this.helpText.style.display = "block";
+    setSizes(event) {
+        this.frame.style.width = `${this.sizes["frame_width"] - (event.matches ? 80 : 0)}px`;
+        this.images.style.width = `${this.sizes["images_size"] - (event.matches ? 80 : 0)}px`;
+
+        var height = 0;
+        if (this.aboutText.style.display === "block") {height += 70};
+        if (this.text.style.display === "block") (height += 25);
+        this.frame.style.height = `${this.sizes["frame_height"] - (event.matches ? 80 : 0) + height}px`;
+
+        for (let image of this.imageElements) {
+            image.style.width = `${(parseInt(this.images.style.width) - (Math.sqrt(this.grid) * 4)) / Math.sqrt(this.grid) * (image.clicked ? (4 / 5) : 1)}px`;
+        }
+    } 
+
+    showAboutText() {
+        this.frame.style.height = `${(this.text.style.display === "block" ? 675 : 650) - (window.matchMedia("screen and (width <= 720px)").matches ? 80 : 0)}px`;
+        this.aboutText.style.display = "block";
+    }
+
+    showMessage(message) {
+        this.frame.style.height = `${(this.aboutText.style.display === "block" ? 675 : 605) - (window.matchMedia("screen and (width <= 720px)").matches ? 80 : 0)}px`;
+        this.text.style.display = "block";
+
+        if (typeof message == "string") {
+            this.text.innerText = message;
+        }
+
+        else {
+            this.text.innerText = message.currentTarget.message;
+        }
     }
 
     start() {
         this.progress = 0;
         this.progresses = [];
+        this.total = 0;
 
         this.step = this.setRandom(Config.steps);
 
@@ -1289,8 +1671,7 @@ class reCAPTCHA {
         this.currentProgressText.style.display = "none";
         this.currentProgressBar.style.display = "flex";
 
-        // FIXME: If the user resets so much, it can animate two times. Yes, this is better now but it isn't perfect.
-        if (!Object.hasOwn(this, "currentAnimation") || (this.currentAnimation.playState !== "running")) {
+        if (this.progresses[this.progress].style.width === "0px") {
             this.currentAnimation = this.progresses[this.progress].animate([{width: "0px"}, {width: "100%"}], {duration: Config.cooldown / 5, iterations: 1});
         }
 
@@ -1299,6 +1680,8 @@ class reCAPTCHA {
 
     verify() {
         let successful = 0;
+
+        this.total += this.grid;
 
         for (let image of this.imageElements) {
             if (image.clicked)
@@ -1311,12 +1694,15 @@ class reCAPTCHA {
                 }
         }
 
-        if (successful === ((this.numberStatus === undefined || !this.numberStatus[0]) ? this.correctNumber : this.numberStatus[1])) {
+        if (successful === this.correctNumber) {
             this.progress += 1;
 
             if (this.progress === this.step) {
-                if (Config.fixedValidity) {
-                    document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                var date = new Date();
+                var results = {}
+
+                if (Config.useFixedValidity) {
+                    document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
                 }
 
                 else {
@@ -1325,28 +1711,47 @@ class reCAPTCHA {
                     for (let date of this.expiryDates) {
                         if (currentDate <= date) {
                             if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
-                                document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                                document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
                             }
 
                             else {
-                                document.cookie = `captchaPassed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
+                                document.cookie = `fc_passed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
                             }
 
                             break
                         }
                     }
 
-                    if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
-                        document.cookie = `captchaPassed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                    if (document.cookie.split("; ").find((row) => row.startsWith("fc_passed="))?.split("=")[1] === undefined) {
+                        document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
                     }
                 }
 
+                if (document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1] !== undefined) {
+                    results = JSON.parse(decodeURIComponent(document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1]))
+                }
+                results[date.toISOString()] = {
+                    "good": (Config.cooldown ** 2 / 1000) < (this.total * 1000) ? (Config.cooldown ** 2 / 1000) : Config.cooldown, 
+                    "bad": this.total * 1000, 
+                    "score_all": Math.abs(date - this.date_all),
+                    "score_img": Math.abs(date - this.date_img), 
+                    "deaths": this.deaths, 
+                    "cheats": Config.isCheatsEnabled
+                }
+                document.cookie = `fc_results=${encodeURIComponent(JSON.stringify(results))}; max-age=${60*60*24*365}; samesite=None; path=/; secure=None`;
+
                 this.label_.style.display = "none";
                 this.frame.style.display = "none";
-                this.description_.style.display = "none";
+
+                if (Config.useCF2025) {this.description_.style.display = "none";}
                 this.completed_.style.display = "block";
 
-                setTimeout(location.reload(), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 3));
+                if (Config.useCF2025) {
+                    setTimeout(location.reload.bind(location), Config.isCheatsEnabled ? 0 : (Config.cooldown / 3))
+                }
+                else {
+                    setTimeout(this.main.finish.bind(this.main), Config.isCheatsEnabled ? 0 : (Config.cooldown / 27), 1);
+                }
             }
 
             else {
@@ -1358,23 +1763,34 @@ class reCAPTCHA {
 
         else {
             this.reset();
-            this.message(Config.error);
+            this.showMessage(i18n.error);
         }
     }
+}
+
+
+function start() {
+        let browserLanguage = navigator.language || navigator.browserLanguage || navigator.languages;
+        let lang = browserLanguage.indexOf('tr') > -1 ? "tr" : "en"
+        for (const [key, value] of Object.entries({...i18n}[lang])) {
+            i18n[key] = value;
+        }
+
+        var date_all = new Date();
+        
+        const main = new Main();
+        const recaptcha = new reCAPTCHA(lang, main.page, date_all);
+        const tunnel = new Tunnel(main.page, recaptcha, recaptcha.animate.bind(recaptcha));
+
+        setTimeout(main.page.start.bind(main.page), Config.isCheatsEnabled ? 0 : (Config.cooldown / 4), tunnel);
 }
 
 
 (function() {
     'use strict';
 
-    if (document.cookie.split("; ").find((row) => row.startsWith("captchaPassed="))?.split("=")[1] === undefined) {
-        document.title = Config.title;
+    if (document.cookie.split("; ").find((row) => row.startsWith("fc_passed="))?.split("=")[1] === undefined) {
+        document.title = i18n.title_25;
         document.documentElement.style.display = "none";
 
-        addEventListener("load", (event) => {
-            const main = new Main();
-            const recaptcha = new reCAPTCHA(main.label, main.description, main.completed);
-            const tunnel = new Tunnel(main.label, main.frame, recaptcha.frame, recaptcha.animate.bind(recaptcha), );
-
-            setTimeout(main.start.bind(main), !Config.isLinuxTargeted && (window.navigator.userAgent.indexOf("X11") != -1 || window.navigator.userAgent.indexOf("Linux") != -1) ? 0 : (Config.cooldown / 4), tunnel);
-        })}})();
+        addEventListener("load", (event) => {start()})}})();
