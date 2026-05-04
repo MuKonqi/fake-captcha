@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    https://tampermonkey.net/
-// @version      1.10.0
+// @version      1.10.1
 // @author       MuKonqi
 // @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
 // @copyright    Copyright (C) 2025-2026 MuKonqi
@@ -195,11 +195,11 @@ class Config {
 
     // Special Variables
 
-    static pinterestLink = "https://binternet.lunar.icu/image_proxy.php?url="; // I just added this because Pinterest is blocked at my school.
+    static pinterestLink = "https://binternet.lunar.icu/image_proxy.php?url="; // oops.
 
     static pinterestSize = "236x"; // Size of images in Pinterest.
 
-    static isCheatsEnabled = false; // Skip all timeouts, aka dev mode.
+    static cheats = "cookies"; // Skip all timeouts, aka dev mode. Options: "true": enabled, "cookies": set by cookies, "false": disabled
 
     static useCF2025 = false; // Use Cloudflare's old main page design (2025) instead of new version (2026).
     
@@ -240,7 +240,7 @@ class Config {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Downtown_Charlottesville_fire_hydrant.jpg/250px-Downtown_Charlottesville_fire_hydrant.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Pune_green_bus.jpg/250px-Pune_green_bus.jpg"
         ]], // Do not change __others__'s name or do not delete it! Note: The images here will never be correct image for reCAPTCHA.
-        "mosque": [true, {"en": "mosque", "tr": "cami"}, null, [
+        "mosque": [true, {"en": "Mosque", "tr": "Cami"}, null, [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg/330px-Blue_Mosque_Courtyard_Dusk_Wikimedia_Commons.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg/330px-Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul%2C_Turkey_002.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/330px-Hagia_Sophia_Mars_2013.jpg",
@@ -254,7 +254,7 @@ class Config {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Sultan_Ahmet_Mosque_February_2013.jpg/250px-Sultan_Ahmet_Mosque_February_2013.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
         ]],
-        "human": [true, {"en": "human", "tr": "insan"}, 5, [
+        "human": [true, {"en": "Human", "tr": "İnsan"}, 5, [
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
             `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
@@ -442,7 +442,7 @@ class i18n {
 
 
 class Main {
-    constructor(lang) {
+    constructor(cheats, lang) {
         // Rechange the title because some scripts change it while loading.
         document.title = i18n.title_25;
 
@@ -491,17 +491,19 @@ class Main {
 
         // Load main page.
         if (Config.useCF2025) {
-            this.page = new CF25(body, favicon);
+            this.page = new CF25(cheats, body, favicon);
         }   
         else {
-            this.page = new CF26(body, favicon);
+            this.page = new CF26(cheats, body, favicon);
         }
     }
 }
 
 
 class CF25 {
-    constructor(body, favicon) {
+    constructor(cheats, body, favicon) {
+        this.cheats = cheats;
+
         document.documentElement.style.fontFamily = "system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji";
 
         this.frame = document.createElement("div");
@@ -679,13 +681,15 @@ class CF25 {
     start(tunnel) {
         this.loading.style.display = "none";
         this.frame.insertBefore(tunnel.frame, this.description);
-        setTimeout(tunnel.start.bind(tunnel), Config.isCheatsEnabled ? 0 : Config.cooldown);
+        setTimeout(tunnel.start.bind(tunnel), this.cheats ? 0 : Config.cooldown);
     }
 }
 
 
 class CF26 {
-    constructor(body, favicon) {
+    constructor(cheats, body, favicon) {
+        this.cheats = cheats;
+
         document.documentElement.style.fontFamily = 'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"';
 
         this.frame = document.createElement("div");
@@ -836,7 +840,7 @@ class CF26 {
     finish(count) {
         if (count === 9) {location.reload();};
         this.completed.innerText = i18n.completed_26 + (".".repeat(count % 4));
-        setTimeout(this.finish.bind(this), Config.isCheatsEnabled ? 0 : (Config.cooldown / 27), count + 1);
+        setTimeout(this.finish.bind(this), this.cheats ? 0 : (Config.cooldown / 27), count + 1);
     }
 
     setColors(event) {
@@ -870,13 +874,14 @@ class CF26 {
     start(tunnel) {
         this.loading.style.display = "none";
         this.frame.insertBefore(tunnel.frame, this.completed);
-        setTimeout(tunnel.start.bind(tunnel), Config.isCheatsEnabled ? 0 : Config.cooldown);
+        setTimeout(tunnel.start.bind(tunnel), this.cheats ? 0 : Config.cooldown);
     }
 }
 
 
 class Tunnel {
-    constructor(main, recaptcha, animate) {
+    constructor(cheats, main, recaptcha, animate) {
+        this.cheats = cheats;
         this.main = main;
         this.recaptcha = recaptcha;
         this.animate = animate;
@@ -1029,7 +1034,7 @@ class Tunnel {
             }
 
             // First wait, after that hide the spinner and show the checkbox.
-            setTimeout(this.continue.bind(this), Config.isCheatsEnabled ? 0 : (Config.cooldown / 2))
+            setTimeout(this.continue.bind(this), this.cheats ? 0 : (Config.cooldown / 2))
         }
 
         else if (this.status === 2) {
@@ -1119,7 +1124,8 @@ class Tunnel {
 
 
 class reCAPTCHA {
-    constructor(lang, main, date_all) {
+    constructor(cheats, lang, main, date_all) {
+        this.cheats = cheats;
         this.lang = lang;
         this.main = main;
         this.date_all = date_all;
@@ -1168,19 +1174,19 @@ class reCAPTCHA {
         this.currentProgressBar.style.height = "15px";
         this.currentProgressBar.style.gridRow = "1";
         this.currentProgressBar.style.gridColumn = "1 / 3";
-        this.currentProgressBar.style.margin = "7.5px 0px 0px 0px";
+        this.currentProgressBar.style.margin = "7px 0px 0px 0px";
         this.currentProgressBar.style.borderRadius = "15px";
-        this.currentProgressBar.style.border = "0.5px solid #ffffff";
+        this.currentProgressBar.style.border = "1px solid #ffffff";
         this.currentProgressBar.style.display = "flex";
         this.currentProgressBar.style.flexDirection = "row";
         this.currentProgressBar.style.backgroundColor = "#003f48";
         this.header.appendChild(this.currentProgressBar);
 
         this.currentProgressText = document.createElement("p");
-        this.currentProgressText.style.height = "20px";
+        this.currentProgressText.style.height = "22px";
         this.currentProgressText.style.gridRow = "2";
         this.currentProgressText.style.gridColumn = "1 / 3";
-        this.currentProgressText.style.margin = "0px";
+        this.currentProgressText.style.margin = "2px 0px 0px 0px";
         this.currentProgressText.style.boxSizing = "border-box";
         this.currentProgressText.style.borderBottom = "2px solid #ffffff";
         this.currentProgressText.style.color = "#ffffff";
@@ -1194,28 +1200,22 @@ class reCAPTCHA {
         this.texts.style.color = "#ffffff";
         this.header.appendChild(this.texts);
 
+        this.description = document.createElement("span");
+        this.description.innerText = i18n.select;
+
+        this.label = document.createElement("strong");
+        this.label.style.fontSize = "24px";
+
         if (i18n.captchaHeader === 0) {
-            this.description = document.createElement("span");
-            this.description.innerText = i18n.select;
+            this.label.style.textTransform = "lowercase";
             this.texts.appendChild(this.description);
-
             this.texts.appendChild(document.createElement("br"));
-
-            this.label = document.createElement("strong");
-            this.label.style.fontSize = "24px";
             this.texts.appendChild(this.label);
         }
 
         else if (i18n.captchaHeader === 1) {
-            this.label = document.createElement("strong");
-            this.label.style.textTransform = "capitalize";
-            this.label.style.fontSize = "24px";
             this.texts.appendChild(this.label);
-
             this.texts.appendChild(document.createElement("br"));
-
-            this.description = document.createElement("span");
-            this.description.innerText = i18n.select;
             this.texts.appendChild(this.description);
         }
 
@@ -1731,14 +1731,14 @@ class reCAPTCHA {
                     results = JSON.parse(decodeURIComponent(document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1]))
                 }
                 results[date.toISOString()] = {
-                    "good": (Config.cooldown ** 2 / 1000) < (this.total * 1000) ? (Config.cooldown ** 2 / 1000) : Config.cooldown, 
+                    "good": Math.round(Math.sqrt(this.total) * 1000), 
                     "bad": this.total * 1000, 
                     "score_all": Math.abs(date - this.date_all),
                     "score_img": Math.abs(date - this.date_img), 
                     "deaths": this.deaths, 
-                    "cheats": Config.isCheatsEnabled
+                    "cheats": this.cheats
                 }
-                document.cookie = `fc_results=${encodeURIComponent(JSON.stringify(results))}; max-age=${60*60*24*365}; samesite=None; path=/; secure=None`;
+                document.cookie = `fc_results=${encodeURIComponent(JSON.stringify(results))}; max-age=${31536000}; samesite=None; path=/; secure=None`;
 
                 this.label_.style.display = "none";
                 this.frame.style.display = "none";
@@ -1747,10 +1747,10 @@ class reCAPTCHA {
                 this.completed_.style.display = "block";
 
                 if (Config.useCF2025) {
-                    setTimeout(location.reload.bind(location), Config.isCheatsEnabled ? 0 : (Config.cooldown / 3))
+                    setTimeout(location.reload.bind(location), this.cheats ? 0 : (Config.cooldown / 3))
                 }
                 else {
-                    setTimeout(this.main.finish.bind(this.main), Config.isCheatsEnabled ? 0 : (Config.cooldown / 27), 1);
+                    setTimeout(this.main.finish.bind(this.main), this.cheats ? 0 : (Config.cooldown / 27), 1);
                 }
             }
 
@@ -1770,19 +1770,29 @@ class reCAPTCHA {
 
 
 function start() {
-        let browserLanguage = navigator.language || navigator.browserLanguage || navigator.languages;
-        let lang = browserLanguage.indexOf('tr') > -1 ? "tr" : "en"
-        for (const [key, value] of Object.entries({...i18n}[lang])) {
-            i18n[key] = value;
+    const browserLanguage = navigator.language || navigator.browserLanguage || navigator.languages;
+    const lang = browserLanguage.indexOf('tr') > -1 ? "tr" : "en"
+    for (const [key, value] of Object.entries({...i18n}[lang])) {
+        i18n[key] = value;
+    }
+
+    var cheats = false;
+    if (Config.cheats === "true") {
+        cheats = true
+    }
+    else if (Config.cheats === "cookies") {
+        if (document.cookie.split("; ").find((row) => row.startsWith("fc_cheats="))?.split("=")[1] === "true") {
+            cheats = true
         }
+    }
 
-        var date_all = new Date();
-        
-        const main = new Main();
-        const recaptcha = new reCAPTCHA(lang, main.page, date_all);
-        const tunnel = new Tunnel(main.page, recaptcha, recaptcha.animate.bind(recaptcha));
+    var date_all = new Date();
+    
+    const main = new Main(cheats, lang);
+    const recaptcha = new reCAPTCHA(cheats, lang, main.page, date_all);
+    const tunnel = new Tunnel(cheats, main.page, recaptcha, recaptcha.animate.bind(recaptcha));
 
-        setTimeout(main.page.start.bind(main.page), Config.isCheatsEnabled ? 0 : (Config.cooldown / 4), tunnel);
+    setTimeout(main.page.start.bind(main.page), cheats ? 0 : (Config.cooldown / 4), tunnel);
 }
 
 
