@@ -194,11 +194,7 @@ class Config {
     // ###
 
     // Special Variables
-
-    static pinterestLink = "https://binternet.lunar.icu/image_proxy.php?url="; // oops.
-
-    static pinterestSize = "236x"; // Size of images in Pinterest.
-
+    
     static cheats = "cookies"; // Skip all timeouts, aka dev mode. Options: "true": enabled, "cookies": set by cookies, "false": disabled
 
     static useCF2025 = false; // Use Cloudflare's old main page design (2025) instead of new version (2026).
@@ -255,42 +251,42 @@ class Config {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg/250px-TR_Izmir_asv2020-02_img57_Salep%C3%A7io%C4%9Flu_Mosque.jpg"
         ]],
         "human": [true, {"en": "Human", "tr": "İnsan"}, 5, [
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/94/32/95/9432954418f607af26c6bd5f0c3e5db3.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/27/7f/24277ff1beed4aede21717ea389b0611.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c0/9c/cd/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/09/65/7a/09657ad73902dfd45071653b2c3eed3a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/33/d9/8b/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/6a/f3/09/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/80/e9/4d/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/51/61/d1/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/f2/e6/2c/f2e62c62df7937c5665feaffb9151b16.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7b/67/a0/7b67a025a104f2f11a991af0f46f4643.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7f/58/5c/7f585c1fdc14fa25b6960b759e5ba686.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/fb/3c/2f/fb3c2fca26e69371df0ac7dca4946bb1.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/ec/97/59/ec9759530cdfcf6de96b500a8d206445.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/83/11/e1/8311e1b1e8efe53eb257c906587f2875.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/db/c1/21/dbc1218d8f79d6ca4e0d2f430c763213.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/37/f0/08/37f008932fa7b7a3006f2b05dd8d5586.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/7f/d3/17/7fd317b367625ca0a2b5e58d4aeb8096.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/f3/99/74/f399749fe6049b388175d93f52f242be.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/67/5f/44/675f440c9a058ee828bddded814f8157.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/33/c2/91/33c2911138c375dd7774ee210a526993.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/30/65/63/3065634ed2151184076be79cdb719c46.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/39/1d/01/391d01c9ddc3be77fe08ab8fe3a97bd5.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/8f/5c/7f/8f5c7fe9601a92d710d85f1b2d1ab6e9.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/9f/9b/d8/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/24/a0/45/24a0450592fdf051307842148c640ecb.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/0a/c4/40/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/dc/7b/94/dc7b944a451e786a2c1636982cef463f.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/77/45/bf/7745bf533891bfb4bfa69a9ea1fd8d79.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/b3/e3/cf/b3e3cf4411aeb13d7d3c44a5759b6f95.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/17/ee/ca/17eeca5c09009567747378b05a548eae.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/14/91/67/149167758f571c1fbbf5bfef79aa70a1.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/97/08/e0/9708e0c0e035e0ff4fb02b8e0a66fd9f.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/c6/91/aa/c691aaf9a9a2a12e4076866a97e334a5.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/70/53/89/7053894de9172eae1e508085cf86175a.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/10/9e/59/109e59803d6216d1c45d6c9d69972864.jpg`,
-            `${Config.pinterestLink}https://i.pinimg.com/${Config.pinterestSize}/a9/e3/a8/a9e3a8af17dcc28ab43dbf6ce9cbed6d.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/9432954418f607af26c6bd5f0c3e5db3.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/24277ff1beed4aede21717ea389b0611.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/c09ccd0e1d36aed1953573dc73ae9180.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main//09657ad73902dfd45071653b2c3eed3a.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/33d98b14ccc1d6e2e879575cc82fc02b.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/6af3095d1b57821d5f81c7f5fd7fc94e.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/80e94dda8ecf8cdc51cae029877fcc1a.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/5161d1e9e5c4dfe32a2fae8d374ac388.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/f2e62c62df7937c5665feaffb9151b16.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/7b67a025a104f2f11a991af0f46f4643.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/7f585c1fdc14fa25b6960b759e5ba686.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/fb3c2fca26e69371df0ac7dca4946bb1.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/ec9759530cdfcf6de96b500a8d206445.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/8311e1b1e8efe53eb257c906587f2875.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/dbc1218d8f79d6ca4e0d2f430c763213.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/37f008932fa7b7a3006f2b05dd8d5586.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/7fd317b367625ca0a2b5e58d4aeb8096.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/f399749fe6049b388175d93f52f242be.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/675f440c9a058ee828bddded814f8157.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/33c2911138c375dd7774ee210a526993.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/3065634ed2151184076be79cdb719c46.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/391d01c9ddc3be77fe08ab8fe3a97bd5.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/8f5c7fe9601a92d710d85f1b2d1ab6e9.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/9f9bd84362e87bc0388ab5d7583a8d8c.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/24a0450592fdf051307842148c640ecb.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/0ac44094ba821fa1f9b5ad79ba9abc80.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/dc7b944a451e786a2c1636982cef463f.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/7745bf533891bfb4bfa69a9ea1fd8d79.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main//b3e3cf4411aeb13d7d3c44a5759b6f95.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/17eeca5c09009567747378b05a548eae.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/149167758f571c1fbbf5bfef79aa70a1.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/9708e0c0e035e0ff4fb02b8e0a66fd9f.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/c691aaf9a9a2a12e4076866a97e334a5.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/7053894de9172eae1e508085cf86175a.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/109e59803d6216d1c45d6c9d69972864.jpg`,
+            `https://raw.githubusercontent.com/MuKonqi/fake-captcha-assets/refs/heads/main/a9e3a8af17dcc28ab43dbf6ce9cbed6d.jpg`,
             //`${Config.pinterestLink}`, //placeholder
         ]]
     };
