@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Verify You Are Human
 // @namespace    https://tampermonkey.net/
-// @version      1.10.1
+// @version      1.10.2
 // @author       MuKonqi
 // @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
 // @copyright    Copyright (C) 2025-2026 MuKonqi
@@ -443,13 +443,8 @@ class Main {
         document.title = i18n.title_25;
 
         // Try to get original shortcut icon.
-        var favicon = null;
-        if (document.querySelector("link[rel*='icon'") !== null) {
-            favicon = document.querySelector("link[rel*='icon'").getAttribute("href");
-        }
-        else {
-            favicon = "/favicon.ico"
-        }
+        const iconLink = document.querySelector("link[rel*='icon'");
+        const favicon = iconLink ? iconLink.getAttribute("href") : "/favicon.ico"
 
         // Remove all scripts because some scripts add some elements to DOM.
         document.querySelectorAll("script").forEach(child => child.remove());
@@ -477,7 +472,7 @@ class Main {
         document.documentElement.setAttribute("lang", lang);
 
         // Define our custom body.
-        var body = document.createElement("div");
+        const body = document.createElement("div");
         body.style.width = "100%";
         body.style.height = "100%";
         body.style.display = "flex";
@@ -556,7 +551,7 @@ class CF25 {
         this.quarters = [];
 
         for (let i = 0; i < 4; i++) {
-            let quarter = document.createElement("div");
+            const quarter = document.createElement("div");
             quarter.style.width = "1.875rem";
             quarter.style.aspectRatio = "1 / 1";
             quarter.style.position = "absolute";
@@ -759,7 +754,7 @@ class CF26 {
         this.quarters = [];
 
         for (let i = 0; i < 4; i++) {
-            let quarter = document.createElement("div");
+            const quarter = document.createElement("div");
             quarter.style.width = "1.875rem";
             quarter.style.aspectRatio = "1 / 1";
             quarter.style.position = "absolute";
@@ -1464,11 +1459,12 @@ class reCAPTCHA {
         */
 
         this.correctImagePaths = [];
-        this.correctNumber = null;
+        this.correctNumber;
         this.imageElements = [];
         this.imagePaths = [];
 
-        var wrongImagePaths = [];
+        const wrongImagePaths = [];
+        let correctCategoryPretty;
 
         const selectableCategories = {...Config.categories};
         delete selectableCategories.__others__;
@@ -1480,7 +1476,7 @@ class reCAPTCHA {
         for (const [categoryLoop, [active, categoryPretty, number, paths]] of Object.entries(Config.categories)) {     
             if (active || categoryLoop === "__others__") {
                 if (categoryLoop === correctCategory) {
-                    var correctCategoryPretty = categoryPretty[this.lang];
+                    correctCategoryPretty = categoryPretty[this.lang];
 
                     if (number !== null) {
                         this.correctNumber = this.setRandom(Config.ratios, true);
@@ -1488,7 +1484,7 @@ class reCAPTCHA {
                             this.correctNumber = Math.round(number * (this.grid === 16 ? (16 / 9) : 1)); 
                         }
                         
-                        let random_paths = this.randomizeImages([...paths])
+                        const random_paths = this.randomizeImages([...paths])
                         this.correctImagePaths.push(...random_paths);
                         this.setImages(random_paths, this.correctNumber);
                     }
@@ -1500,7 +1496,7 @@ class reCAPTCHA {
 
                 else {
                     if (number !== null) {
-                        let random_paths = this.randomizeImages([...paths])
+                        const random_paths = this.randomizeImages([...paths])
                         wrongImagePaths.push(...random_paths);
                         this.setImages(random_paths, Math.round(number * (this.grid === 16 ? (16 / 9) : 1)));
                     }
@@ -1551,7 +1547,7 @@ class reCAPTCHA {
         this.randomizeImages(this.imagePaths);
 
         for (let path of this.imagePaths) {
-            let image = document.createElement("img");
+            const image = document.createElement("img");
             image.style.margin = "2px";
             image.style.aspectRatio = "1 / 1";
             image.style.transition = "all .5s ease";
@@ -1599,7 +1595,7 @@ class reCAPTCHA {
         this.frame.style.width = `${this.sizes["frame_width"] - (event.matches ? 80 : 0)}px`;
         this.images.style.width = `${this.sizes["images_size"] - (event.matches ? 80 : 0)}px`;
 
-        var height = 0;
+        let height = 0;
         if (this.aboutText.style.display === "block") {height += 70};
         if (this.text.style.display === "block") (height += 25);
         this.frame.style.height = `${this.sizes["frame_height"] - (event.matches ? 80 : 0) + height}px`;
@@ -1636,19 +1632,19 @@ class reCAPTCHA {
 
         for (let i = 0; i < this.step; i++) {
             if (i !== 0) {
-                let seperator = document.createElement("span");
+                const seperator = document.createElement("span");
                 seperator.style.width = "5px";
                 seperator.style.height = "100%";
                 seperator.style.backgroundColor = "#a9a9a9";
                 this.currentProgressBar.appendChild(seperator);
             }
 
-            let parent = document.createElement("span");
+            const parent = document.createElement("span");
             parent.style.width = `calc((100% - 5 * ${this.step - 1}px) / ${this.step})`;
             parent.style.display = "flex";
             this.currentProgressBar.appendChild(parent);
 
-            let child = document.createElement("span");
+            const child = document.createElement("span");
             child.style.width = "0px";
             child.style.backgroundColor = "#29dd84";
             parent.appendChild(child);
@@ -1694,8 +1690,8 @@ class reCAPTCHA {
             this.progress += 1;
 
             if (this.progress === this.step) {
-                var date = new Date();
-                var results = {}
+                const date = new Date();
+                let results = {}
 
                 if (Config.useFixedValidity) {
                     document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
@@ -1727,7 +1723,7 @@ class reCAPTCHA {
                     results = JSON.parse(decodeURIComponent(document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1]))
                 }
                 results[date.toISOString()] = {
-                    "good": Math.round(Math.sqrt(this.total) * 1000), 
+                    "good": Math.round(Math.sqrt(this.total) * 1000) + Config.cooldown * 1.5, 
                     "bad": this.total * 1000, 
                     "score_all": Math.abs(date - this.date_all),
                     "score_img": Math.abs(date - this.date_img), 
@@ -1772,7 +1768,7 @@ function start() {
         i18n[key] = value;
     }
 
-    var cheats = false;
+    let cheats = false;
     if (Config.cheats === "true") {
         cheats = true
     }
@@ -1782,7 +1778,7 @@ function start() {
         }
     }
 
-    var date_all = new Date();
+    const date_all = new Date();
     
     const main = new Main(cheats, lang);
     const recaptcha = new reCAPTCHA(cheats, lang, main.page, date_all);
