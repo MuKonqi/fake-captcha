@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Verify You Are Human
+// @name         fake-captcha
 // @namespace    https://tampermonkey.net/
-// @version      1.10.2
+// @version      1.10.3
 // @author       MuKonqi
-// @description  A user-script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA.
+// @description  A script for fake combination of Cloudflare's Tunnel and Google's reCAPTCHA
 // @copyright    Copyright (C) 2025-2026 MuKonqi
 // @homepageURL  https://github.com/mukonqi/fake-captcha
 // @supportURL   https://github.com/mukonqi/fake-captcha/issues
@@ -198,6 +198,8 @@ class Config {
     static cheats = "cookies"; // Skip all timeouts, aka dev mode. Options: "true": enabled, "cookies": set by cookies, "false": disabled
 
     static useCF2025 = false; // Use Cloudflare's old main page design (2025) instead of new version (2026).
+
+    static verifyFunction = null; // Use external verify function for reCAPTCHA. Useful for external scripts. Set null to disable.
     
     // ###
 
@@ -209,7 +211,7 @@ class Config {
 
     static expiryTimes = ["09:00", "09:40", "09:50", "10:30", "10:40", "11:20", "11:30", "12:10", "12:20", "13:00", "13:45", "14:25", "14:35", "15:15", "15:20", "16:00"]; // Expiry times in hour:minute format. Note: The order should be from first to last.
 
-    static maximumAge = 2400; // Maximum validition time to be used with expiryTimes.
+    static expiryMaximum = 2400; // Maximum validition time to be used with expiryTimes.
 
     static useFixedValidity = false; // If you won't to use expiryTimes, you should enable this.
     
@@ -1691,38 +1693,7 @@ class reCAPTCHA {
 
             if (this.progress === this.step) {
                 const date = new Date();
-                let results = {}
-
-                if (Config.useFixedValidity) {
-                    document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
-                }
-
-                else {
-                    const currentDate = new Date();
-
-                    for (let date of this.expiryDates) {
-                        if (currentDate <= date) {
-                            if (((date.getTime() - currentDate.getTime()) / 1000) > Config.maximumAge) {
-                                document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
-                            }
-
-                            else {
-                                document.cookie = `fc_passed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
-                            }
-
-                            break
-                        }
-                    }
-
-                    if (document.cookie.split("; ").find((row) => row.startsWith("fc_passed="))?.split("=")[1] === undefined) {
-                        document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
-                    }
-                }
-
-                if (document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1] !== undefined) {
-                    results = JSON.parse(decodeURIComponent(document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1]))
-                }
-                results[date.toISOString()] = {
+                const resultsCurrent = {
                     "good": Math.round(Math.sqrt(this.total) * 1000) + Config.cooldown * 1.5, 
                     "bad": this.total * 1000, 
                     "score_all": Math.abs(date - this.date_all),
@@ -1730,19 +1701,57 @@ class reCAPTCHA {
                     "deaths": this.deaths, 
                     "cheats": this.cheats
                 }
-                document.cookie = `fc_results=${encodeURIComponent(JSON.stringify(results))}; max-age=${31536000}; samesite=None; path=/; secure=None`;
 
-                this.label_.style.display = "none";
-                this.frame.style.display = "none";
-
-                if (Config.useCF2025) {this.description_.style.display = "none";}
-                this.completed_.style.display = "block";
-
-                if (Config.useCF2025) {
-                    setTimeout(location.reload.bind(location), this.cheats ? 0 : (Config.cooldown / 3))
+                if (Config.verifyFunction !== null) {
+                    Config.verifyFunction(date, resultsCurrent);
                 }
                 else {
-                    setTimeout(this.main.finish.bind(this.main), this.cheats ? 0 : (Config.cooldown / 27), 1);
+                    let resultsAll = {};
+
+                    if (Config.useFixedValidity) {
+                        document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                    }
+
+                    else {
+                        const currentDate = new Date();
+
+                        for (let date of this.expiryDates) {
+                            if (currentDate <= date) {
+                                if (((date.getTime() - currentDate.getTime()) / 1000) > Config.expiryMaximum) {
+                                    document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                                }
+
+                                else {
+                                    document.cookie = `fc_passed=true; expires=${date.toUTCString()}; samesite=None; path=/; secure=None`;
+                                }
+
+                                break
+                            }
+                        }
+
+                        if (document.cookie.split("; ").find((row) => row.startsWith("fc_passed="))?.split("=")[1] === undefined) {
+                            document.cookie = `fc_passed=true; max-age=${Config.validity}; samesite=None; path=/; secure=None`;
+                        }
+                    }
+
+                    if (document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1] !== undefined) {
+                        resultsAll = JSON.parse(decodeURIComponent(document.cookie.split("; ").find((row) => row.startsWith("fc_results"))?.split("=")[1]))
+                    }
+                    resultsAll[date.toISOString()] = resultsCurrent;
+                    document.cookie = `fc_results=${encodeURIComponent(JSON.stringify(resultsAll))}; max-age=${31536000}; samesite=None; path=/; secure=None`;
+
+                    this.label_.style.display = "none";
+                    this.frame.style.display = "none";
+
+                    if (Config.useCF2025) {this.description_.style.display = "none";}
+                    this.completed_.style.display = "block";
+
+                    if (Config.useCF2025) {
+                        setTimeout(location.reload.bind(location), this.cheats ? 0 : (Config.cooldown / 3))
+                    }
+                    else {
+                        setTimeout(this.main.finish.bind(this.main), this.cheats ? 0 : (Config.cooldown / 27), 1);
+                    }
                 }
             }
 
